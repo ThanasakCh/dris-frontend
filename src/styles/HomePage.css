@@ -1,0 +1,9 @@
+/* HomePage Container - Simple wrapper for scrollable sections */
+.home-page-container {
+  width: 100%;
+  scroll-behavior: smooth;
+}
+
+.home-page-container > div {
+  scroll-margin-top: 80px; /* Offset for fixed header */
+}

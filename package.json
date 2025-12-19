@@ -1,0 +1,93 @@
+{
+  "name": "grovi-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest"
+  },
+  "keywords": [
+    "agriculture",
+    "crop-monitoring",
+    "satellite",
+    "gis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "description": "Grovi - Crop Monitoring Frontend",
+  "dependencies": {
+    "@mapbox/mapbox-gl-draw": "^1.5.1",
+    "@maplibre/maplibre-gl-geocoder": "^1.9.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@tailwindcss/vite": "^4.1.17",
+    "@turf/turf": "^7.2.0",
+    "@types/leaflet": "^1.9.20",
+    "@types/react": "^19.1.10",
+    "@types/react-datepicker": "^6.2.0",
+    "@types/react-dom": "^19.1.7",
+    "@types/react-router-dom": "^5.3.3",
+    "axios": "^1.11.0",
+    "chart.js": "^4.5.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.5",
+    "highcharts": "^12.4.0",
+    "highcharts-react-official": "^3.2.3",
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
+    "leaflet-image": "^0.4.0",
+    "leaflet-side-by-side": "^2.2.0",
+    "lucide-react": "^0.556.0",
+    "mapbox-gl-compare": "^0.4.2",
+    "maplibre-gl": "^5.14.0",
+    "react": "^19.1.1",
+    "react-chartjs-2": "^5.3.1",
+    "react-datepicker": "^8.10.0",
+    "react-dom": "^19.1.1",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.8.0",
+    "shpjs": "^6.2.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react"
+    ]
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.ts"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "\\.(css|less|scss|sass)$": "identity-obj-proxy"
+    }
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.27.1",
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
+    "@types/mapbox__mapbox-gl-draw": "^1.4.9",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "^10.4.22",
+    "identity-obj-proxy": "^3.0.0",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
+    "ts-jest": "^29.4.1",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.2"
+  }
+}

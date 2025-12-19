@@ -1,6 +1,6 @@
 export const API_CONFIG = {
   // BASE_URL: 'http://localhost:8000',
-  BASE_URL: 'https://concentrations-treatment-respondents-italia.trycloudflare.com',
+  BASE_URL: 'http://localhost:8000',
 }
 
 export const getApiUrl = (endpoint: string) => {

@@ -23,7 +23,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 const translations: Record<Language, Record<string, string>> = {
   TH: {
     // Header
-    "header.logout": "ออกจากระบบ",
+    "header.logout": "ออกจากระบบ2",
     "header.switchLanguage": "เปลี่ยนภาษา",
     "header.darkMode": "โหมดมืด",
     "header.lightMode": "โหมดสว่าง",

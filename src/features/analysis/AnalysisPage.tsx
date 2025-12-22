@@ -159,7 +159,7 @@ export default function MobileAnalysisPage() {
         (bounds, coord) => bounds.extend(coord as [number, number]),
         new maplibregl.LngLatBounds(coords[0], coords[0])
       );
-      map.fitBounds(bounds, { padding: 50 });
+      map.fitBounds(bounds, { padding: 5 });
     });
 
     mapRef.current = map;
@@ -320,7 +320,7 @@ export default function MobileAnalysisPage() {
   return (
     <div
       className="fixed inset-0 flex flex-col"
-      style={{ background: "#f8fafc", zIndex: 9999 }}
+      style={{ background: "#f4f3ef", zIndex: 9999 }}
     >
       {/* Header */}
       <header
@@ -328,6 +328,11 @@ export default function MobileAnalysisPage() {
         style={{
           background: "linear-gradient(135deg, #16a34a, #15803d)",
           color: "white",
+          position: "relative",
+          height: "auto",
+          minHeight: "50px",
+          border: "none",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
         }}
       >
         <button
@@ -345,28 +350,33 @@ export default function MobileAnalysisPage() {
       {/* Map Section */}
       <div
         className="relative flex-shrink-0"
-        style={{ height: "40vh", minHeight: "200px" }}
+        style={{
+          height: "37vh",
+          minHeight: "180px",
+          padding: "8px 12px",
+          background: "#f4f3ef",
+        }}
       >
         <div
           ref={mapContainerRef}
           className="w-full h-full"
-          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+          style={{
+            borderRadius: "12px",
+            overflow: "hidden",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          }}
         />
       </div>
 
       {/* Bottom Sheet */}
       <div
-        className="flex-1 bg-white rounded-t-3xl mt-2 overflow-y-auto"
-        style={{ boxShadow: "0 -4px 24px rgba(0,0,0,0.08)" }}
+        className="flex-1 overflow-y-auto relative z-10"
+        style={{ background: "#f4f3ef", paddingTop: "0" }}
       >
-        <div className="flex justify-center pt-2 pb-1">
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
-        </div>
-
-        <div className="px-4 pb-6">
+        <div className="px-3 pb-3">
           {/* Main Settings Card */}
           <div
-            className="rounded-2xl p-4 mb-4"
+            className="rounded-xl p-2.5 mb-2"
             style={{
               background: "white",
               border: "1px solid #e5e7eb",
@@ -376,23 +386,23 @@ export default function MobileAnalysisPage() {
             {/* VI Selector Row */}
             {/* VI Selector Row - Stacked for mobile */}
             <div
-              className="mb-4 pb-4"
+              className="mb-2 pb-2"
               style={{ borderBottom: "1px solid #f3f4f6" }}
             >
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center gap-2 mb-2">
                 <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
                   style={{ background: "#dbeafe" }}
                 >
                   <TrendingUp
-                    className="w-5 h-5"
+                    className="w-4 h-4"
                     style={{ color: "#3b82f6" }}
                   />
                 </div>
                 <div>
                   <h4
                     style={{
-                      fontSize: "14px",
+                      fontSize: "13px",
                       fontWeight: 600,
                       color: "#1f2937",
                       margin: 0,
@@ -400,7 +410,7 @@ export default function MobileAnalysisPage() {
                   >
                     {t("analysis.selectVI")}
                   </h4>
-                  <p style={{ fontSize: "11px", color: "#6b7280", margin: 0 }}>
+                  <p style={{ fontSize: "10px", color: "#6b7280", margin: 0 }}>
                     {t("analysis.selectVITrendDesc")}
                   </p>
                 </div>
@@ -411,10 +421,10 @@ export default function MobileAnalysisPage() {
                   <DropdownMenuTrigger asChild>
                     <button
                       disabled={isAnalyzing}
-                      className="w-full p-3 rounded-xl flex items-center justify-between"
+                      className="w-full p-2 rounded-lg flex items-center justify-between"
                       style={{
                         border: "1px solid #e5e7eb",
-                        fontSize: "13px",
+                        fontSize: "12px",
                         background: "#f9fafb",
                         color: "#1f2937",
                         textAlign: "left",

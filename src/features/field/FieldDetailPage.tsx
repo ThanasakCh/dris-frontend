@@ -297,7 +297,7 @@ export default function MobileFieldDetailPage() {
       // On desktop, add more padding on left for sidebar
       const padding = isDesktop
         ? { top: 100, bottom: 100, left: 450, right: 100 }
-        : 50;
+        : 5;
       map.fitBounds(bounds, { padding, maxZoom: 17.4 });
     });
 
@@ -1219,7 +1219,7 @@ export default function MobileFieldDetailPage() {
     <>
       <div
         className="fixed inset-0 flex flex-col"
-        style={{ background: "#f8fafc", zIndex: 9999 }}
+        style={{ background: "#f4f3ef", zIndex: 9999 }}
       >
         {/* Header */}
         <header
@@ -1227,6 +1227,11 @@ export default function MobileFieldDetailPage() {
           style={{
             background: "linear-gradient(135deg, #16a34a, #15803d)",
             color: "white",
+            position: "relative",
+            height: "auto",
+            minHeight: "50px",
+            border: "none",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
           }}
         >
           <button
@@ -1234,9 +1239,9 @@ export default function MobileFieldDetailPage() {
             className="w-9 h-9 rounded-full flex items-center justify-center mr-3 transition-colors"
             style={{ background: "rgba(255,255,255,0.2)" }}
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-5 h-5 text-white" />
           </button>
-          <h1 style={{ fontSize: "17px", fontWeight: 600 }}>
+          <h1 style={{ fontSize: "17px", fontWeight: 600, color: "white" }}>
             {t("field.details")}
           </h1>
         </header>
@@ -1244,135 +1249,162 @@ export default function MobileFieldDetailPage() {
         {/* Map Section */}
         <div
           className="relative flex-shrink-0"
-          style={{ height: "45vh", minHeight: "200px" }}
+          style={{
+            height: "37vh",
+            minHeight: "180px",
+            padding: "8px 12px",
+            background: "#f4f3ef",
+          }}
         >
           <div
             ref={mapContainerRef}
             className="w-full h-full"
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
+              borderRadius: "12px",
+              overflow: "hidden",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
             }}
           />
         </div>
 
         {/* Bottom Sheet */}
-        <div className="flex-1 bg-white overflow-y-auto relative z-10">
-          <div className="flex justify-center pt-3 pb-2 bg-gray-50 border-b border-gray-100">
-            <div className="w-10 h-1 bg-gray-300 rounded-full" />
-          </div>
-
-          <div className="px-5 pb-8">
-            {/* Field Name */}
-            <div className="flex items-center gap-2 mb-4">
-              <h2
-                style={{
-                  fontSize: "22px",
-                  fontWeight: 700,
-                  color: "#1f2937",
-                  margin: 0,
-                }}
-              >
-                {field.name}
-              </h2>
-              <button
-                onClick={fieldActions?.handleEdit}
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                title="แก้ไขชื่อ"
-              >
-                <Pencil className="w-4 h-4" style={{ color: "#6b7280" }} />
-              </button>
-            </div>
-
-            {/* Area Info */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded flex items-center justify-center">
-                  <VectorSquareIcon size={14} color="#F6B010" />
-                </div>
-                <span style={{ fontSize: "15px", color: "#374151" }}>
-                  {showAreaInSqm
-                    ? `${(field.area_m2 || 0).toFixed(2)} ตารางเมตร`
-                    : `${area.rai} ไร่ ${area.ngan} งาน ${area.tarangwa} ตารางวา`}
-                </span>
-              </div>
-              <button
-                className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                onClick={() => setShowAreaInSqm(!showAreaInSqm)}
-                title={
-                  showAreaInSqm
-                    ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                    : "เปลี่ยนเป็น ตารางเมตร"
-                }
-              >
-                <RefreshCw className="w-4 h-4" style={{ color: "#6b7280" }} />
-              </button>
-            </div>
-
-            {/* Address */}
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 rounded flex items-center justify-center">
-                <MapPin size={14} style={{ color: "#F6B010" }} />
-              </div>
-              <span style={{ fontSize: "14px", color: "#374151" }}>
-                {field.address || "ต.สุเทพ อ.เมืองเชียงใหม่ จ.เชียงใหม่"}
-              </span>
-            </div>
-
-            {/* Coordinates */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded flex items-center justify-center">
-                  <LocateFixed size={14} style={{ color: "#F6B010" }} />
-                </div>
-                <span style={{ fontSize: "14px", color: "#374151" }}>
-                  {showCoordsInUTM
-                    ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
-                    : `${field.centroid_lat?.toFixed(
-                        6
-                      )}N, ${field.centroid_lng?.toFixed(6)}E`}
-                </span>
-              </div>
-              <div className="flex gap-1">
-                <button
-                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                  onClick={() =>
-                    copyToClipboard(
-                      showCoordsInUTM
-                        ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
-                        : `${field.centroid_lat?.toFixed(
-                            6
-                          )}, ${field.centroid_lng?.toFixed(6)}`
-                    )
-                  }
-                  title="คัดลอก"
+        <div
+          className="flex-1 overflow-y-auto relative z-10"
+          style={{ background: "#f4f3ef", paddingTop: "0" }}
+        >
+          <div className="px-3 pb-4">
+            {/* Field Info Card */}
+            <div
+              className="bg-white rounded-xl p-3 mb-1.5"
+              style={{
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                border: "1px solid rgba(0, 0, 0, 0.05)",
+              }}
+            >
+              {/* Field Name */}
+              <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-100">
+                <h2
+                  style={{
+                    fontSize: "18px",
+                    fontWeight: 700,
+                    color: "#1f2937",
+                    margin: 0,
+                  }}
                 >
-                  <Copy className="w-4 h-4" style={{ color: "#6b7280" }} />
-                </button>
+                  {field.name}
+                </h2>
                 <button
-                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
-                  onClick={() => setShowCoordsInUTM(!showCoordsInUTM)}
+                  onClick={fieldActions?.handleEdit}
+                  className="p-1 rounded-md hover:bg-green-50 transition-colors"
+                  title="แก้ไขชื่อ"
+                >
+                  <Pencil
+                    className="w-3.5 h-3.5"
+                    style={{ color: "#F6B010" }}
+                  />
+                </button>
+              </div>
+
+              {/* Area Info */}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
+                    <VectorSquareIcon size={12} color="#F6B010" />
+                  </div>
+                  <span style={{ fontSize: "12px", color: "#374151" }}>
+                    {showAreaInSqm
+                      ? `${(field.area_m2 || 0).toFixed(2)} ตร.ม.`
+                      : `${area.rai} ไร่ ${area.ngan} งาน ${area.tarangwa} ตร.วา`}
+                  </span>
+                </div>
+                <button
+                  className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+                  onClick={() => setShowAreaInSqm(!showAreaInSqm)}
                   title={
-                    showCoordsInUTM
-                      ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
-                      : "เปลี่ยนเป็น UTM"
+                    showAreaInSqm
+                      ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
+                      : "เปลี่ยนเป็น ตารางเมตร"
                   }
                 >
-                  <RefreshCw className="w-4 h-4" style={{ color: "#6b7280" }} />
+                  <RefreshCw
+                    className="w-3.5 h-3.5"
+                    style={{ color: "#6b7280" }}
+                  />
                 </button>
               </div>
-            </div>
 
-            {/* Field Detail Selector (Dropdown Style) */}
-            <div className="relative mb-6">
+              {/* Address */}
+              <div className="flex items-start gap-1.5 mb-2">
+                <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center shrink-0">
+                  <MapPin size={12} style={{ color: "#F6B010" }} />
+                </div>
+                <span
+                  style={{
+                    fontSize: "11px",
+                    color: "#374151",
+                    lineHeight: "1.4",
+                  }}
+                >
+                  {field.address || "ต.สุเทพ อ.เมืองเชียงใหม่ จ.เชียงใหม่"}
+                </span>
+              </div>
+
+              {/* Coordinates */}
+              <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-100">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
+                    <LocateFixed size={12} style={{ color: "#F6B010" }} />
+                  </div>
+                  <span style={{ fontSize: "11px", color: "#374151" }}>
+                    {showCoordsInUTM
+                      ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
+                      : `${field.centroid_lat?.toFixed(
+                          6
+                        )}N, ${field.centroid_lng?.toFixed(6)}E`}
+                  </span>
+                </div>
+                <div className="flex gap-0.5">
+                  <button
+                    className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+                    onClick={() =>
+                      copyToClipboard(
+                        showCoordsInUTM
+                          ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
+                          : `${field.centroid_lat?.toFixed(
+                              6
+                            )}, ${field.centroid_lng?.toFixed(6)}`
+                      )
+                    }
+                    title="คัดลอก"
+                  >
+                    <Copy
+                      className="w-3.5 h-3.5"
+                      style={{ color: "#6b7280" }}
+                    />
+                  </button>
+                  <button
+                    className="p-1 rounded-md hover:bg-gray-100 transition-colors"
+                    onClick={() => setShowCoordsInUTM(!showCoordsInUTM)}
+                    title={
+                      showCoordsInUTM
+                        ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
+                        : "เปลี่ยนเป็น UTM"
+                    }
+                  >
+                    <RefreshCw
+                      className="w-3.5 h-3.5"
+                      style={{ color: "#6b7280" }}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {/* Field Detail Selector (Now inside the same card) */}
               <button
                 onClick={() => setIsFieldDetailOpen(!isFieldDetailOpen)}
-                className="w-full bg-blue-50 rounded-xl py-3 px-4 flex items-center justify-between cursor-pointer transition-colors border border-blue-100 hover:bg-blue-100"
+                className="w-full bg-blue-50 rounded-lg py-2 px-3 flex items-center justify-between cursor-pointer transition-colors border border-blue-100 hover:bg-blue-100"
               >
-                <span className="text-sm font-semibold text-gray-800">
+                <span className="text-xs font-semibold text-gray-800">
                   รายละเอียดของแปลง
                 </span>
                 <ChevronDown
@@ -1451,46 +1483,65 @@ export default function MobileFieldDetailPage() {
               </div>
             </div>
 
-            {/* Feature Buttons Grid */}
-            <div className="grid grid-cols-3 gap-3">
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <button
-                    key={feature.id}
-                    onClick={feature.enabled ? feature.onClick : undefined}
-                    disabled={!feature.enabled}
-                    className="flex flex-col items-center p-4 rounded-2xl transition-all"
-                    style={{
-                      background: "white",
-                      border: "1px solid #e5e7eb",
-                      opacity: feature.enabled ? 1 : 0.6,
-                      cursor: feature.enabled ? "pointer" : "not-allowed",
-                    }}
-                  >
-                    <div
-                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-2"
-                      style={{ background: feature.bgColor }}
-                    >
-                      <Icon
-                        className="w-6 h-6"
-                        style={{ color: feature.color }}
-                      />
-                    </div>
-                    <span
-                      className="text-center whitespace-pre-line"
+            {/* Feature Buttons Card */}
+            <div
+              className="bg-white rounded-xl p-3"
+              style={{
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
+                border: "1px solid rgba(0, 0, 0, 0.05)",
+              }}
+            >
+              <div className="grid grid-cols-3 gap-2">
+                {features.map((feature) => {
+                  const Icon = feature.icon;
+                  return (
+                    <button
+                      key={feature.id}
+                      onClick={feature.enabled ? feature.onClick : undefined}
+                      disabled={!feature.enabled}
+                      className="flex flex-col items-center p-2 rounded-lg transition-all duration-200 group"
                       style={{
-                        fontSize: "11px",
-                        fontWeight: 500,
-                        color: "#374151",
-                        lineHeight: 1.3,
+                        background: feature.enabled ? "#f9fafb" : "#f3f4f6",
+                        opacity: feature.enabled ? 1 : 0.5,
+                        cursor: feature.enabled ? "pointer" : "not-allowed",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (feature.enabled) {
+                          e.currentTarget.style.background = feature.bgColor;
+                          e.currentTarget.style.transform = "scale(1.05)";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (feature.enabled) {
+                          e.currentTarget.style.background = "#f9fafb";
+                          e.currentTarget.style.transform = "scale(1)";
+                        }
                       }}
                     >
-                      {feature.label}
-                    </span>
-                  </button>
-                );
-              })}
+                      <div
+                        className="w-9 h-9 rounded-lg flex items-center justify-center mb-1 transition-all duration-200"
+                        style={{ background: feature.bgColor }}
+                      >
+                        <Icon
+                          className="w-4 h-4"
+                          style={{ color: feature.color }}
+                        />
+                      </div>
+                      <span
+                        className="text-center whitespace-pre-line"
+                        style={{
+                          fontSize: "9px",
+                          fontWeight: 500,
+                          color: feature.enabled ? "#374151" : "#9ca3af",
+                          lineHeight: 1.2,
+                        }}
+                      >
+                        {feature.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

@@ -189,7 +189,7 @@ export default function MobileHealthPage() {
         (bounds, coord) => bounds.extend(coord as [number, number]),
         new maplibregl.LngLatBounds(coords[0], coords[0])
       );
-      map.fitBounds(bounds, { padding: 50 });
+      map.fitBounds(bounds, { padding: 5 });
 
       // Mark map as loaded
       setMapLoaded(true);
@@ -373,7 +373,7 @@ export default function MobileHealthPage() {
   return (
     <div
       className="fixed inset-0 flex flex-col"
-      style={{ background: "#f8fafc", zIndex: 9999 }}
+      style={{ background: "#f4f3ef", zIndex: 9999 }}
     >
       {/* Header */}
       <header
@@ -381,6 +381,11 @@ export default function MobileHealthPage() {
         style={{
           background: "linear-gradient(135deg, #16a34a, #15803d)",
           color: "white",
+          position: "relative",
+          height: "auto",
+          minHeight: "50px",
+          border: "none",
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
         }}
       >
         <button
@@ -397,59 +402,42 @@ export default function MobileHealthPage() {
 
       {/* Map Section */}
       <div
-        className="relative flex-shrink-0 z-0"
-        style={{ height: "50vh", minHeight: "250px" }}
+        className="relative flex-shrink-0"
+        style={{
+          height: "37vh",
+          minHeight: "180px",
+          padding: "8px 12px",
+          background: "#f4f3ef",
+        }}
       >
         <div
           ref={mapContainerRef}
           className="w-full h-full"
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            borderRadius: "12px",
+            overflow: "hidden",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
           }}
         />
-
-        {/* Always show Analyze Button on map */}
-        <button
-          onClick={handleAnalyze}
-          disabled={isAnalyzing}
-          className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 rounded-full shadow-lg z-10"
-          style={{
-            background: isAnalyzing ? "#9ca3af" : "white",
-            color: isAnalyzing ? "#6b7280" : "#16a34a",
-            fontWeight: 600,
-            fontSize: "14px",
-          }}
-        >
-          <RefreshCw
-            className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`}
-          />
-          {isAnalyzing ? t("action.analyzing") : t("action.analyze")}
-        </button>
 
         {/* Date Carousel - Always show if there are snapshots */}
         {snapshots.length > 0 && (
           <div
-            className={`absolute bottom-0 left-0 right-0 flex flex-col items-center z-10 transition-all duration-300 ${
-              isCarouselExpanded ? "pb-0" : "pb-0"
-            }`}
+            className={`absolute bottom-2 left-2 right-2 flex flex-col items-center z-10 transition-all duration-300`}
+            style={{ borderRadius: "10px", overflow: "hidden" }}
           >
             {/* Toggle Button */}
             <button
               onClick={() => setIsCarouselExpanded(!isCarouselExpanded)}
-              className="bg-white/95 px-4 py-1.5 rounded-t-xl shadow-sm text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1 hover:bg-white"
-              style={{ paddingBottom: "2px" }}
+              className="bg-white/95 px-3 py-1 rounded-t-lg shadow-sm text-xs font-medium text-gray-500 flex items-center gap-1 hover:bg-white"
             >
               {isCarouselExpanded ? (
                 <>
-                  <ChevronDown className="w-4 h-4" /> {t("action.hide")}
+                  <ChevronDown className="w-3 h-3" /> {t("action.hide")}
                 </>
               ) : (
                 <>
-                  <ChevronUp className="w-4 h-4" /> {t("action.selectTime")}
+                  <ChevronUp className="w-3 h-3" /> {t("action.selectTime")}
                 </>
               )}
             </button>
@@ -457,8 +445,11 @@ export default function MobileHealthPage() {
             {/* Carousel Content - Sliding Window (Show 3 items) */}
             {isCarouselExpanded && (
               <div
-                className="w-full flex items-center justify-between px-2 py-3 gap-2"
-                style={{ background: "rgba(255,255,255,0.95)" }}
+                className="w-full flex items-center justify-between px-2 py-2 gap-2"
+                style={{
+                  background: "rgba(255,255,255,0.95)",
+                  borderRadius: "0 0 10px 10px",
+                }}
               >
                 {/* Prev Button */}
                 <button
@@ -553,17 +544,15 @@ export default function MobileHealthPage() {
         )}
       </div>
 
-      {/* Bottom Sheet - Rectangular and distinct section */}
-      <div className="flex-1 bg-white overflow-y-auto relative z-10">
-        {/* Handle (Optional - maybe remove if pure rectangular split is desired, but keeping centering line for now) */}
-        <div className="flex justify-center pt-3 pb-2 bg-gray-50 border-b border-gray-100">
-          <div className="w-10 h-1 bg-gray-300 rounded-full" />
-        </div>
-
-        <div className="px-5 pb-8">
+      {/* Bottom Sheet */}
+      <div
+        className="flex-1 overflow-y-auto relative z-10"
+        style={{ background: "#f4f3ef", paddingTop: "0" }}
+      >
+        <div className="px-3 pb-3">
           {/* VI Selector Card - Always visible */}
           <div
-            className="rounded-2xl p-5 mb-5"
+            className="rounded-2xl p-3 mb-3"
             style={{
               background: "white",
               border: "1px solid #e5e7eb",
@@ -571,7 +560,7 @@ export default function MobileHealthPage() {
             }}
           >
             {/* Header */}
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-3">
               <div
                 className="w-10 h-10 rounded-xl flex items-center justify-center"
                 style={{ background: "#dcfce7" }}
@@ -596,7 +585,7 @@ export default function MobileHealthPage() {
             </div>
 
             {/* VI Selector */}
-            <div className="mb-4">
+            <div className="mb-3">
               <label
                 style={{ fontSize: "12px", color: "#6b7280", fontWeight: 500 }}
                 className="mb-1.5 block"
@@ -665,7 +654,7 @@ export default function MobileHealthPage() {
             <button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
-              className="w-full flex items-center justify-center gap-2 p-3 rounded-xl"
+              className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl"
               style={{
                 background: isAnalyzing
                   ? "#9ca3af"
@@ -686,12 +675,19 @@ export default function MobileHealthPage() {
 
           {selectedSnapshot ? (
             <>
-              {/* Average Value Section */}
-              <div className="mb-6">
+              {/* Average Value Section - wrapped in card */}
+              <div
+                className="rounded-xl p-3 mb-3"
+                style={{
+                  background: "white",
+                  border: "1px solid #e5e7eb",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                }}
+              >
                 <h3
-                  className="text-center mb-4"
+                  className="text-center mb-3"
                   style={{
-                    fontSize: "15px",
+                    fontSize: "14px",
                     fontWeight: 600,
                     color: "#374151",
                   }}
@@ -703,7 +699,7 @@ export default function MobileHealthPage() {
                 <div className="flex items-center justify-between mb-2">
                   <span
                     style={{
-                      fontSize: "13px",
+                      fontSize: "12px",
                       color: "#ef4444",
                       fontWeight: 500,
                     }}
@@ -712,7 +708,7 @@ export default function MobileHealthPage() {
                   </span>
                   <span
                     style={{
-                      fontSize: "20px",
+                      fontSize: "18px",
                       fontWeight: 700,
                       color: "#374151",
                     }}
@@ -721,7 +717,7 @@ export default function MobileHealthPage() {
                   </span>
                   <span
                     style={{
-                      fontSize: "13px",
+                      fontSize: "12px",
                       color: "#16a34a",
                       fontWeight: 500,
                     }}
@@ -754,12 +750,12 @@ export default function MobileHealthPage() {
 
                 {/* Status Message */}
                 <div
-                  className="mt-4 p-4 rounded-xl text-center"
+                  className="mt-3 p-3 rounded-lg text-center"
                   style={{ background: "#dcfce7" }}
                 >
                   <p
                     style={{
-                      fontSize: "14px",
+                      fontSize: "13px",
                       color: "#15803d",
                       fontWeight: 500,
                     }}
@@ -844,52 +840,23 @@ export default function MobileHealthPage() {
               </div>
             </>
           ) : (
-            /* Empty State */
-            <div className="flex flex-col items-center justify-center py-12">
+            /* Empty State - Text only, no button */
+            <div className="flex flex-col items-center justify-center py-4">
               <div
-                className="w-20 h-20 rounded-full flex items-center justify-center mb-4"
+                className="w-12 h-12 rounded-full flex items-center justify-center mb-2"
                 style={{ background: "#f3f4f6" }}
               >
-                <span style={{ fontSize: "40px" }}>🌱</span>
+                <span style={{ fontSize: "24px" }}>🌱</span>
               </div>
-              <h3
-                style={{
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  color: "#374151",
-                  marginBottom: "8px",
-                }}
-              >
-                ยังไม่มีข้อมูลการวิเคราะห์
-              </h3>
               <p
                 style={{
                   fontSize: "13px",
                   color: "#6b7280",
                   textAlign: "center",
-                  marginBottom: "16px",
                 }}
               >
-                กดปุ่มวิเคราะห์เพื่อดึงข้อมูลดาวเทียม
+                ยังไม่มีข้อมูล กดปุ่มด้านบนเพื่อวิเคราะห์
               </p>
-              <button
-                onClick={handleAnalyze}
-                disabled={isAnalyzing}
-                className="flex items-center gap-2 px-6 py-3 rounded-full shadow-md"
-                style={{
-                  background: isAnalyzing
-                    ? "#9ca3af"
-                    : "linear-gradient(135deg, #16a34a, #15803d)",
-                  color: "white",
-                  fontWeight: 600,
-                  fontSize: "14px",
-                }}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`}
-                />
-                {isAnalyzing ? "กำลังวิเคราะห์..." : "วิเคราะห์ข้อมูลดาวเทียม"}
-              </button>
             </div>
           )}
         </div>

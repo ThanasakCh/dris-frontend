@@ -274,15 +274,12 @@ export default function MobileHealthPage() {
 
     try {
       setIsAnalyzing(true);
-      console.log("Starting analysis to fetch latest 4 cloud-masked images...");
 
       // Clear old snapshots
       try {
-        console.log("🗑️ Clearing old snapshots...");
         await axios.delete(`/vi-analysis/snapshots/${fieldId}`, {
           params: { vi_type: selectedVI },
         });
-        console.log("✅ Old snapshots cleared");
       } catch (e) {
         console.warn("Failed to clear old snapshots");
       }
@@ -297,7 +294,6 @@ export default function MobileHealthPage() {
       );
 
       const data = response.data;
-      console.log("Historical analysis completed:", data);
 
       // Reload snapshots
       await loadSnapshots();
@@ -517,7 +513,7 @@ export default function MobileHealthPage() {
                             <span
                               style={{ fontSize: "10px", color: "#16a34a" }}
                             >
-                              📍
+                              No overlay
                             </span>
                           )}
 

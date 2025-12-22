@@ -10,11 +10,11 @@ interface BasemapSelectorProps {
 }
 
 const basemaps = [
-  { id: "light", name: "Light", icon: "☀️" },
-  { id: "dark", name: "Dark", icon: "🌙" },
-  { id: "voyager", name: "Voyager", icon: "🗺️" },
-  { id: "streets", name: "Streets", icon: "🏙️" },
-  { id: "satellite", name: "Satellite", icon: "🛰️" },
+  { id: "light", name: "Light", icon: "L" },
+  { id: "dark", name: "Dark", icon: "D" },
+  { id: "voyager", name: "Voyager", icon: "V" },
+  { id: "streets", name: "Streets", icon: "S" },
+  { id: "satellite", name: "Satellite", icon: "Sat" },
 ] as const;
 
 export default function BasemapSelector({
@@ -55,7 +55,7 @@ export default function BasemapSelector({
           <div className="absolute bottom-14 right-0 z-40 bg-white/90 backdrop-blur-md rounded-2xl shadow-xl border border-white/50 p-3 min-w-[200px]">
             <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-200">
               <span className="text-sm font-semibold text-gray-700">
-                🗺️ Basemap
+                Basemap
               </span>
               <button
                 onClick={() => setIsOpen(false)}

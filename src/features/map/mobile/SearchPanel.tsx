@@ -148,8 +148,6 @@ const MobileSearchPanel: React.FC<MobileSearchPanelProps> = ({ map }) => {
       setResults([]);
       setQuery("");
       setIsExpanded(false);
-
-      console.log("Successfully navigated to location");
     } catch (error) {
       console.error("Error navigating to location:", error);
     }

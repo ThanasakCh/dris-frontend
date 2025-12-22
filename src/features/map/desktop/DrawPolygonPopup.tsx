@@ -97,12 +97,12 @@ export default function DesktopDrawPolygonPopup({
         setIsOpen(false);
       } else if (draw) {
         // Add to draw control directly
-        const featureId = draw.add({
+        draw.add({
           type: "Feature",
           geometry: geometry,
           properties: {},
         });
-        console.log("✅ นำเข้าแปลงสำเร็จ:", featureId);
+
         setIsOpen(false);
 
         // Trigger draw create event manually

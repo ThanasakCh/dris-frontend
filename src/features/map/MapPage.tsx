@@ -172,11 +172,6 @@ const MobileMapPage: React.FC = () => {
       },
       selectedFieldLayer // Insert before (below) the selected field layer
     );
-
-    console.log(
-      "✅ Overlay แสดงบนแผนที่แล้ว (เฉพาะแปลงที่เลือก)",
-      overlay.fieldId
-    );
   };
 
   const clearOverlay = () => {
@@ -294,7 +289,6 @@ const MobileMapPage: React.FC = () => {
         setIsDrawingMode(false);
         setDesktopAreaText("");
         setDesktopAreaCentroid(null);
-        console.log("✅ วาด polygon เสร็จแล้ว", feature);
       });
 
       map.on("draw.render", () => {
@@ -862,7 +856,7 @@ const MobileMapPage: React.FC = () => {
         confirmButtonText: t("action.ok"),
       });
     } catch (error: any) {
-      console.error("❌ บันทึกแปลงไม่สำเร็จ:", error);
+      console.error("บันทึกแปลงไม่สำเร็จ:", error);
       Swal.fire({
         title: t("confirm.error"),
         text:
@@ -875,8 +869,7 @@ const MobileMapPage: React.FC = () => {
     }
   };
 
-  const handleToggleLayer = (layerId: string) => {
-    console.log("Toggle layer:", layerId);
+  const handleToggleLayer = (_layerId: string) => {
     // TODO: Implement layer toggle logic
   };
 
@@ -1184,7 +1177,7 @@ const MobileMapPage: React.FC = () => {
                       confirmButtonText: "ตกลง",
                     });
                   } catch (error: any) {
-                    console.error("❌ บันทึกแปลงไม่สำเร็จ:", error);
+                    console.error("บันทึกแปลงไม่สำเร็จ:", error);
                     Swal.fire({
                       title: "เกิดข้อผิดพลาด",
                       text:
@@ -1346,7 +1339,7 @@ const MobileMapPage: React.FC = () => {
                   confirmButtonText: t("action.ok"),
                 });
               } catch (error: any) {
-                console.error("❌ บันทึกแปลงไม่สำเร็จ:", error);
+                console.error("บันทึกแปลงไม่สำเร็จ:", error);
                 Swal.fire({
                   title: t("confirm.error"),
                   text:

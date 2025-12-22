@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     // DEV_MODE: Auto-login with mock user
     if (DEV_MODE) {
-      console.log("🔧 DEV_MODE: Using mock user (bypass authentication)");
+      console.log("DEV_MODE: Using mock user (bypass authentication)");
       axios.defaults.headers.common["Authorization"] = `Bearer ${MOCK_TOKEN}`;
       setUser(MOCK_USER);
       setIsLoading(false);

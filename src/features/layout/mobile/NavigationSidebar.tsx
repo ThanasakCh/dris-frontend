@@ -244,7 +244,7 @@ export default function MobileSidebar({
               >
                 <MapPin size={14} />
               </div>
-              <div>Drought Monitoring</div>
+              <div>Health Monitoring</div>
               <div style={{ marginTop: "4px", fontSize: "10px" }}>
                 Northern Thailand
               </div>

@@ -242,7 +242,7 @@ export default function DesktopMenuSidebar({
               >
                 <MapPin size={16} />
               </div>
-              <div>Drought Monitoring</div>
+              <div>Health Monitoring</div>
               <div style={{ marginTop: "6px", fontSize: "11px" }}>
                 Northern Thailand
               </div>

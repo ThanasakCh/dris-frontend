@@ -869,10 +869,6 @@ const MobileMapPage: React.FC = () => {
     }
   };
 
-  const handleToggleLayer = (_layerId: string) => {
-    // TODO: Implement layer toggle logic
-  };
-
   const handleDarkModeToggle = (isDark: boolean) => {
     const newStyle = isDark ? "dark" : "light";
     handleStyleChange(newStyle);

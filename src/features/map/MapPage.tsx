@@ -38,9 +38,6 @@ import {
 
 // Panel Components
 import HealthPopup from "../health/mobile/HealthCheckPopup";
-import AnalysisPanel from "../../components/panels/AnalysisPanel";
-import DrawPanel from "../../components/panels/DrawPanel";
-import LayersPanel from "../../components/panels/LayersPanel";
 
 // Mobile Search Component
 import MobileSearchPanel from "./mobile/SearchPanel";
@@ -66,7 +63,7 @@ const MobileMapPage: React.FC = () => {
 
   const mapRef = useRef<maplibregl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const drawRef = useRef<MapboxDraw | null>(null);
+  const [drawControl, setDrawControl] = useState<MapboxDraw | null>(null);
 
   const { fields, createField, saveThumbnail, refreshFields } = useField();
   const { t } = useLanguage();
@@ -287,7 +284,7 @@ const MobileMapPage: React.FC = () => {
       });
 
       map.addControl(draw as any);
-      drawRef.current = draw;
+      setDrawControl(draw);
 
       // Handle draw events (desktop only)
       map.on("draw.create", (e: any) => {
@@ -300,10 +297,9 @@ const MobileMapPage: React.FC = () => {
         console.log("✅ วาด polygon เสร็จแล้ว", feature);
       });
 
-      // Handle draw.render for real-time area calculation
       map.on("draw.render", () => {
-        if (!drawRef.current) return;
-        const data = drawRef.current.getAll();
+        if (!draw) return;
+        const data = draw.getAll();
         if (data.features.length > 0) {
           const feature = data.features[0];
           if (
@@ -612,9 +608,9 @@ const MobileMapPage: React.FC = () => {
 
   // Cancel drawing mode (before polygon is complete)
   const handleCancelDrawingMode = () => {
-    if (drawRef.current) {
-      drawRef.current.deleteAll();
-      drawRef.current.changeMode("simple_select");
+    if (drawControl) {
+      drawControl.deleteAll();
+      drawControl.changeMode("simple_select");
     }
     setIsDrawingMode(false);
     setDrawnFeature(null);
@@ -756,8 +752,8 @@ const MobileMapPage: React.FC = () => {
   };
 
   const handleCancelDraw = () => {
-    if (drawRef.current && drawnFeature) {
-      drawRef.current.delete(drawnFeature.id);
+    if (drawControl && drawnFeature) {
+      drawControl.delete(drawnFeature.id);
     }
     setDrawnFeature(null);
     setDrawFormData({
@@ -845,8 +841,8 @@ const MobileMapPage: React.FC = () => {
       }
 
       // Reset
-      if (drawRef.current && drawnFeature) {
-        drawRef.current.delete(drawnFeature.id);
+      if (drawControl && drawnFeature) {
+        drawControl.delete(drawnFeature.id);
       }
       setDrawnFeature(null);
       setDrawFormData({
@@ -895,17 +891,33 @@ const MobileMapPage: React.FC = () => {
       case "info":
         return <HealthPopup fieldId={selectedFieldId || undefined} />;
       case "analysis":
-        return <AnalysisPanel fieldId={selectedFieldId} />;
-
+        return (
+          <div className="p-4 text-center text-gray-500">
+            <p className="font-medium">วิเคราะห์ VI</p>
+            <p className="text-sm mt-2">
+              กรุณาเลือกแปลงเพื่อเข้าหน้ารายละเอียด
+            </p>
+          </div>
+        );
       case "filters":
         return (
-          <DrawPanel
-            draw={drawRef.current}
-            onStartDrawing={handleStartDrawing}
-          />
+          <div className="p-4">
+            <h3 className="text-lg font-bold mb-2">วาดพื้นที่</h3>
+            <button
+              onClick={handleStartDrawing}
+              className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+            >
+              เริ่มวาดพื้นที่
+            </button>
+          </div>
         );
       case "layers":
-        return <LayersPanel onToggleLayer={handleToggleLayer} />;
+        return (
+          <div className="p-4 text-center text-gray-500">
+            <p className="font-medium">ชั้นข้อมูล</p>
+            <p className="text-sm mt-2">ฟีเจอร์นี้กำลังพัฒนา</p>
+          </div>
+        );
       case "draw_form":
         return (
           <div className="p-4">
@@ -1064,7 +1076,7 @@ const MobileMapPage: React.FC = () => {
                 map={mapRef.current}
                 currentStyle={currentStyle}
                 onStyleChange={handleStyleChange}
-                draw={drawRef.current}
+                draw={drawControl}
                 onStartDrawing={handleStartDrawing}
                 selectedFieldId={selectedFieldId}
                 selectedFieldName={selectedFieldName}
@@ -1151,8 +1163,8 @@ const MobileMapPage: React.FC = () => {
                     }
 
                     // Reset
-                    if (drawRef.current && drawnFeature) {
-                      drawRef.current.delete(drawnFeature.id);
+                    if (drawControl && drawnFeature) {
+                      drawControl.delete(drawnFeature.id);
                     }
                     setDrawnFeature(null);
                     setDrawFormData({
@@ -1243,7 +1255,7 @@ const MobileMapPage: React.FC = () => {
               map={mapRef.current}
               currentStyle={currentStyle}
               onStyleChange={handleStyleChange}
-              draw={drawRef.current}
+              draw={drawControl}
               onStartDrawing={handleStartDrawing}
               selectedFieldId={selectedFieldId}
               selectedFieldName={selectedFieldName}

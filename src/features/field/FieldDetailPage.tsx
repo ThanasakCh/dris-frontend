@@ -1279,6 +1279,7 @@ export default function MobileFieldDetailPage() {
                 {field.name}
               </h2>
               <button
+                onClick={fieldActions?.handleEdit}
                 className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
                 title="แก้ไขชื่อ"
               >

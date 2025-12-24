@@ -141,8 +141,38 @@ export default function DesktopHealthPanel({
   mapRef,
   onSnapshotsChange,
 }: DesktopHealthPanelProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const fieldActions = useFieldActions(field, onBack);
+
+  // Helper functions to translate variety and season
+  const getVarietyLabel = (variety: string | undefined): string => {
+    if (!variety) return "-";
+    const v = variety.toLowerCase();
+    if (v.includes("jasmine") || v === "jasmine") return t("farm.jasmine");
+    if (v.includes("ricekk6") || v === "ricekk6") return t("farm.riceKK6");
+    if (v.includes("ricekk15") || v === "ricekk15") return t("farm.riceKK15");
+    if (v.includes("ricept") || v === "ricept") return t("farm.ricePT");
+    if (v.includes("stickyrice") || v === "stickyrice")
+      return t("farm.stickyRice");
+    if (v.includes("riceberry") || v === "riceberry")
+      return t("farm.riceberry");
+    if (v.includes("other") || v === "other") return t("farm.other");
+    return variety;
+  };
+
+  const getSeasonLabel = (season: string | undefined): string => {
+    if (!season) return "-";
+    const s = season.toLowerCase();
+    if (s.includes("wetseason") || s === "wetseason")
+      return t("farm.wetSeason");
+    if (s.includes("dryseason") || s === "dryseason")
+      return t("farm.drySeason");
+    if (s.includes("transplant") || s === "transplant")
+      return t("farm.transplant");
+    if (s.includes("broadcast") || s === "broadcast")
+      return t("farm.broadcast");
+    return season;
+  };
   const [selectedVI, setSelectedVI] = useState("NDVI");
   const [snapshots, setSnapshots] = useState<VISnapshot[]>([]);
   const [selectedSnapshot, setSelectedSnapshot] = useState<VISnapshot | null>(
@@ -620,7 +650,7 @@ export default function DesktopHealthPanel({
                             {t("field.plantVariety")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
-                            {field.variety || "-"}
+                            {getVarietyLabel(field.variety)}
                           </span>
                         </div>
 
@@ -633,11 +663,14 @@ export default function DesktopHealthPanel({
                             {field.planting_date
                               ? new Date(
                                   field.planting_date
-                                ).toLocaleDateString("th-TH", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                ).toLocaleDateString(
+                                  language === "TH" ? "th-TH" : "en-US",
+                                  {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  }
+                                )
                               : "-"}
                           </span>
                         </div>
@@ -648,7 +681,7 @@ export default function DesktopHealthPanel({
                             {t("field.plantingSeasonLabel")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
-                            {field.planting_season || "-"}
+                            {getSeasonLabel(field.planting_season)}
                           </span>
                         </div>
                       </div>

@@ -51,7 +51,7 @@ export default function HealthPopup({
   onOverlayChange,
 }: HealthPopupProps) {
   const { fields } = useField();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFieldId, setSelectedFieldId] = useState<string | undefined>(
     propFieldId
@@ -155,7 +155,7 @@ export default function HealthPopup({
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("th-TH", {
+    return date.toLocaleDateString(language === "TH" ? "th-TH" : "en-US", {
       day: "numeric",
       month: "short",
       year: "2-digit",

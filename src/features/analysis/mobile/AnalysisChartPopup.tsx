@@ -47,7 +47,7 @@ export default function AnalysisPopup({
   fieldName: propFieldName,
 }: AnalysisPopupProps) {
   const { fields } = useField();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFieldId, setSelectedFieldId] = useState<string | undefined>(
     propFieldId
@@ -120,7 +120,9 @@ export default function AnalysisPopup({
         const date = new Date(item.measurement_date || item.date);
         const value = item.vi_value || item.value;
         return {
-          date: date.toLocaleDateString("th-TH", { month: "short" }),
+          date: date.toLocaleDateString(language === "TH" ? "th-TH" : "en-US", {
+            month: "short",
+          }),
           value,
         };
       });

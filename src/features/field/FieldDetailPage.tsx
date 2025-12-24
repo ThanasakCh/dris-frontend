@@ -89,25 +89,40 @@ export default function MobileFieldDetailPage() {
   const getVarietyLabel = (variety: string | undefined): string => {
     if (!variety) return "-";
     const v = variety.toLowerCase();
-    if (v.includes("หอมมะลิ") || v.includes("jasmine"))
+    // Match both Thai names and Select option values
+    if (v.includes("หอมมะลิ") || v.includes("jasmine") || v === "jasmine")
       return t("farm.jasmine");
-    if (v.includes("กข6") || v.includes("rd6")) return t("farm.riceKK6");
-    if (v.includes("กข15") || v.includes("rd15")) return t("farm.riceKK15");
-    if (v.includes("ปทุมธานี") || v.includes("pathum")) return t("farm.ricePT");
-    if (v.includes("เหนียว") || v.includes("sticky"))
+    if (v.includes("กข6") || v.includes("rd6") || v === "ricekk6")
+      return t("farm.riceKK6");
+    if (v.includes("กข15") || v.includes("rd15") || v === "ricekk15")
+      return t("farm.riceKK15");
+    if (v.includes("ปทุมธานี") || v.includes("pathum") || v === "ricept")
+      return t("farm.ricePT");
+    if (v.includes("เหนียว") || v.includes("sticky") || v === "stickyrice")
       return t("farm.stickyRice");
-    if (v.includes("ไรซ์เบอรี่") || v.includes("riceberry"))
+    if (
+      v.includes("ไรซ์เบอรี่") ||
+      v.includes("riceberry") ||
+      v === "riceberry"
+    )
       return t("farm.riceberry");
+    if (v === "other") return t("farm.other");
     return variety;
   };
 
   const getSeasonLabel = (season: string | undefined): string => {
     if (!season) return "-";
     const s = season.toLowerCase();
-    if (s.includes("นาปี") || s.includes("wet")) return t("farm.wetSeason");
-    if (s.includes("นาปรัง") || s.includes("dry")) return t("farm.drySeason");
+    // Match both Thai names and Select option values
+    if (s.includes("นาปี") || s.includes("wet") || s === "wetseason")
+      return t("farm.wetSeason");
+    if (s.includes("นาปรัง") || s.includes("dry") || s === "dryseason")
+      return t("farm.drySeason");
+    if (s === "transplant") return t("farm.transplant");
+    if (s === "broadcast") return t("farm.broadcast");
     return season;
   };
+
   const [isLoading, setIsLoading] = useState(false);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [isFieldDetailOpen, setIsFieldDetailOpen] = useState(false);
@@ -1462,7 +1477,7 @@ export default function MobileFieldDetailPage() {
                             <div className="w-2 h-2 rounded-full bg-green-500"></div>
                           </div>
                           <span className="text-xs text-gray-700">
-                            รายละเอียดของแปลง
+                            {t("field.detailOf")}
                           </span>
                         </div>
                       </div>
@@ -1472,27 +1487,30 @@ export default function MobileFieldDetailPage() {
                         {/* ชนิดพันธุ์พืช */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            ชนิดพันธุ์พืช
+                            {t("field.plantVariety")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
-                            {field?.variety || "-"}
+                            {getVarietyLabel(field?.variety)}
                           </span>
                         </div>
 
                         {/* วันที่ปลูก */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            วันที่ปลูก
+                            {t("farm.plantingDate")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
                             {field?.planting_date
                               ? new Date(
                                   field.planting_date
-                                ).toLocaleDateString("th-TH", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                ).toLocaleDateString(
+                                  language === "TH" ? "th-TH" : "en-US",
+                                  {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  }
+                                )
                               : "-"}
                           </span>
                         </div>
@@ -1500,10 +1518,10 @@ export default function MobileFieldDetailPage() {
                         {/* ฤดูกาลปลูก */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            ฤดูกาลปลูก
+                            {t("field.plantingSeasonLabel")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
-                            {field?.planting_season || "-"}
+                            {getSeasonLabel(field?.planting_season)}
                           </span>
                         </div>
                       </div>

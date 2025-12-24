@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import axios from "../../../config/axios";
 import { Search, MapPin, X } from "lucide-react";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface SearchResult {
   display_name: string;
@@ -16,6 +17,7 @@ interface MobileSearchPanelProps {
 }
 
 const MobileSearchPanel: React.FC<MobileSearchPanelProps> = ({ map }) => {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -124,15 +126,22 @@ const MobileSearchPanel: React.FC<MobileSearchPanelProps> = ({ map }) => {
         marker.remove();
       }
 
+      // Create popup instance
+      const popup = new maplibregl.Popup().setHTML(
+        `<div style="padding: 4px; font-size: 12px;">${result.display_name}</div>`
+      );
+
       // Add new marker
       const newMarker = new maplibregl.Marker()
         .setLngLat([result.lon, result.lat])
-        .setPopup(
-          new maplibregl.Popup().setHTML(
-            `<div style="padding: 4px; font-size: 12px;">${result.display_name}</div>`
-          )
-        )
+        .setPopup(popup)
         .addTo(map);
+
+      // Remove marker when popup closes
+      popup.on("close", () => {
+        newMarker.remove();
+        setMarker(null);
+      });
 
       newMarker.togglePopup();
       setMarker(newMarker);
@@ -216,7 +225,7 @@ const MobileSearchPanel: React.FC<MobileSearchPanelProps> = ({ map }) => {
             <input
               ref={inputRef}
               type="text"
-              placeholder="ค้นหาพื้นที่..."
+              placeholder={t("field.searchPlaceholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyPress={(e) => {
@@ -269,7 +278,7 @@ const MobileSearchPanel: React.FC<MobileSearchPanelProps> = ({ map }) => {
                 }}
               />
             ) : (
-              "ค้นหา"
+              t("action.search")
             )}
           </button>
 
@@ -376,7 +385,7 @@ const MobileSearchPanel: React.FC<MobileSearchPanelProps> = ({ map }) => {
               borderTop: "1px solid rgba(0, 0, 0, 0.08)",
             }}
           >
-            ไม่พบผลลัพธ์
+            {t("field.notFound")}
           </div>
         )}
       </div>

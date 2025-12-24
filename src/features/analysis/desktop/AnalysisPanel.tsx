@@ -31,6 +31,13 @@ import {
 import { TimeSeriesChart, TimeSeriesChartRef } from "../../../shared/charts";
 import { useLanguage } from "../../../contexts/LanguageContext";
 import { useFieldActions } from "../../../hooks/useFieldActions";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Icons
 const VectorSquareIcon = ({
@@ -125,19 +132,34 @@ const viTypes = [
   { code: "VCI", name: "VCI", description: "Vegetation Condition Index" },
 ];
 
-const monthNames = [
-  "มกราคม",
-  "กุมภาพันธ์",
-  "มีนาคม",
-  "เมษายน",
-  "พฤษภาคม",
-  "มิถุนายน",
-  "กรกฎาคม",
-  "สิงหาคม",
-  "กันยายน",
-  "ตุลาคม",
-  "พฤศจิกายน",
-  "ธันวาคม",
+const monthKeys = [
+  "month.jan",
+  "month.feb",
+  "month.mar",
+  "month.apr",
+  "month.may",
+  "month.jun",
+  "month.jul",
+  "month.aug",
+  "month.sep",
+  "month.oct",
+  "month.nov",
+  "month.dec",
+];
+
+const monthShortKeys = [
+  "month.janShort",
+  "month.febShort",
+  "month.marShort",
+  "month.aprShort",
+  "month.mayShort",
+  "month.junShort",
+  "month.julShort",
+  "month.augShort",
+  "month.sepShort",
+  "month.octShort",
+  "month.novShort",
+  "month.decShort",
 ];
 
 export default function DesktopAnalysisPanel({
@@ -250,13 +272,19 @@ export default function DesktopAnalysisPanel({
   const getAnalysisDescription = (): string => {
     switch (analysisType) {
       case "monthly_range":
-        return `ค่าเฉลี่ยรายเดือน ${selectedVI} ช่วง ${
-          monthNames[startMonth - 1]
-        } - ${monthNames[endMonth - 1]} ปี ${selectedYear}`;
+        const start = t(monthKeys[startMonth - 1]);
+        const end = t(monthKeys[endMonth - 1]);
+        return `${t("analysis.monthlyAvg")} ${selectedVI} ${t(
+          "analysis.monthlyRange"
+        )} ${start} - ${end} ${t("analysis.yearLabel")} ${selectedYear}`;
       case "full_year":
-        return `ค่าเฉลี่ยรายเดือน ${selectedVI} ทั้งปี ${selectedYear}`;
+        return `${t("analysis.yearlyAvg")} ${selectedVI} ${t(
+          "analysis.fullYear"
+        )} ${selectedYear}`;
       case "ten_year_avg":
-        return `ค่าเฉลี่ยรายปี ${selectedVI} (10 ปีย้อนหลัง)`;
+        return `${t("analysis.yearlyAvg")} ${selectedVI} (${t(
+          "analysis.tenYearAvg"
+        )})`;
       default:
         return "";
     }
@@ -275,8 +303,9 @@ export default function DesktopAnalysisPanel({
       return rawData.map((item) => {
         const date = new Date(item.measurement_date || item.date);
         const value = item.vi_value || item.value;
+        const monthIndex = date.getMonth();
         return {
-          date: date.toLocaleDateString("th-TH", { month: "short" }),
+          date: t(monthShortKeys[monthIndex]),
           value,
         };
       });
@@ -329,10 +358,10 @@ export default function DesktopAnalysisPanel({
         setTimeSeriesData([]);
         setShowResultPopup(false);
         Swal.fire({
-          title: "แจ้งเตือน",
-          text: "ไม่พบข้อมูลในช่วงเวลาที่เลือก กรุณาเลือกช่วงเวลาอื่น",
+          title: t("confirm.warning"),
+          text: t("analysis.noDataWarning"),
           icon: "warning",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
           confirmButtonColor: "#16a34a",
         });
       }
@@ -341,12 +370,14 @@ export default function DesktopAnalysisPanel({
       setTimeSeriesData([]);
       setShowResultPopup(false);
       const errorMessage =
-        error.response?.data?.detail || error.message || "ไม่ทราบสาเหตุ";
+        error.response?.data?.detail ||
+        error.message ||
+        t("health.unknownCause");
       Swal.fire({
-        title: "เกิดข้อผิดพลาด",
-        text: `เกิดข้อผิดพลาดในการดึงข้อมูลจาก Google Earth Engine:\n\n${errorMessage}`,
+        title: t("confirm.error"),
+        text: `${t("analysis.geeError")}:\n\n${errorMessage}`,
         icon: "error",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
       });
     } finally {
       setIsAnalyzing(false);
@@ -361,7 +392,7 @@ export default function DesktopAnalysisPanel({
 
   const downloadCSV = () => {
     if (timeSeriesData.length === 0) return;
-    const headers = ["วันที่", `ค่า ${selectedVI}`];
+    const headers = [t("table.date"), `${t("table.value")} ${selectedVI}`];
     const csvData = timeSeriesData.map((item) => [
       item.date,
       item.value.toFixed(4),
@@ -393,7 +424,7 @@ export default function DesktopAnalysisPanel({
           toast: true,
           position: "top-end",
           icon: "success",
-          title: "คัดลอกแล้ว",
+          title: t("copy.success"),
           showConfirmButton: false,
           timer: 1500,
           timerProgressBar: true,
@@ -404,7 +435,7 @@ export default function DesktopAnalysisPanel({
           toast: true,
           position: "top-end",
           icon: "error",
-          title: "คัดลอกไม่สำเร็จ",
+          title: t("copy.failed"),
           showConfirmButton: false,
           timer: 1500,
         });
@@ -435,7 +466,7 @@ export default function DesktopAnalysisPanel({
                 <ChevronLeft size={20} />
               </button>
               <h2 className="text-xl font-bold text-gray-800 flex-1 text-center">
-                รายละเอียดแปลง
+                {t("field.details")}
               </h2>
               <div className="w-12 h-12" />
             </div>
@@ -473,21 +504,21 @@ export default function DesktopAnalysisPanel({
                       <button
                         onClick={fieldActions.handleEdit}
                         className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                        title="แก้ไข"
+                        title={t("action.edit")}
                       >
                         <Pencil size={12} />
                       </button>
                       <button
                         onClick={fieldActions.handleDelete}
                         className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                        title="ลบ"
+                        title={t("action.delete")}
                       >
                         <Trash2 size={10} />
                       </button>
                       <button
                         onClick={fieldActions.handleDownload}
                         className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                        title="ดาวน์โหลด"
+                        title={t("action.download")}
                       >
                         <Download size={10} />
                       </button>
@@ -502,7 +533,9 @@ export default function DesktopAnalysisPanel({
                         <VectorSquareIcon size={11} color="#F6B010" />
                         <span className="text-[11px] text-gray-600 leading-none">
                           {showAreaInSqm
-                            ? `${(field.area_m2 || 0).toFixed(2)} ตารางเมตร`
+                            ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                                "unit.sqm"
+                              )}`
                             : `${area.rai} ${t("field.rai")} ${area.ngan} ${t(
                                 "field.ngan"
                               )} ${area.tarangwa} ${t("field.sqWa")}`}
@@ -513,8 +546,8 @@ export default function DesktopAnalysisPanel({
                         onClick={() => setShowAreaInSqm(!showAreaInSqm)}
                         title={
                           showAreaInSqm
-                            ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                            : "เปลี่ยนเป็น ตารางเมตร"
+                            ? t("unit.changeToRai")
+                            : t("unit.changeToSqm")
                         }
                       >
                         <RefreshCw size={10} />
@@ -529,7 +562,7 @@ export default function DesktopAnalysisPanel({
                         className="mt-0.5 shrink-0"
                       />
                       <span className="text-[11px] text-gray-600 leading-tight">
-                        {field.address || "ต.ศรีภิรมย์ อ.พรหมพิราม จ.พิษณุโลก"}
+                        {field.address || t("field.addressFallback")}
                       </span>
                     </div>
 
@@ -563,8 +596,8 @@ export default function DesktopAnalysisPanel({
                           onClick={() => setShowCoordsInUTM(!showCoordsInUTM)}
                           title={
                             showCoordsInUTM
-                              ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
-                              : "เปลี่ยนเป็น UTM"
+                              ? t("unit.changeToLatLng")
+                              : t("unit.changeToUTM")
                           }
                         >
                           <RefreshCw size={10} />
@@ -584,7 +617,7 @@ export default function DesktopAnalysisPanel({
                 className="w-full bg-blue-50 rounded-xl py-2 px-4 flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors border border-blue-100"
               >
                 <span className="text-sm font-semibold text-gray-800">
-                  รายละเอียดของแปลง
+                  {t("field.detailOf")}
                 </span>
                 <ChevronRight
                   size={14}
@@ -617,7 +650,7 @@ export default function DesktopAnalysisPanel({
                               <div className="w-2 h-2 rounded-full bg-green-500"></div>
                             </div>
                             <span className="text-xs text-gray-700">
-                              รายละเอียดของแปลง
+                              {t("field.detailOf")}
                             </span>
                           </div>
                           <button
@@ -633,7 +666,7 @@ export default function DesktopAnalysisPanel({
                           {/* ชนิดพันธุ์พืช */}
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-gray-500">
-                              ชนิดพันธุ์พืช
+                              {t("field.plantVariety")}
                             </span>
                             <span className="text-xs font-medium text-gray-800">
                               {field.variety || "-"}
@@ -643,7 +676,7 @@ export default function DesktopAnalysisPanel({
                           {/* วันที่ปลูก */}
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-gray-500">
-                              วันที่ปลูก
+                              {t("farm.plantingDate")}
                             </span>
                             <span className="text-xs font-medium text-gray-800">
                               {field.planting_date
@@ -661,7 +694,7 @@ export default function DesktopAnalysisPanel({
                           {/* ฤดูกาลปลูก */}
                           <div className="flex justify-between items-center">
                             <span className="text-xs text-gray-500">
-                              ฤดูกาลปลูก
+                              {t("field.plantingSeasonLabel")}
                             </span>
                             <span className="text-xs font-medium text-gray-800">
                               {field.planting_season || "-"}
@@ -680,11 +713,13 @@ export default function DesktopAnalysisPanel({
               <div className="flex items-center gap-2">
                 <TrendIcon size={18} color="#16a34a" />
                 <span className="text-[15px] font-semibold text-gray-800">
-                  วิเคราะห์แนวโน้มไม้
+                  {t("analysis.trendAnalysis")}
                 </span>
               </div>
               <div className="flex items-center" style={{ gap: 8 }}>
-                <span style={{ fontSize: 12, color: "#073B1A" }}>เมนู</span>
+                <span style={{ fontSize: 12, color: "#073B1A" }}>
+                  {t("health.menu")}
+                </span>
                 <button
                   type="button"
                   id="menu_btn"
@@ -718,7 +753,7 @@ export default function DesktopAnalysisPanel({
             {/* เลือกดัชนีพืช */}
             <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
               <div className="text-[12px] text-gray-500 mb-2">
-                เลือกดัชนีพืช
+                {t("analysis.selectVI")}
               </div>
 
               <DropdownMenu modal={false}>
@@ -765,13 +800,13 @@ export default function DesktopAnalysisPanel({
             {/* ประเภทการวิเคราะห์ */}
             <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
               <div className="text-[12px] text-gray-500 mb-2">
-                ประเภทการวิเคราะห์
+                {t("analysis.type")}
               </div>
               <div className="flex gap-2">
                 {[
-                  { code: "monthly_range", label: "ช่วงเดือน" },
-                  { code: "full_year", label: "ทั้งปี" },
-                  { code: "ten_year_avg", label: "10 ปีย้อนหลัง" },
+                  { code: "monthly_range", label: t("analysis.monthRange") },
+                  { code: "full_year", label: t("analysis.fullYear") },
+                  { code: "ten_year_avg", label: t("analysis.tenYearAvg") },
                 ].map((type) => (
                   <button
                     key={type.code}
@@ -803,20 +838,24 @@ export default function DesktopAnalysisPanel({
                   {/* ปี */}
                   <div className="flex-1">
                     <label className="text-[11px] text-gray-500 mb-1 block">
-                      ปี
+                      {t("analysis.yearLabel")}
                     </label>
-                    <select
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(Number(e.target.value))}
+                    <Select
+                      value={String(selectedYear)}
+                      onValueChange={(value) => setSelectedYear(Number(value))}
                       disabled={isAnalyzing}
-                      className="w-full px-2 py-2 rounded-lg border border-gray-200 bg-gray-50 text-[13px]"
                     >
-                      {getAvailableYears().map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="w-full h-9 px-2 border border-gray-200 rounded-lg bg-gray-50 text-sm">
+                        <SelectValue placeholder={String(selectedYear)} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getAvailableYears().map((year) => (
+                          <SelectItem key={year} value={String(year)}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* เดือนเริ่ม */}
@@ -824,41 +863,49 @@ export default function DesktopAnalysisPanel({
                     <>
                       <div className="flex-1">
                         <label className="text-[11px] text-gray-500 mb-1 block">
-                          เริ่ม
+                          {t("analysis.startMonth")}
                         </label>
-                        <select
-                          value={startMonth}
-                          onChange={(e) =>
-                            setStartMonth(Number(e.target.value))
+                        <Select
+                          value={String(startMonth)}
+                          onValueChange={(value) =>
+                            setStartMonth(Number(value))
                           }
                           disabled={isAnalyzing}
-                          className="w-full px-2 py-2 rounded-lg border border-gray-200 bg-gray-50 text-[13px]"
                         >
-                          {monthNames.map((name, idx) => (
-                            <option key={idx} value={idx + 1}>
-                              {name}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger className="w-full h-9 px-2 border border-gray-200 rounded-lg bg-gray-50 text-sm">
+                            <SelectValue placeholder={t(monthKeys[0])} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {monthKeys.map((key, idx) => (
+                              <SelectItem key={idx} value={String(idx + 1)}>
+                                {t(key)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
 
                       {/* เดือนสิ้นสุด */}
                       <div className="flex-1">
                         <label className="text-[11px] text-gray-500 mb-1 block">
-                          สิ้นสุด
+                          {t("analysis.endMonth")}
                         </label>
-                        <select
-                          value={endMonth}
-                          onChange={(e) => setEndMonth(Number(e.target.value))}
+                        <Select
+                          value={String(endMonth)}
+                          onValueChange={(value) => setEndMonth(Number(value))}
                           disabled={isAnalyzing}
-                          className="w-full px-2 py-2 rounded-lg border border-gray-200 bg-gray-50 text-[13px]"
                         >
-                          {monthNames.map((name, idx) => (
-                            <option key={idx} value={idx + 1}>
-                              {name}
-                            </option>
-                          ))}
-                        </select>
+                          <SelectTrigger className="w-full h-9 px-2 border border-gray-200 rounded-lg bg-gray-50 text-sm">
+                            <SelectValue placeholder={t(monthKeys[0])} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {monthKeys.map((key, idx) => (
+                              <SelectItem key={idx} value={String(idx + 1)}>
+                                {t(key)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                     </>
                   )}
@@ -880,12 +927,12 @@ export default function DesktopAnalysisPanel({
                 size={16}
                 className={isAnalyzing ? "animate-spin" : ""}
               />
-              {isAnalyzing ? "กำลังวิเคราะห์..." : "วิเคราะห์แนวโน้ม"}
+              {isAnalyzing ? t("action.analyzing") : t("analysis.analyzeTrend")}
             </button>
 
             {/* Description */}
             <p className="text-[10px] text-gray-400 text-center mt-2 leading-relaxed">
-              ข้อมูลจากดาวเทียม Sentinel-2 • ผลลัพธ์จะแสดงในป็อปอัพด้านขวา
+              {t("analysis.sentinelInfo")}
             </p>
           </div>
         </div>
@@ -952,7 +999,7 @@ export default function DesktopAnalysisPanel({
               <div className="flex items-center gap-2">
                 <TrendIcon size={20} color="#16a34a" />
                 <span className="font-semibold text-gray-800 text-[17px]">
-                  ผลการวิเคราะห์ {selectedVI}
+                  {t("analysis.resultOf")} {selectedVI}
                 </span>
               </div>
               <button
@@ -994,11 +1041,11 @@ export default function DesktopAnalysisPanel({
               <div className="flex items-center gap-2">
                 <BarChart3 size={18} className="text-green-600" />
                 <span className="font-semibold text-gray-800">
-                  Time Series ({selectedYear})
+                  {t("analysis.timeSeries")} ({selectedYear})
                 </span>
               </div>
               <span className="text-sm text-gray-500">
-                {timeSeriesData.length} จุดข้อมูล
+                {timeSeriesData.length} {t("analysis.dataPoints")}
               </span>
             </div>
 
@@ -1028,7 +1075,7 @@ export default function DesktopAnalysisPanel({
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-full border-2 border-green-600 text-green-600 font-semibold text-[14px] hover:bg-green-50 transition-colors"
               >
                 <ImageIcon size={18} />
-                รูปภาพ
+                {t("action.image")}
               </button>
               <button
                 onClick={downloadCSV}

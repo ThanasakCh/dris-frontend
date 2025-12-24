@@ -102,7 +102,9 @@ export default function DrawPolygonPopup({
         title: t("draw.importSuccess"),
         text: `${t("draw.importedFrom")} ${file.name}`,
         icon: "success",
-        timer: 2000,
+        toast: true,
+        position: "top-end",
+        timer: 3000,
         showConfirmButton: false,
       });
     } catch (error: any) {
@@ -181,7 +183,7 @@ export default function DrawPolygonPopup({
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="วาดโพลิกอน"
+        title={t("draw.title")}
       >
         <div
           style={{ color: isOpen ? "rgb(59, 130, 246)" : "rgb(51, 51, 51)" }}

@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface DesktopDrawingBannerProps {
   isVisible: boolean;
@@ -14,6 +15,7 @@ export default function DesktopDrawingBanner({
   areaText,
   areaCentroid,
 }: DesktopDrawingBannerProps) {
+  const { t } = useLanguage();
   if (!isVisible) return null;
 
   return createPortal(
@@ -59,7 +61,7 @@ export default function DesktopDrawingBanner({
               color: "#1f2937",
             }}
           >
-            คุณสามารถวาดแปลงได้
+            {t("draw.canDrawField")}
           </span>
           <span
             style={{
@@ -67,7 +69,7 @@ export default function DesktopDrawingBanner({
               color: "#6b7280",
             }}
           >
-            ไม่เกิน 3,000 ไร่ / แปลง
+            {t("draw.maxAreaLimit")}
           </span>
         </div>
 
@@ -83,7 +85,7 @@ export default function DesktopDrawingBanner({
             border: "none",
             cursor: "pointer",
           }}
-          title="ยกเลิกการวาด"
+          title={t("draw.cancelDrawing")}
         >
           <X
             size={20}

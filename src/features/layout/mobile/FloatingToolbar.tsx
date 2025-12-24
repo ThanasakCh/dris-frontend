@@ -24,6 +24,7 @@ interface FloatingSidebarProps {
   selectedFieldName?: string;
   fieldsCount?: number;
   onOverlayChange?: (overlay: OverlayData | null) => void;
+  onImportGeometry?: (geometry: GeoJSON.Geometry, fileName: string) => void;
 }
 
 export default function FloatingSidebar({
@@ -36,6 +37,7 @@ export default function FloatingSidebar({
   selectedFieldName,
   fieldsCount = 0,
   onOverlayChange,
+  onImportGeometry,
 }: FloatingSidebarProps) {
   return (
     <div
@@ -56,6 +58,7 @@ export default function FloatingSidebar({
       <DrawPolygonPopup
         draw={draw}
         onStartDrawing={onStartDrawing}
+        onImportGeometry={onImportGeometry}
         savedPolygons={fieldsCount}
       />
 

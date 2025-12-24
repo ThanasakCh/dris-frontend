@@ -41,6 +41,7 @@ import {
   DesktopHealthPanel,
   DesktopAnalysisPanel,
 } from "../../components/panels/desktop";
+import { DesktopHeader } from "../../components/desktop";
 import type { VISnapshot } from "../../components/panels/desktop";
 import { getImageUrl } from "../../config/api";
 import profileImage from "../../assets/profile.jpg";
@@ -83,7 +84,30 @@ export default function MobileFieldDetailPage() {
 
   const { user } = useAuth();
   const { fields, getField, currentField, getThumbnail } = useField();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+
+  const getVarietyLabel = (variety: string | undefined): string => {
+    if (!variety) return "-";
+    const v = variety.toLowerCase();
+    if (v.includes("หอมมะลิ") || v.includes("jasmine"))
+      return t("farm.jasmine");
+    if (v.includes("กข6") || v.includes("rd6")) return t("farm.riceKK6");
+    if (v.includes("กข15") || v.includes("rd15")) return t("farm.riceKK15");
+    if (v.includes("ปทุมธานี") || v.includes("pathum")) return t("farm.ricePT");
+    if (v.includes("เหนียว") || v.includes("sticky"))
+      return t("farm.stickyRice");
+    if (v.includes("ไรซ์เบอรี่") || v.includes("riceberry"))
+      return t("farm.riceberry");
+    return variety;
+  };
+
+  const getSeasonLabel = (season: string | undefined): string => {
+    if (!season) return "-";
+    const s = season.toLowerCase();
+    if (s.includes("นาปี") || s.includes("wet")) return t("farm.wetSeason");
+    if (s.includes("นาปรัง") || s.includes("dry")) return t("farm.drySeason");
+    return season;
+  };
   const [isLoading, setIsLoading] = useState(false);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [isFieldDetailOpen, setIsFieldDetailOpen] = useState(false);
@@ -388,7 +412,7 @@ export default function MobileFieldDetailPage() {
           toast: true,
           position: "top-end",
           icon: "success",
-          title: "คัดลอกแล้ว",
+          title: t("copy.success"),
           showConfirmButton: false,
           timer: 1500,
           timerProgressBar: true,
@@ -399,7 +423,7 @@ export default function MobileFieldDetailPage() {
           toast: true,
           position: "top-end",
           icon: "error",
-          title: "คัดลอกไม่สำเร็จ",
+          title: t("copy.failed"),
           showConfirmButton: false,
           timer: 1500,
         });
@@ -520,7 +544,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "health",
       icon: Leaf,
-      label: "ติดตามความ\nสมบูรณ์ของพืช",
+      label: t("feature.health"),
       color: "#16a34a",
       bgColor: "#dcfce7",
       enabled: true,
@@ -529,7 +553,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "field-status",
       icon: BarChart3,
-      label: "วิเคราะห์แนวโน้ม",
+      label: t("feature.analysis"),
       color: "#2563eb",
       bgColor: "#dbeafe",
       enabled: true,
@@ -538,7 +562,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "weather",
       icon: CloudSun,
-      label: "สภาพอากาศ",
+      label: t("feature.weather"),
       color: "#ea580c",
       bgColor: "#fed7aa",
       enabled: false,
@@ -546,7 +570,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "fertilizer",
       icon: Lightbulb,
-      label: "แนะนำการใส่\nปุ๋ย",
+      label: t("feature.fertilizer"),
       color: "#0891b2",
       bgColor: "#cffafe",
       enabled: false,
@@ -554,7 +578,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "pest",
       icon: AlertTriangle,
-      label: "ภัยพืช",
+      label: t("feature.pest"),
       color: "#7c3aed",
       bgColor: "#ede9fe",
       enabled: false,
@@ -562,7 +586,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "notebook",
       icon: BookOpen,
-      label: "สมุดบันทึก",
+      label: t("feature.notebook"),
       color: "#2563eb",
       bgColor: "#dbeafe",
       enabled: false,
@@ -570,7 +594,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "price",
       icon: BarChart3,
-      label: "ราคาผลผลิต",
+      label: t("feature.price"),
       color: "#eab308",
       bgColor: "#fef9c3",
       enabled: false,
@@ -578,7 +602,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "score",
       icon: BarChart3,
-      label: "คะแนนแปลง\nเกษตรกร",
+      label: t("feature.score"),
       color: "#16a34a",
       bgColor: "#dcfce7",
       enabled: false,
@@ -586,7 +610,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "disease",
       icon: AlertTriangle,
-      label: "โรคและแมลง",
+      label: t("feature.disease"),
       color: "#dc2626",
       bgColor: "#fee2e2",
       enabled: false,
@@ -594,7 +618,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "forecast",
       icon: BarChart3,
-      label: "คำถามการณ์\nผลผลิต",
+      label: t("feature.forecast"),
       color: "#4338ca",
       bgColor: "#e0e7ff",
       enabled: false,
@@ -602,7 +626,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "water",
       icon: Lightbulb,
-      label: "แหล่งน้ำนา\n/เล็ก",
+      label: t("feature.water"),
       color: "#0284c7",
       bgColor: "#e0f2fe",
       enabled: false,
@@ -610,7 +634,7 @@ export default function MobileFieldDetailPage() {
     {
       id: "burn",
       icon: AlertTriangle,
-      label: "ประวัติการเผา\n[ใหม่]",
+      label: t("feature.burn"),
       color: "#6b7280",
       bgColor: "#f3f4f6",
       enabled: false,
@@ -647,6 +671,17 @@ export default function MobileFieldDetailPage() {
             className="absolute inset-0"
             style={{ zIndex: 0, width: "100%", height: "100%" }}
           />
+
+          {/* Desktop Top Right Controls (Language & Theme) - Consistent with UserBadge */}
+          {/* Desktop Header (Language, Theme, Profile) */}
+          <DesktopHeader
+            userName={user?.name}
+            userRole="Farmer"
+            currentStyle={currentStyle}
+            onStyleChange={handleStyleChange}
+            profileUrl={user?.profile_url || profileImage}
+          />
+
           {/* Sidebar Panel - Conditional Render */}
           {activePanel === "health" ? (
             <DesktopHealthPanel
@@ -722,15 +757,21 @@ export default function MobileFieldDetailPage() {
                     <div className="flex gap-2.5">
                       {/* Thumbnail */}
                       <div className="shrink-0">
-                        <img
-                          src={
-                            thumbnail ||
-                            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="94" height="94"><rect width="100%" height="100%" rx="24" ry="24" fill="%2316a34a"/><path d="M47 25 C47 45 47 60 47 70 M37 35 C42 40 47 45 47 45 M57 35 C52 40 47 45 47 45 M32 50 C40 55 47 60 47 60 M62 50 C54 55 47 60 47 60" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>'
-                          }
-                          alt="Field thumbnail"
-                          className="w-[94px] h-[94px] rounded-3xl object-cover shadow-sm"
-                          style={{ border: "1px solid #e5e7eb" }}
-                        />
+                        {thumbnail ? (
+                          <img
+                            src={thumbnail}
+                            alt="Field thumbnail"
+                            className="w-[94px] h-[94px] rounded-3xl object-cover shadow-sm"
+                            style={{ border: "1px solid #e5e7eb" }}
+                          />
+                        ) : (
+                          <div
+                            className="w-[94px] h-[94px] rounded-3xl bg-gray-100 shadow-sm flex items-center justify-center text-gray-300"
+                            style={{ border: "1px solid #e5e7eb" }}
+                          >
+                            <span className="text-xl">🌾</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Content */}
@@ -744,21 +785,21 @@ export default function MobileFieldDetailPage() {
                             <button
                               onClick={fieldActions?.handleEdit}
                               className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                              title="แก้ไข"
+                              title={t("action.edit")}
                             >
                               <Pencil size={12} />
                             </button>
                             <button
                               onClick={fieldActions?.handleDelete}
                               className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                              title="ลบ"
+                              title={t("action.delete")}
                             >
                               <Trash2 size={10} />
                             </button>
                             <button
                               onClick={fieldActions?.handleDownload}
                               className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                              title="ดาวน์โหลด"
+                              title={t("action.download")}
                             >
                               <Download size={10} />
                             </button>
@@ -773,9 +814,9 @@ export default function MobileFieldDetailPage() {
                               <VectorSquareIcon size={11} color="#F6B010" />
                               <span className="text-[11px] text-gray-600 leading-none">
                                 {showAreaInSqm
-                                  ? `${(field.area_m2 || 0).toFixed(
-                                      2
-                                    )} ตารางเมตร`
+                                  ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                                      "unit.sqm"
+                                    )}`
                                   : `${area.rai} ${t("field.rai")} ${
                                       area.ngan
                                     } ${t("field.ngan")} ${area.tarangwa} ${t(
@@ -788,8 +829,8 @@ export default function MobileFieldDetailPage() {
                               onClick={() => setShowAreaInSqm(!showAreaInSqm)}
                               title={
                                 showAreaInSqm
-                                  ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                                  : "เปลี่ยนเป็น ตารางเมตร"
+                                  ? t("unit.changeToRai")
+                                  : t("unit.changeToSqm")
                               }
                             >
                               <RefreshCw size={10} />
@@ -801,7 +842,7 @@ export default function MobileFieldDetailPage() {
                             <MapPin
                               size={11}
                               style={{ color: "#F6B010" }}
-                              className="mt-0.5"
+                              className="mt-0.5 shrink-0"
                             />
                             <span className="text-[11px] text-gray-600 leading-tight">
                               {field.address ||
@@ -867,7 +908,7 @@ export default function MobileFieldDetailPage() {
                         className="w-full bg-blue-50 rounded-xl py-2 px-4 flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors border border-blue-100"
                       >
                         <span className="text-sm font-semibold text-gray-800">
-                          รายละเอียดของแปลง
+                          {t("field.detailOf")}
                         </span>
                         <ChevronRight
                           size={14}
@@ -900,7 +941,7 @@ export default function MobileFieldDetailPage() {
                                       <div className="w-2 h-2 rounded-full bg-green-500"></div>
                                     </div>
                                     <span className="text-xs text-gray-700">
-                                      รายละเอียดของแปลง
+                                      {t("field.detailOf")}
                                     </span>
                                   </div>
                                   <button
@@ -916,27 +957,32 @@ export default function MobileFieldDetailPage() {
                                   {/* ชนิดพันธุ์พืช */}
                                   <div className="flex justify-between items-center">
                                     <span className="text-xs text-gray-500">
-                                      ชนิดพันธุ์พืช
+                                      {t("field.plantVariety")}
                                     </span>
                                     <span className="text-xs font-medium text-gray-800">
-                                      {field?.variety || "-"}
+                                      {getVarietyLabel(field?.variety)}
                                     </span>
                                   </div>
 
                                   {/* วันที่ปลูก */}
                                   <div className="flex justify-between items-center">
                                     <span className="text-xs text-gray-500">
-                                      วันที่ปลูก
+                                      {t("farm.plantingDate")}
                                     </span>
                                     <span className="text-xs font-medium text-gray-800">
                                       {field?.planting_date
                                         ? new Date(
                                             field.planting_date
-                                          ).toLocaleDateString("th-TH", {
-                                            day: "numeric",
-                                            month: "long",
-                                            year: "numeric",
-                                          })
+                                          ).toLocaleDateString(
+                                            language === "TH"
+                                              ? "th-TH"
+                                              : "en-GB",
+                                            {
+                                              day: "numeric",
+                                              month: "long",
+                                              year: "numeric",
+                                            }
+                                          )
                                         : "-"}
                                     </span>
                                   </div>
@@ -944,10 +990,10 @@ export default function MobileFieldDetailPage() {
                                   {/* ฤดูกาลปลูก */}
                                   <div className="flex justify-between items-center">
                                     <span className="text-xs text-gray-500">
-                                      ฤดูกาลปลูก
+                                      {t("field.plantingSeasonLabel")}
                                     </span>
                                     <span className="text-xs font-medium text-gray-800">
-                                      {field?.planting_season || "-"}
+                                      {getSeasonLabel(field?.planting_season)}
                                     </span>
                                   </div>
                                 </div>
@@ -969,19 +1015,19 @@ export default function MobileFieldDetailPage() {
                             disabled={!item.enabled}
                             className="bg-white rounded-2xl p-2.5 flex flex-col items-center justify-center gap-1.5 shadow-sm border border-gray-100 hover:border-green-300 hover:shadow-md transition-all group"
                             style={{
-                              minHeight: "85px",
+                              minHeight: "80px",
                               opacity: item.enabled ? 1 : 0.6,
                               cursor: item.enabled ? "pointer" : "not-allowed",
                             }}
                           >
                             <div
-                              className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-green-600 group-hover:text-white"
+                              className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors group-hover:bg-green-600 group-hover:text-white"
                               style={{
                                 background: item.bgColor,
                                 color: item.color,
                               }}
                             >
-                              <Icon size={20} />
+                              <Icon size={18} />
                             </div>
                             <div className="text-[10px] text-center font-medium text-gray-500 leading-tight whitespace-pre-line h-7 flex items-center justify-center group-hover:text-gray-800">
                               {item.label}
@@ -1048,26 +1094,6 @@ export default function MobileFieldDetailPage() {
             </div>
           )}
 
-          {/* User Profile (Top Right) */}
-          <div className="absolute top-5 right-5 z-20 flex gap-3">
-            <div className="bg-white/90 backdrop-blur-sm p-1 pr-4 rounded-full shadow-lg flex items-center gap-3 cursor-pointer hover:scale-105 transition-transform border border-gray-200/50">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 p-0.5">
-                <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                  <img
-                    src={user?.profile_url || profileImage}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-gray-800">
-                  {user?.name || "Guest User"}
-                </span>
-                <span className="text-[10px] text-gray-500">Farmer</span>
-              </div>
-            </div>
-          </div>
           {/* Map Controls (Right) */}
           <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-20 flex flex-col gap-3">
             {/* White panel with Location + Layers */}
@@ -1103,7 +1129,7 @@ export default function MobileFieldDetailPage() {
             {isLayersOpen && (
               <div className="absolute right-14 top-0 bg-white rounded-2xl shadow-xl p-4 min-w-[280px] border border-gray-100">
                 <div className="text-sm font-semibold text-gray-700 mb-3">
-                  เลือกแผนที่
+                  {t("map.selectBasemap")}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {[
@@ -1111,7 +1137,7 @@ export default function MobileFieldDetailPage() {
                       id: "light",
                       name: "Light",
                       Icon: Sun,
-                      desc: "แผนที่สว่าง",
+                      desc: t("map.light"),
                       color: "text-amber-500",
                       bg: "bg-amber-50",
                     },
@@ -1119,7 +1145,7 @@ export default function MobileFieldDetailPage() {
                       id: "dark",
                       name: "Dark",
                       Icon: Moon,
-                      desc: "แผนที่มืด",
+                      desc: t("map.dark"),
                       color: "text-slate-600",
                       bg: "bg-slate-100",
                     },
@@ -1127,7 +1153,7 @@ export default function MobileFieldDetailPage() {
                       id: "voyager",
                       name: "Voyager",
                       Icon: MapIcon,
-                      desc: "แผนที่มาตรฐาน",
+                      desc: t("map.voyager"),
                       color: "text-blue-500",
                       bg: "bg-blue-50",
                     },
@@ -1135,7 +1161,7 @@ export default function MobileFieldDetailPage() {
                       id: "streets",
                       name: "Streets",
                       Icon: Building2,
-                      desc: "แผนที่ถนน",
+                      desc: t("map.streets"),
                       color: "text-purple-500",
                       bg: "bg-purple-50",
                     },
@@ -1143,7 +1169,7 @@ export default function MobileFieldDetailPage() {
                       id: "satellite",
                       name: "Satellite",
                       Icon: Satellite,
-                      desc: "ภาพดาวเทียม",
+                      desc: t("map.satellite"),
                       color: "text-green-600",
                       bg: "bg-green-50",
                     },
@@ -1151,7 +1177,7 @@ export default function MobileFieldDetailPage() {
                       id: "osm",
                       name: "OpenStreetMap",
                       Icon: Globe,
-                      desc: "แผนที่ OSM",
+                      desc: t("map.osm"),
                       color: "text-cyan-500",
                       bg: "bg-cyan-50",
                     },
@@ -1192,14 +1218,14 @@ export default function MobileFieldDetailPage() {
               <button
                 className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg font-medium transition-colors"
                 onClick={() => mapRef.current?.zoomIn()}
-                title="Zoom In"
+                title={t("map.zoomIn")}
               >
                 +
               </button>
               <button
                 className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg font-medium transition-colors"
                 onClick={() => mapRef.current?.zoomOut()}
-                title="Zoom Out"
+                title={t("map.zoomOut")}
               >
                 −
               </button>
@@ -1296,7 +1322,7 @@ export default function MobileFieldDetailPage() {
                 <button
                   onClick={fieldActions?.handleEdit}
                   className="p-1 rounded-md hover:bg-green-50 transition-colors"
-                  title="แก้ไขชื่อ"
+                  title={t("field.editName")}
                 >
                   <Pencil
                     className="w-3.5 h-3.5"
@@ -1313,8 +1339,12 @@ export default function MobileFieldDetailPage() {
                   </div>
                   <span style={{ fontSize: "12px", color: "#374151" }}>
                     {showAreaInSqm
-                      ? `${(field.area_m2 || 0).toFixed(2)} ตร.ม.`
-                      : `${area.rai} ไร่ ${area.ngan} งาน ${area.tarangwa} ตร.วา`}
+                      ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                          "unit.sqmShort"
+                        )}`
+                      : `${area.rai} ${t("field.rai")} ${area.ngan} ${t(
+                          "field.ngan"
+                        )} ${area.tarangwa} ${t("field.sqWaShort")}`}
                   </span>
                 </div>
                 <button
@@ -1322,8 +1352,8 @@ export default function MobileFieldDetailPage() {
                   onClick={() => setShowAreaInSqm(!showAreaInSqm)}
                   title={
                     showAreaInSqm
-                      ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                      : "เปลี่ยนเป็น ตารางเมตร"
+                      ? t("unit.changeToRai")
+                      : t("unit.changeToSqm")
                   }
                 >
                   <RefreshCw

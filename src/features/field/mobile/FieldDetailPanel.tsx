@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
 import { useField } from "../../../contexts/FieldContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface FieldDetailPanelProps {
   fieldId: string;
@@ -28,6 +29,7 @@ export default function FieldDetailPanel({
   onClose,
   onFeatureClick,
 }: FieldDetailPanelProps) {
+  const { t } = useLanguage();
   const { fields } = useField();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -112,7 +114,7 @@ export default function FieldDetailPanel({
   if (!field) {
     return (
       <div className="fixed inset-0 z-50 bg-white flex items-center justify-center">
-        <p className="text-gray-500">ไม่พบข้อมูลแปลง</p>
+        <p className="text-gray-500">{t("field.notFound")}</p>
       </div>
     );
   }
@@ -124,7 +126,9 @@ export default function FieldDetailPanel({
     const remainingNgan = (areaRai - rai) * 4;
     const ngan = Math.floor(remainingNgan);
     const wah = ((remainingNgan - ngan) * 100).toFixed(2);
-    return `${rai} ไร่ ${ngan} งาน ${wah} ตารางวา`;
+    return `${rai} ${t("unit.rai")} ${ngan} ${t("unit.ngan")} ${wah} ${t(
+      "unit.wah"
+    )}`;
   };
 
   const copyToClipboard = (text: string) => {
@@ -134,7 +138,7 @@ export default function FieldDetailPanel({
   const features = [
     {
       id: "health",
-      name: "ติดตามความ\nสมบูรณ์ของพืช",
+      name: t("feature.health"),
       icon: Leaf,
       color: "#16a34a",
       bgColor: "#dcfce7",
@@ -142,7 +146,7 @@ export default function FieldDetailPanel({
     },
     {
       id: "weather",
-      name: "สภาพอากาศ",
+      name: t("feature.weather"),
       icon: Cloud,
       color: "#f97316",
       bgColor: "#fed7aa",
@@ -150,7 +154,7 @@ export default function FieldDetailPanel({
     },
     {
       id: "analysis",
-      name: "สภาพแปลง",
+      name: t("analysis.fieldStatus"),
       icon: BarChart3,
       color: "#2563eb",
       bgColor: "#dbeafe",
@@ -158,7 +162,7 @@ export default function FieldDetailPanel({
     },
     {
       id: "fertilizer",
-      name: "แนะนำการใส่ปุ๋ย",
+      name: t("feature.fertilizer"),
       icon: Lightbulb,
       color: "#16a34a",
       bgColor: "#dcfce7",
@@ -166,7 +170,7 @@ export default function FieldDetailPanel({
     },
     {
       id: "disaster",
-      name: "ภัยพิบัติ",
+      name: t("feature.disaster"),
       icon: Zap,
       color: "#eab308",
       bgColor: "#fef9c3",
@@ -174,7 +178,7 @@ export default function FieldDetailPanel({
     },
     {
       id: "notebook",
-      name: "สมุดบันทึก",
+      name: t("feature.notebook"),
       icon: BookOpen,
       color: "#16a34a",
       bgColor: "#dcfce7",
@@ -202,7 +206,9 @@ export default function FieldDetailPanel({
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h1 style={{ fontSize: "17px", fontWeight: 600 }}>รายละเอียดแปลง</h1>
+        <h1 style={{ fontSize: "17px", fontWeight: 600 }}>
+          {t("field.detailOf")}
+        </h1>
       </header>
 
       {/* Map Section - Same height as MobileAnalysisPage */}
@@ -284,7 +290,7 @@ export default function FieldDetailPanel({
                   <MapPin className="w-4 h-4" style={{ color: "#ef4444" }} />
                 </div>
                 <span style={{ fontSize: "14px", color: "#6b7280", flex: 1 }}>
-                  {field.address || "ต. สุเทพ อ. เมืองเชียงใหม่ จ. เชียงใหม่"}
+                  {field.address || t("field.addressFallback")}
                 </span>
               </div>
 

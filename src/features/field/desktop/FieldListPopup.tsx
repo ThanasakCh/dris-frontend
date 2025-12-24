@@ -239,9 +239,9 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
     });
 
   const sortOptions = [
-    { value: "latest", label: "เรียงตามแปลงที่เพิ่มล่าสุด" },
-    { value: "name_asc", label: "เรียงตามชื่อแปลง (A → Z)" },
-    { value: "name_desc", label: "เรียงตามชื่อแปลง (Z → A)" },
+    { value: "latest", label: t("sort.latest") },
+    { value: "name_asc", label: t("sort.nameAsc") },
+    { value: "name_desc", label: t("sort.nameDesc") },
   ];
 
   return (
@@ -263,7 +263,7 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="วิเคราะห์แปลง"
+        title={t("map.analyzeField")}
       >
         <div
           style={{
@@ -432,9 +432,9 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
                               </div>
                               <span className="truncate flex-1 font-medium text-gray-700 ml-1">
                                 {showAreaInSqm
-                                  ? `${(field.area_m2 || 0).toFixed(
-                                      2
-                                    )} ตารางเมตร`
+                                  ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                                      "unit.sqm"
+                                    )}`
                                   : formatArea(field.area_m2)}
                               </span>
                             </div>
@@ -446,8 +446,8 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
                               className="text-gray-400 hover:text-green-600 transition-colors shrink-0 ml-1"
                               title={
                                 showAreaInSqm
-                                  ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                                  : "เปลี่ยนเป็น ตารางเมตร"
+                                  ? t("unit.changeToRai")
+                                  : t("unit.changeToSqm")
                               }
                             >
                               <RefreshCw size={11} />
@@ -504,7 +504,7 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
                                     icon: "success",
                                     timer: 1000,
                                     showConfirmButton: false,
-                                    position: "bottom",
+                                    position: "top-end",
                                     toast: true,
                                   });
                                 }}
@@ -520,8 +520,8 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
                                 className="text-gray-400 hover:text-green-600 transition-colors"
                                 title={
                                   showCoordsInUTM
-                                    ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
-                                    : "เปลี่ยนเป็น UTM"
+                                    ? t("unit.changeToLatLng")
+                                    : t("unit.changeToUTM")
                                 }
                               >
                                 <RefreshCw size={11} />

@@ -243,7 +243,7 @@ export default function AnalysisMenuPopup({}: AnalysisMenuPopupProps) {
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="วิเคราะห์แปลง"
+        title={t("map.analyzeField")}
       >
         <div
           style={{
@@ -378,9 +378,9 @@ export default function AnalysisMenuPopup({}: AnalysisMenuPopupProps) {
                               </div>
                               <span className="truncate flex-1 font-medium text-gray-700 ml-1 text-[11px]">
                                 {showAreaInSqm
-                                  ? `${(field.area_m2 || 0).toFixed(
-                                      2
-                                    )} ตารางเมตร`
+                                  ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                                      "unit.sqm"
+                                    )}`
                                   : formatArea(field.area_m2)}
                               </span>
                             </div>
@@ -392,8 +392,8 @@ export default function AnalysisMenuPopup({}: AnalysisMenuPopupProps) {
                               className="text-gray-400 hover:text-green-600 transition-colors shrink-0 ml-1"
                               title={
                                 showAreaInSqm
-                                  ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                                  : "เปลี่ยนเป็น ตารางเมตร"
+                                  ? t("unit.changeToRai")
+                                  : t("unit.changeToSqm")
                               }
                             >
                               <RefreshCw size={10} />
@@ -466,8 +466,8 @@ export default function AnalysisMenuPopup({}: AnalysisMenuPopupProps) {
                                 className="text-gray-400 hover:text-green-600 transition-colors"
                                 title={
                                   showCoordsInUTM
-                                    ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
-                                    : "เปลี่ยนเป็น UTM"
+                                    ? t("unit.changeToLatLng")
+                                    : t("unit.changeToUTM")
                                 }
                               >
                                 <RefreshCw size={10} />

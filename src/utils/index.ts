@@ -1,1 +1,1 @@
-export { captureMapThumbnail, generateFallbackThumbnail } from "./thumbnailCapture";
+export { captureMapThumbnail } from "./thumbnailCapture";

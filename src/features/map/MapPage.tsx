@@ -10,10 +10,14 @@ import Swal from "sweetalert2";
 import { useResponsive } from "../../hooks/useResponsive";
 
 // Thumbnail Capture Utility (using Leaflet in background)
+import { captureMapThumbnail } from "../../utils/thumbnailCapture";
 import {
-  captureMapThumbnail,
-  generateFallbackThumbnail,
-} from "../../utils/thumbnailCapture";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Mobile UI Components
 import FloatingSidebar from "../layout/mobile/FloatingToolbar";
@@ -78,7 +82,7 @@ const MobileMapPage: React.FC = () => {
   const [drawnFeature, setDrawnFeature] = useState<any>(null);
   const [drawFormData, setDrawFormData] = useState({
     name: "",
-    variety: "ข้าวหอมมะลิ",
+    variety: "jasmine",
     planting_season: "",
     planting_date: "",
   });
@@ -344,7 +348,7 @@ const MobileMapPage: React.FC = () => {
 
   // Restore fields when fields array changes
   useEffect(() => {
-    if (mapRef.current && fields.length > 0) {
+    if (mapRef.current) {
       restoreFields();
     }
   }, [fields]);
@@ -498,20 +502,32 @@ const MobileMapPage: React.FC = () => {
       return;
     }
 
-    // Clear existing field layers first to avoid duplicates
-    fields.forEach((_, index) => {
-      const sourceId = `field-source-${index}`;
-      const layerId = `field-${index}`;
+    // Clear existing field layers systematically
+    let cleanupIndex = 0;
+    while (true) {
+      const sourceId = `field-source-${cleanupIndex}`;
+      const layerId = `field-${cleanupIndex}`;
       const outlineId = `${layerId}-outline`;
 
-      try {
-        if (map.getLayer(outlineId)) map.removeLayer(outlineId);
-        if (map.getLayer(layerId)) map.removeLayer(layerId);
-        if (map.getSource(sourceId)) map.removeSource(sourceId);
-      } catch (e) {
-        // Ignore errors during cleanup
+      // Check if any exists
+      const hasSource = map.getSource(sourceId);
+      const hasLayer = map.getLayer(layerId);
+      const hasOutline = map.getLayer(outlineId);
+
+      if (!hasSource && !hasLayer && !hasOutline) {
+        // Stop if we don't find any components for this index
+        break;
       }
-    });
+
+      try {
+        if (hasOutline) map.removeLayer(outlineId);
+        if (hasLayer) map.removeLayer(layerId);
+        if (hasSource) map.removeSource(sourceId);
+      } catch (e) {
+        // Ignore removal errors
+      }
+      cleanupIndex++;
+    }
 
     // Add field layers
     fields.forEach((field, index) => {
@@ -691,6 +707,116 @@ const MobileMapPage: React.FC = () => {
     setMobileAreaText("");
   };
 
+  const handleImportGeometry = (geometry: any, fileName: string) => {
+    if (!mapRef.current) return;
+
+    // Calculate bounds
+    const bounds = new maplibregl.LngLatBounds();
+
+    // Helper to extend bounds
+    const extendBounds = (coords: any[]) => {
+      coords.forEach((coord) => {
+        if (
+          Array.isArray(coord) &&
+          coord.length >= 2 &&
+          typeof coord[0] === "number"
+        ) {
+          bounds.extend([coord[0], coord[1]]);
+        } else if (Array.isArray(coord)) {
+          extendBounds(coord);
+        }
+      });
+    };
+
+    if (geometry.coordinates) {
+      extendBounds(geometry.coordinates);
+    }
+
+    // Prepare feature
+    const featureId = `imported-${Date.now()}`;
+    const feature = {
+      id: featureId,
+      type: "Feature",
+      geometry: geometry,
+      properties: {},
+    };
+
+    // Render logic
+    if (isDesktop && drawControl) {
+      // Desktop: Add to MapboxDraw so it's visible and editable
+      drawControl.add(feature as any);
+    } else {
+      // Mobile: Convert to points if Polygon
+      // Note: This only supports simple Polygons for mobile editing currently
+      if (
+        geometry.type === "Polygon" &&
+        geometry.coordinates &&
+        geometry.coordinates[0]
+      ) {
+        const coords = geometry.coordinates[0] as [number, number][];
+        // Remove closing point if it matches start
+        const points = [...coords];
+        if (
+          points.length > 0 &&
+          points[0][0] === points[points.length - 1][0] &&
+          points[0][1] === points[points.length - 1][1]
+        ) {
+          points.pop();
+        }
+        setMobileDrawingPoints(points);
+        // Important: Set this to false so the manual drawing UI (Add Point buttons) doesn't appear.
+        // The geometry will still be rendered by the useEffect reacting to mobileDrawingPoints.
+        setMobileDrawingActive(false);
+      }
+    }
+
+    setDrawnFeature(feature);
+
+    // Pre-fill name from filename
+    const simpleName = fileName.replace(/\.[^/.]+$/, "");
+    setDrawFormData((prev) => ({
+      ...prev,
+      name: simpleName,
+    }));
+
+    // Zoom and Show Form
+    if (!bounds.isEmpty()) {
+      mapRef.current.fitBounds(bounds, {
+        padding: { top: 100, bottom: 100, left: 100, right: 100 },
+        maxZoom: 17,
+        animate: true,
+        duration: 1500, // Smooth zoom
+      });
+
+      // Show form AFTER zoom completes
+      mapRef.current.once("moveend", () => {
+        setActivePanel("draw_form");
+        // Ensure no other modes interfere
+        if (isDesktop) {
+          setIsDrawingMode(false);
+        } else {
+          // For mobile, we might keep drawing active or not?
+          // If we turn off mobileDrawingActive, the useEffect drawing layer clears.
+          // If we want to show it, we must keep it active OR rely on 'drawnFeature' rendering?
+          // Mobile implementation relies on 'mobileDrawingPoints' + 'mobileDrawingActive' logic in useEffect.
+          // If we enter 'draw_form', usually we stop drawing.
+          // BUT: Mobile 'draw_form' usually implies save phase.
+          // Let's rely on the Desktop fix first as that's the user context.
+          setMobileDrawingActive(false);
+        }
+      });
+    } else {
+      setActivePanel("draw_form");
+    }
+
+    // Cleanup basics
+    // setIsDrawingMode(false); // Done in moveend
+    // setMobileDrawingActive(false); // Done in moveend
+    if (isDesktop) {
+      clearMobileDrawingLayers();
+    }
+  };
+
   // Clear mobile drawing layers from map
   const clearMobileDrawingLayers = () => {
     const map = mapRef.current;
@@ -746,20 +872,36 @@ const MobileMapPage: React.FC = () => {
   };
 
   const handleCancelDraw = () => {
-    if (drawControl && drawnFeature) {
-      drawControl.delete(drawnFeature.id);
+    // Check if drawControl exists and has the delete method (Desktop only)
+    if (
+      drawControl &&
+      typeof drawControl.delete === "function" &&
+      drawnFeature
+    ) {
+      try {
+        drawControl.delete(drawnFeature.id);
+      } catch (e) {
+        console.warn("Could not delete from drawControl", e);
+      }
     }
+
+    // For mobile or general cleanup
     setDrawnFeature(null);
+    setMobileDrawingPoints([]);
+    setMobileAreaText("");
+    setMobileAreaCentroid(null);
+    setActivePanel(null); // Important: Close the panel
+
+    // Reset form data
     setDrawFormData({
       name: "",
       variety: "ข้าวหอมมะลิ",
       planting_season: "",
       planting_date: "",
     });
-    setActivePanel(null);
   };
 
-  const handleSaveField = async () => {
+  const handleSaveField = async (externalFormData?: any) => {
     if (!drawnFeature) {
       Swal.fire({
         title: t("confirm.warning"),
@@ -770,7 +912,9 @@ const MobileMapPage: React.FC = () => {
       return;
     }
 
-    if (!drawFormData.name.trim()) {
+    const dataToSave = externalFormData || drawFormData;
+
+    if (!dataToSave.name.trim()) {
       Swal.fire({
         title: t("confirm.warning"),
         text: t("draw.enterFieldName"),
@@ -782,19 +926,19 @@ const MobileMapPage: React.FC = () => {
 
     try {
       let planting_date = null;
-      if (drawFormData.planting_date) {
+      if (dataToSave.planting_date) {
         try {
-          planting_date = new Date(drawFormData.planting_date).toISOString();
+          planting_date = new Date(dataToSave.planting_date).toISOString();
         } catch (error) {
           console.warn("Date format error:", error);
         }
       }
 
       const fieldData = {
-        name: drawFormData.name.trim(),
-        crop_type: drawFormData.variety,
-        variety: drawFormData.variety,
-        planting_season: drawFormData.planting_season || null,
+        name: dataToSave.name.trim(),
+        crop_type: dataToSave.variety,
+        variety: dataToSave.variety,
+        planting_season: dataToSave.planting_season || null,
         planting_date: planting_date,
         geometry: drawnFeature.geometry,
       };
@@ -803,16 +947,30 @@ const MobileMapPage: React.FC = () => {
 
       // Capture thumbnail using Leaflet (reliable method)
       // Get center from the drawn geometry
-      const coords = drawnFeature.geometry.coordinates[0];
+      // Calculate center for complex geometries
+      const allPoints: [number, number][] = [];
+      const extractPoints = (coords: any[]) => {
+        coords.forEach((c) => {
+          if (Array.isArray(c) && c.length >= 2 && typeof c[0] === "number") {
+            allPoints.push([c[0], c[1]]);
+          } else if (Array.isArray(c)) {
+            extractPoints(c);
+          }
+        });
+      };
+      extractPoints(drawnFeature.geometry.coordinates);
+
+      if (allPoints.length === 0) throw new Error("Invalid geometry");
+
       let sumLat = 0,
         sumLng = 0;
-      for (const coord of coords) {
-        sumLng += coord[0];
-        sumLat += coord[1];
+      for (const p of allPoints) {
+        sumLng += p[0];
+        sumLat += p[1];
       }
       const center: [number, number] = [
-        sumLat / coords.length,
-        sumLng / coords.length,
+        sumLat / allPoints.length,
+        sumLng / allPoints.length,
       ];
 
       let dataUrl = await captureMapThumbnail({
@@ -825,20 +983,25 @@ const MobileMapPage: React.FC = () => {
         },
       });
 
-      // Fallback to procedural thumbnail if Leaflet capture failed
-      if (!dataUrl) {
-        dataUrl = generateFallbackThumbnail(newField.id);
-      }
-
       if (dataUrl) {
         await saveThumbnail(newField.id, dataUrl);
       }
 
       // Reset
-      if (drawControl && drawnFeature) {
-        drawControl.delete(drawnFeature.id);
+      if (
+        drawControl &&
+        drawnFeature &&
+        typeof drawControl.delete === "function"
+      ) {
+        try {
+          drawControl.delete(drawnFeature.id);
+        } catch (e) {}
       }
       setDrawnFeature(null);
+      setMobileDrawingPoints([]);
+      setMobileAreaText("");
+      setMobileAreaCentroid(null);
+
       setDrawFormData({
         name: "",
         variety: "ข้าวหอมมะลิ",
@@ -882,29 +1045,25 @@ const MobileMapPage: React.FC = () => {
       case "analysis":
         return (
           <div className="p-4 text-center text-gray-500">
-            <p className="font-medium">วิเคราะห์ VI</p>
-            <p className="text-sm mt-2">
-              กรุณาเลือกแปลงเพื่อเข้าหน้ารายละเอียด
-            </p>
+            <p className="font-medium">{t("analysis.fieldStatus")}</p>
+            <p className="text-sm mt-2">{t("field.pleaseSelectField")}</p>
           </div>
         );
-      case "filters":
         return (
           <div className="p-4">
-            <h3 className="text-lg font-bold mb-2">วาดพื้นที่</h3>
+            <h3 className="text-lg font-bold mb-2">{t("field.drawShape")}</h3>
             <button
               onClick={handleStartDrawing}
               className="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600"
             >
-              เริ่มวาดพื้นที่
+              {t("draw.start")}
             </button>
           </div>
         );
-      case "layers":
         return (
           <div className="p-4 text-center text-gray-500">
-            <p className="font-medium">ชั้นข้อมูล</p>
-            <p className="text-sm mt-2">ฟีเจอร์นี้กำลังพัฒนา</p>
+            <p className="font-medium">{t("field.dataLayers")}</p>
+            <p className="text-sm mt-2">{t("feature.comingSoon")}</p>
           </div>
         );
       case "draw_form":
@@ -929,43 +1088,62 @@ const MobileMapPage: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("farm.riceVariety")}
               </label>
-              <select
+              <Select
                 value={drawFormData.variety}
-                onChange={(e) =>
-                  setDrawFormData({ ...drawFormData, variety: e.target.value })
+                onValueChange={(value) =>
+                  setDrawFormData({ ...drawFormData, variety: value })
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg text-base"
               >
-                <option value="ข้าวหอมมะลิ">ข้าวหอมมะลิ</option>
-                <option value="ข้าวกข6">ข้าวกข6</option>
-                <option value="ข้าวกข15">ข้าวกข15</option>
-                <option value="ข้าวปทุมธานี">ข้าวปทุมธานี</option>
-                <option value="ข้าวเหนียว">ข้าวเหนียว</option>
-                <option value="ข้าวไรซ์เบอรี่">ข้าวไรซ์เบอรี่</option>
-                <option value="อื่นๆ">อื่นๆ</option>
-              </select>
+                <SelectTrigger className="w-full h-12 px-3 border border-gray-300 rounded-lg text-base">
+                  <SelectValue placeholder={t("farm.jasmine")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="jasmine">{t("farm.jasmine")}</SelectItem>
+                  <SelectItem value="riceKK6">{t("farm.riceKK6")}</SelectItem>
+                  <SelectItem value="riceKK15">{t("farm.riceKK15")}</SelectItem>
+                  <SelectItem value="ricePT">{t("farm.ricePT")}</SelectItem>
+                  <SelectItem value="stickyRice">
+                    {t("farm.stickyRice")}
+                  </SelectItem>
+                  <SelectItem value="riceberry">
+                    {t("farm.riceberry")}
+                  </SelectItem>
+                  <SelectItem value="other">{t("farm.other")}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {t("farm.plantingSeason")}
               </label>
-              <select
+              <Select
                 value={drawFormData.planting_season}
-                onChange={(e) =>
+                onValueChange={(value) =>
                   setDrawFormData({
                     ...drawFormData,
-                    planting_season: e.target.value,
+                    planting_season: value,
                   })
                 }
-                className="w-full p-3 border border-gray-300 rounded-lg text-base"
               >
-                <option value="">เลือกฤดูกาล</option>
-                <option value="นาปี">นาปี - ปลูกฤดูฝน</option>
-                <option value="นาปรัง">นาปรัง - ปลูกนอกฤดู</option>
-                <option value="นาดำ">นาดำ</option>
-                <option value="นาหว่าน">นาหว่าน</option>
-              </select>
+                <SelectTrigger className="w-full h-12 px-3 border border-gray-300 rounded-lg text-base">
+                  <SelectValue placeholder={t("farm.selectSeason")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="wetSeason">
+                    {t("farm.wetSeason")}
+                  </SelectItem>
+                  <SelectItem value="drySeason">
+                    {t("farm.drySeason")}
+                  </SelectItem>
+                  <SelectItem value="transplant">
+                    {t("farm.transplant")}
+                  </SelectItem>
+                  <SelectItem value="broadcast">
+                    {t("farm.broadcast")}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="mb-4">
@@ -1013,19 +1191,19 @@ const MobileMapPage: React.FC = () => {
   const getPanelTitle = () => {
     switch (activePanel) {
       case "info":
-        return "สุขภาพแปลง";
+        return t("field.health");
       case "analysis":
-        return "วิเคราะห์ VI";
+        return t("analysis.fieldStatus");
       case "filters":
-        return "วาดรูปแปลง";
+        return t("field.drawShape");
       case "layers":
-        return "ชั้นข้อมูล";
+        return t("field.dataLayers");
       case "stats":
-        return "สถิติ";
+        return t("field.stats");
       case "draw_form":
-        return "บันทึกแปลงใหม่";
+        return t("field.saveNew");
       default:
-        return "เครื่องมือ";
+        return t("field.tools");
     }
   };
 
@@ -1059,19 +1237,23 @@ const MobileMapPage: React.FC = () => {
               />
 
               {/* Floating Sidebar (Left) - Same as Mobile */}
-              <DesktopFloatingSidebar
-                onItemClick={handlePanelClick}
-                activePanel={activePanel || undefined}
-                map={mapRef.current}
-                currentStyle={currentStyle}
-                onStyleChange={handleStyleChange}
-                draw={drawControl}
-                onStartDrawing={handleStartDrawing}
-                selectedFieldId={selectedFieldId}
-                selectedFieldName={selectedFieldName}
-                fieldsCount={fields.length}
-                onOverlayChange={handleOverlayChange}
-              />
+              {/* Hide when drawing or in draw form (Desktop) */}
+              {activePanel !== "draw_form" && (
+                <DesktopFloatingSidebar
+                  onItemClick={handlePanelClick}
+                  activePanel={activePanel || undefined}
+                  map={mapRef.current}
+                  currentStyle={currentStyle}
+                  onStyleChange={handleStyleChange}
+                  draw={drawControl}
+                  onStartDrawing={handleStartDrawing}
+                  selectedFieldId={selectedFieldId}
+                  selectedFieldName={selectedFieldName}
+                  fieldsCount={fields.length}
+                  onOverlayChange={handleOverlayChange}
+                  onImportGeometry={handleImportGeometry}
+                />
+              )}
 
               {/* Desktop Search Panel - same position as mobile */}
               <div
@@ -1141,11 +1323,6 @@ const MobileMapPage: React.FC = () => {
                         properties: {},
                       },
                     });
-
-                    // Fallback to procedural thumbnail if Leaflet capture failed
-                    if (!dataUrl) {
-                      dataUrl = generateFallbackThumbnail(newField.id);
-                    }
 
                     if (dataUrl) {
                       await saveThumbnail(newField.id, dataUrl);
@@ -1236,8 +1413,8 @@ const MobileMapPage: React.FC = () => {
             </div>
           )}
 
-          {/* Floating Sidebar (Left) - hide when drawing */}
-          {!mobileDrawingActive && (
+          {/* Floating Sidebar (Left) - hide when drawing or in draw form */}
+          {!mobileDrawingActive && activePanel !== "draw_form" && (
             <FloatingSidebar
               onItemClick={handlePanelClick}
               activePanel={activePanel || undefined}
@@ -1250,6 +1427,7 @@ const MobileMapPage: React.FC = () => {
               selectedFieldName={selectedFieldName}
               fieldsCount={fields.length}
               onOverlayChange={handleOverlayChange}
+              onImportGeometry={handleImportGeometry}
             />
           )}
 
@@ -1293,16 +1471,34 @@ const MobileMapPage: React.FC = () => {
                 const newField = await createField(fieldData);
 
                 // Capture thumbnail
-                const coords = drawnFeature.geometry.coordinates[0];
+                // Calculate center for complex geometries
+                const allPoints: [number, number][] = [];
+                const extractPoints = (coords: any[]) => {
+                  coords.forEach((c) => {
+                    if (
+                      Array.isArray(c) &&
+                      c.length >= 2 &&
+                      typeof c[0] === "number"
+                    ) {
+                      allPoints.push([c[0], c[1]]);
+                    } else if (Array.isArray(c)) {
+                      extractPoints(c);
+                    }
+                  });
+                };
+                extractPoints(drawnFeature.geometry.coordinates);
+
+                if (allPoints.length === 0) throw new Error("Invalid geometry");
+
                 let sumLat = 0,
                   sumLng = 0;
-                for (const coord of coords) {
-                  sumLng += coord[0];
-                  sumLat += coord[1];
+                for (const p of allPoints) {
+                  sumLng += p[0];
+                  sumLat += p[1];
                 }
                 const center: [number, number] = [
-                  sumLat / coords.length,
-                  sumLng / coords.length,
+                  sumLat / allPoints.length,
+                  sumLng / allPoints.length,
                 ];
 
                 let dataUrl = await captureMapThumbnail({
@@ -1314,10 +1510,6 @@ const MobileMapPage: React.FC = () => {
                     properties: {},
                   },
                 });
-
-                if (!dataUrl) {
-                  dataUrl = generateFallbackThumbnail(newField.id);
-                }
 
                 if (dataUrl) {
                   await saveThumbnail(newField.id, dataUrl);

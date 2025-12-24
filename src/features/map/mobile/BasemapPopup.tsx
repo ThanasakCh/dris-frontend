@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { Map } from "maplibre-gl";
 import { mapStyles } from "../../../config/mapConfig";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface BasemapPopupProps {
   map: Map | null;
@@ -36,6 +37,7 @@ export default function BasemapPopup({
   onStyleChange,
 }: BasemapPopupProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useLanguage();
 
   const handleStyleChange = (styleId: keyof typeof mapStyles) => {
     if (map && mapStyles[styleId]) {
@@ -61,7 +63,7 @@ export default function BasemapPopup({
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="แผนที่"
+        title={t("map.basemapTitle")}
       >
         <div
           style={{ color: isOpen ? "rgb(59, 130, 246)" : "rgb(51, 51, 51)" }}
@@ -101,7 +103,7 @@ export default function BasemapPopup({
                 }}
               >
                 <MapIcon className="w-4 h-4" />
-                Basemap
+                {t("map.selectBasemap")}
               </h4>
               <button
                 onClick={() => setIsOpen(false)}

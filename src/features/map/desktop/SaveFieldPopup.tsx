@@ -2,6 +2,13 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import Swal from "sweetalert2";
 import { useLanguage } from "../../../contexts/LanguageContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DesktopSaveFieldPopupProps {
   isOpen: boolean;
@@ -23,7 +30,7 @@ export default function DesktopSaveFieldPopup({
 }: DesktopSaveFieldPopupProps) {
   const [formData, setFormData] = useState({
     name: "",
-    variety: "ข้าวหอมมะลิ",
+    variety: "jasmine",
     planting_season: "",
     planting_date: "",
   });
@@ -47,7 +54,7 @@ export default function DesktopSaveFieldPopup({
       // Reset form
       setFormData({
         name: "",
-        variety: "ข้าวหอมมะลิ",
+        variety: "jasmine",
         planting_season: "",
         planting_date: "",
       });
@@ -61,7 +68,7 @@ export default function DesktopSaveFieldPopup({
   const handleCancel = () => {
     setFormData({
       name: "",
-      variety: "ข้าวหอมมะลิ",
+      variety: "jasmine",
       planting_season: "",
       planting_date: "",
     });
@@ -154,22 +161,28 @@ export default function DesktopSaveFieldPopup({
             >
               {t("farm.riceVariety")}
             </label>
-            <select
+            <Select
               value={formData.variety}
-              onChange={(e) =>
-                setFormData({ ...formData, variety: e.target.value })
+              onValueChange={(value) =>
+                setFormData({ ...formData, variety: value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               disabled={isSaving}
             >
-              <option value="ข้าวหอมมะลิ">ข้าวหอมมะลิ</option>
-              <option value="ข้าวกข6">ข้าวกข6</option>
-              <option value="ข้าวกข15">ข้าวกข15</option>
-              <option value="ข้าวปทุมธานี">ข้าวปทุมธานี</option>
-              <option value="ข้าวเหนียว">ข้าวเหนียว</option>
-              <option value="ข้าวไรซ์เบอรี่">ข้าวไรซ์เบอรี่</option>
-              <option value="อื่นๆ">อื่นๆ</option>
-            </select>
+              <SelectTrigger className="w-full h-12 px-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-green-500">
+                <SelectValue placeholder={t("farm.jasmine")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="jasmine">{t("farm.jasmine")}</SelectItem>
+                <SelectItem value="riceKK6">{t("farm.riceKK6")}</SelectItem>
+                <SelectItem value="riceKK15">{t("farm.riceKK15")}</SelectItem>
+                <SelectItem value="ricePT">{t("farm.ricePT")}</SelectItem>
+                <SelectItem value="stickyRice">
+                  {t("farm.stickyRice")}
+                </SelectItem>
+                <SelectItem value="riceberry">{t("farm.riceberry")}</SelectItem>
+                <SelectItem value="other">{t("farm.other")}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Planting Season */}
@@ -184,20 +197,25 @@ export default function DesktopSaveFieldPopup({
             >
               {t("farm.plantingSeason")}
             </label>
-            <select
+            <Select
               value={formData.planting_season}
-              onChange={(e) =>
-                setFormData({ ...formData, planting_season: e.target.value })
+              onValueChange={(value) =>
+                setFormData({ ...formData, planting_season: value })
               }
-              className="w-full p-3 border border-gray-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               disabled={isSaving}
             >
-              <option value="">{t("farm.selectSeason")}</option>
-              <option value="นาปี">นาปี - ปลูกฤดูฝน</option>
-              <option value="นาปรัง">นาปรัง - ปลูกนอกฤดู</option>
-              <option value="นาดำ">นาดำ</option>
-              <option value="นาหว่าน">นาหว่าน</option>
-            </select>
+              <SelectTrigger className="w-full h-12 px-3 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-green-500">
+                <SelectValue placeholder={t("farm.selectSeason")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="wetSeason">{t("farm.wetSeason")}</SelectItem>
+                <SelectItem value="drySeason">{t("farm.drySeason")}</SelectItem>
+                <SelectItem value="transplant">
+                  {t("farm.transplant")}
+                </SelectItem>
+                <SelectItem value="broadcast">{t("farm.broadcast")}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Planting Date */}

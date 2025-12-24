@@ -24,6 +24,7 @@ interface DesktopFloatingSidebarProps {
   selectedFieldName?: string;
   fieldsCount?: number;
   onOverlayChange?: (overlay: OverlayData | null) => void;
+  onImportGeometry?: (geometry: GeoJSON.Geometry, fileName: string) => void;
 }
 
 export default function DesktopFloatingSidebar({
@@ -36,6 +37,7 @@ export default function DesktopFloatingSidebar({
   selectedFieldName,
   fieldsCount = 0,
   onOverlayChange,
+  onImportGeometry,
 }: DesktopFloatingSidebarProps) {
   return (
     <div
@@ -56,6 +58,7 @@ export default function DesktopFloatingSidebar({
       <DesktopDrawPolygonPopup
         draw={draw}
         onStartDrawing={onStartDrawing}
+        onImportGeometry={onImportGeometry}
         savedPolygons={fieldsCount}
       />
 

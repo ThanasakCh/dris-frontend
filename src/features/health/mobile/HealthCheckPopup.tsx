@@ -3,6 +3,14 @@ import { Sliders, X, Activity, RefreshCw, TrendingUp } from "lucide-react";
 import axios from "../../../config/axios";
 import { useField } from "../../../contexts/FieldContext";
 import { getImageUrl } from "../../../config/api";
+import { useLanguage } from "../../../contexts/LanguageContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface VISnapshot {
   id: string;
@@ -29,12 +37,12 @@ interface HealthPopupProps {
 }
 
 const viTypes = [
-  { code: "NDVI", name: "NDVI", color: "#4CAF50", label: "ความหนาแน่นพืช" },
-  { code: "EVI", name: "EVI", color: "#8BC34A", label: "การเจริญเติบโต" },
-  { code: "GNDVI", name: "GNDVI", color: "#CDDC39", label: "ใบสีเขียว" },
-  { code: "NDWI", name: "NDWI", color: "#2196F3", label: "ความชื้น" },
-  { code: "SAVI", name: "SAVI", color: "#FF9800", label: "พืชปรับดิน" },
-  { code: "VCI", name: "VCI", color: "#9C27B0", label: "สภาพพืช (%)" },
+  { code: "NDVI", name: "NDVI", color: "#4CAF50", labelKey: "vi.ndvi" },
+  { code: "EVI", name: "EVI", color: "#8BC34A", labelKey: "vi.evi" },
+  { code: "GNDVI", name: "GNDVI", color: "#CDDC39", labelKey: "vi.gndvi" },
+  { code: "NDWI", name: "NDWI", color: "#2196F3", labelKey: "vi.ndwi" },
+  { code: "SAVI", name: "SAVI", color: "#FF9800", labelKey: "vi.savi" },
+  { code: "VCI", name: "VCI", color: "#9C27B0", labelKey: "vi.vci" },
 ];
 
 export default function HealthPopup({
@@ -43,6 +51,7 @@ export default function HealthPopup({
   onOverlayChange,
 }: HealthPopupProps) {
   const { fields } = useField();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFieldId, setSelectedFieldId] = useState<string | undefined>(
     propFieldId
@@ -120,17 +129,25 @@ export default function HealthPopup({
   const getHealthStatus = (value: number) => {
     const percentage = value * 100;
     if (percentage < 30)
-      return { status: "ต่ำ", color: "#ef4444", bg: "rgba(239, 68, 68, 0.1)" };
+      return {
+        status: t("health.status.low"),
+        color: "#ef4444",
+        bg: "rgba(239, 68, 68, 0.1)",
+      };
     if (percentage < 60)
       return {
-        status: "ปานกลาง",
+        status: t("health.status.moderate"),
         color: "#f59e0b",
         bg: "rgba(245, 158, 11, 0.1)",
       };
     if (percentage < 80)
-      return { status: "ดี", color: "#10b981", bg: "rgba(16, 185, 129, 0.1)" };
+      return {
+        status: t("health.status.high"),
+        color: "#10b981",
+        bg: "rgba(16, 185, 129, 0.1)",
+      };
     return {
-      status: "ดีเยี่ยม",
+      status: t("health.status.excellent"),
       color: "#059669",
       bg: "rgba(5, 150, 105, 0.1)",
     };
@@ -200,7 +217,7 @@ export default function HealthPopup({
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="ติดตามความสมบูรณ์"
+        title={t("health.tracking")}
       >
         <div
           style={{ color: isOpen ? "rgb(59, 130, 246)" : "rgb(51, 51, 51)" }}
@@ -243,7 +260,7 @@ export default function HealthPopup({
                 style={{ fontSize: "15px", fontWeight: 600 }}
               >
                 <Activity className="w-5 h-5" />
-                ติดตามความสมบูรณ์
+                {t("health.tracking")}
               </h4>
               <button
                 onClick={() => setIsOpen(false)}
@@ -267,34 +284,32 @@ export default function HealthPopup({
                     fontWeight: 500,
                   }}
                 >
-                  เลือกแปลง
+                  {t("field.select")}
                 </label>
-                <select
+                <Select
                   value={fieldId || ""}
-                  onChange={(e) =>
-                    setSelectedFieldId(e.target.value || undefined)
+                  onValueChange={(value) =>
+                    setSelectedFieldId(value || undefined)
                   }
-                  className="w-full mt-1 p-2 rounded-lg"
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    fontSize: "14px",
-                    background: "white",
-                  }}
                 >
-                  <option value="">-- เลือกแปลง --</option>
-                  {fields.map((field) => (
-                    <option key={field.id} value={field.id}>
-                      {field.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                    <SelectValue placeholder={`-- ${t("field.select")} --`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fields.map((field) => (
+                      <SelectItem key={field.id} value={field.id}>
+                        {field.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {!fieldId ? (
                 <div className="text-center py-4" style={{ color: "#6b7280" }}>
                   <Activity className="w-10 h-10 mx-auto mb-2 opacity-30" />
                   <p style={{ fontSize: "13px" }}>
-                    เลือกแปลงจาก dropdown ด้านบน
+                    {t("health.selectFromDropdown")}
                   </p>
                 </div>
               ) : (
@@ -308,24 +323,23 @@ export default function HealthPopup({
                         fontWeight: 500,
                       }}
                     >
-                      ดัชนีพืช
+                      {t("vi.index")}
                     </label>
-                    <select
+                    <Select
                       value={selectedVI}
-                      onChange={(e) => setSelectedVI(e.target.value)}
-                      className="w-full mt-1 p-2 rounded-lg"
-                      style={{
-                        border: "1px solid #e5e7eb",
-                        fontSize: "14px",
-                        background: "white",
-                      }}
+                      onValueChange={(value) => setSelectedVI(value)}
                     >
-                      {viTypes.map((vi) => (
-                        <option key={vi.code} value={vi.code}>
-                          {vi.name} - {vi.label}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                        <SelectValue placeholder="NDVI" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {viTypes.map((vi) => (
+                          <SelectItem key={vi.code} value={vi.code}>
+                            {vi.name} - {t(vi.labelKey)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Analyze Button */}
@@ -349,8 +363,8 @@ export default function HealthPopup({
                       className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`}
                     />
                     {isAnalyzing
-                      ? "กำลังวิเคราะห์..."
-                      : "วิเคราะห์ข้อมูลดาวเทียม"}
+                      ? t("action.analyzing")
+                      : t("health.analyzeSatellite")}
                   </button>
 
                   {/* Current Status */}
@@ -373,7 +387,7 @@ export default function HealthPopup({
                             fontWeight: 500,
                           }}
                         >
-                          สถานะปัจจุบัน
+                          {t("health.currentStatus")}
                         </span>
                         <span
                           style={{
@@ -435,7 +449,8 @@ export default function HealthPopup({
                           marginTop: "8px",
                         }}
                       >
-                        อัพเดท: {formatDate(latestSnapshot.snapshot_date)}
+                        {t("health.updated")}:{" "}
+                        {formatDate(latestSnapshot.snapshot_date)}
                       </p>
                     </div>
                   )}
@@ -454,7 +469,7 @@ export default function HealthPopup({
                           color: "#374151",
                         }}
                       >
-                        ประวัติ ({snapshots.length})
+                        {t("health.history")} ({snapshots.length})
                       </span>
                     </div>
 
@@ -463,7 +478,7 @@ export default function HealthPopup({
                         className="text-center py-4"
                         style={{ color: "#9ca3af" }}
                       >
-                        กำลังโหลด...
+                        {t("loading.message")}
                       </div>
                     ) : snapshots.length === 0 ? (
                       <div
@@ -474,7 +489,7 @@ export default function HealthPopup({
                           fontSize: "13px",
                         }}
                       >
-                        ยังไม่มีข้อมูล กดวิเคราะห์เพื่อเริ่มต้น
+                        {t("health.noDataYet")}
                       </div>
                     ) : (
                       <div className="flex flex-col gap-2">

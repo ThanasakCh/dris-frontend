@@ -23,6 +23,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/shared/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const viTypes = [
   {
@@ -42,18 +49,18 @@ const viTypes = [
 ];
 
 const months = [
-  { value: 1, name: "มกราคม", short: "ม.ค." },
-  { value: 2, name: "กุมภาพันธ์", short: "ก.พ." },
-  { value: 3, name: "มีนาคม", short: "มี.ค." },
-  { value: 4, name: "เมษายน", short: "เม.ย." },
-  { value: 5, name: "พฤษภาคม", short: "พ.ค." },
-  { value: 6, name: "มิถุนายน", short: "มิ.ย." },
-  { value: 7, name: "กรกฎาคม", short: "ก.ค." },
-  { value: 8, name: "สิงหาคม", short: "ส.ค." },
-  { value: 9, name: "กันยายน", short: "ก.ย." },
-  { value: 10, name: "ตุลาคม", short: "ต.ค." },
-  { value: 11, name: "พฤศจิกายน", short: "พ.ย." },
-  { value: 12, name: "ธันวาคม", short: "ธ.ค." },
+  { value: 1, nameKey: "month.jan", shortKey: "month.janShort" },
+  { value: 2, nameKey: "month.feb", shortKey: "month.febShort" },
+  { value: 3, nameKey: "month.mar", shortKey: "month.marShort" },
+  { value: 4, nameKey: "month.apr", shortKey: "month.aprShort" },
+  { value: 5, nameKey: "month.may", shortKey: "month.mayShort" },
+  { value: 6, nameKey: "month.jun", shortKey: "month.junShort" },
+  { value: 7, nameKey: "month.jul", shortKey: "month.julShort" },
+  { value: 8, nameKey: "month.aug", shortKey: "month.augShort" },
+  { value: 9, nameKey: "month.sep", shortKey: "month.sepShort" },
+  { value: 10, nameKey: "month.oct", shortKey: "month.octShort" },
+  { value: 11, nameKey: "month.nov", shortKey: "month.novShort" },
+  { value: 12, nameKey: "month.dec", shortKey: "month.decShort" },
 ];
 
 interface TimeSeriesData {
@@ -173,15 +180,17 @@ export default function MobileAnalysisPage() {
   const getAnalysisDescription = (): string => {
     switch (analysisType) {
       case "monthly_range":
-        const startMonthName =
-          months.find((m) => m.value === startMonth)?.short || "";
-        const endMonthName =
-          months.find((m) => m.value === endMonth)?.short || "";
-        return `${selectedVI} ${startMonthName}-${endMonthName} ${selectedYear}`;
+        const startMonthKey =
+          months.find((m) => m.value === startMonth)?.shortKey || "";
+        const endMonthKey =
+          months.find((m) => m.value === endMonth)?.shortKey || "";
+        return `${selectedVI} ${t(startMonthKey)}-${t(
+          endMonthKey
+        )} ${selectedYear}`;
       case "full_year":
-        return `${selectedVI} ปี ${selectedYear}`;
+        return `${selectedVI} ${t("analysis.yearLabel")} ${selectedYear}`;
       case "ten_year_avg":
-        return `${selectedVI} (10 ปีย้อนหลัง)`;
+        return `${selectedVI} (${t("analysis.tenYearAvg")})`;
       default:
         return selectedVI;
     }
@@ -248,19 +257,21 @@ export default function MobileAnalysisPage() {
         setTimeSeriesData(processedData);
 
         await Swal.fire({
-          title: "สำเร็จ",
-          text: `วิเคราะห์เสร็จสิ้น! ได้ข้อมูล ${processedData.length} จุด`,
+          title: t("confirm.success"),
+          text: `${t("analysis.complete")} ${processedData.length} ${t(
+            "analysis.dataPoints"
+          )}`,
           icon: "success",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
           confirmButtonColor: "#16a34a",
         });
       } else {
         setTimeSeriesData([]);
         await Swal.fire({
-          title: "แจ้งเตือน",
-          text: "ไม่พบข้อมูลในช่วงเวลาที่เลือก กรุณาเลือกช่วงเวลาอื่น",
+          title: t("confirm.warning"),
+          text: t("analysis.noDataWarning"),
           icon: "warning",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
           confirmButtonColor: "#16a34a",
         });
       }
@@ -268,12 +279,12 @@ export default function MobileAnalysisPage() {
       console.error("Analysis failed:", error);
       setTimeSeriesData([]);
       await Swal.fire({
-        title: "เกิดข้อผิดพลาด",
+        title: t("confirm.error"),
         text:
-          "การวิเคราะห์ไม่สำเร็จ: " +
+          t("analysis.analysisFailed") +
           (error.response?.data?.detail || error.message),
         icon: "error",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
         confirmButtonColor: "#16a34a",
       });
     } finally {
@@ -498,9 +509,15 @@ export default function MobileAnalysisPage() {
 
               <div className="flex gap-1 flex-1">
                 {[
-                  { type: "monthly_range" as const, label: "ช่วงเดือน" },
-                  { type: "full_year" as const, label: "ทั้งปี" },
-                  { type: "ten_year_avg" as const, label: "10 ปีย้อนหลัง" },
+                  {
+                    type: "monthly_range" as const,
+                    label: t("analysis.monthlyRange"),
+                  },
+                  { type: "full_year" as const, label: t("analysis.fullYear") },
+                  {
+                    type: "ten_year_avg" as const,
+                    label: t("analysis.tenYearAvg"),
+                  },
                 ].map((item) => (
                   <button
                     key={item.type}
@@ -538,21 +555,24 @@ export default function MobileAnalysisPage() {
                       marginBottom: "2px",
                     }}
                   >
-                    ปี:
+                    {t("analysis.yearLabel")}:
                   </label>
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                  <Select
+                    value={String(selectedYear)}
+                    onValueChange={(value) => setSelectedYear(parseInt(value))}
                     disabled={isAnalyzing}
-                    className="w-full p-2 rounded-xl"
-                    style={{ border: "1px solid #e5e7eb", fontSize: "13px" }}
                   >
-                    {getAvailableYears().map((year) => (
-                      <option key={year} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-white">
+                      <SelectValue placeholder={String(selectedYear)} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getAvailableYears().map((year) => (
+                        <SelectItem key={year} value={String(year)}>
+                          {year}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {analysisType === "monthly_range" && (
@@ -567,26 +587,26 @@ export default function MobileAnalysisPage() {
                           marginBottom: "2px",
                         }}
                       >
-                        เริ่ม:
+                        {t("analysis.startMonth")}:
                       </label>
-                      <select
-                        value={startMonth}
-                        onChange={(e) =>
-                          setStartMonth(parseInt(e.target.value))
+                      <Select
+                        value={String(startMonth)}
+                        onValueChange={(value) =>
+                          setStartMonth(parseInt(value))
                         }
                         disabled={isAnalyzing}
-                        className="w-full p-2 rounded-xl"
-                        style={{
-                          border: "1px solid #e5e7eb",
-                          fontSize: "13px",
-                        }}
                       >
-                        {months.map((m) => (
-                          <option key={m.value} value={m.value}>
-                            {m.name}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-white">
+                          <SelectValue placeholder={t(months[0].nameKey)} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((m) => (
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {t(m.nameKey)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="flex-1">
                       <label
@@ -598,24 +618,24 @@ export default function MobileAnalysisPage() {
                           marginBottom: "2px",
                         }}
                       >
-                        สิ้นสุด:
+                        {t("analysis.endMonth")}:
                       </label>
-                      <select
-                        value={endMonth}
-                        onChange={(e) => setEndMonth(parseInt(e.target.value))}
+                      <Select
+                        value={String(endMonth)}
+                        onValueChange={(value) => setEndMonth(parseInt(value))}
                         disabled={isAnalyzing}
-                        className="w-full p-2 rounded-xl"
-                        style={{
-                          border: "1px solid #e5e7eb",
-                          fontSize: "13px",
-                        }}
                       >
-                        {months.map((m) => (
-                          <option key={m.value} value={m.value}>
-                            {m.name}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger className="w-full h-10 px-3 border border-gray-200 rounded-xl text-sm bg-white">
+                          <SelectValue placeholder={t(months[0].nameKey)} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((m) => (
+                            <SelectItem key={m.value} value={String(m.value)}>
+                              {t(m.nameKey)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </>
                 )}

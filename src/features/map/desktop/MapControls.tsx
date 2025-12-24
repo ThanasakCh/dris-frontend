@@ -1,11 +1,13 @@
 import { ZoomIn, ZoomOut, Compass, Crosshair } from "lucide-react";
 import type { Map } from "maplibre-gl";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface DesktopMapControlsProps {
   map: Map | null;
 }
 
 export default function DesktopMapControls({ map }: DesktopMapControlsProps) {
+  const { t } = useLanguage();
   const handleZoomIn = () => {
     if (map) map.zoomIn();
   };
@@ -58,14 +60,22 @@ export default function DesktopMapControls({ map }: DesktopMapControlsProps) {
       }}
     >
       {/* Zoom In */}
-      <button onClick={handleZoomIn} style={buttonStyle} title="Zoom In">
+      <button
+        onClick={handleZoomIn}
+        style={buttonStyle}
+        title={t("map.zoomInBtn")}
+      >
         <div style={{ color: "rgb(51, 51, 51)" }}>
           <ZoomIn className="w-[18px] h-[18px]" />
         </div>
       </button>
 
       {/* Zoom Out */}
-      <button onClick={handleZoomOut} style={buttonStyle} title="Zoom Out">
+      <button
+        onClick={handleZoomOut}
+        style={buttonStyle}
+        title={t("map.zoomOutBtn")}
+      >
         <div style={{ color: "rgb(51, 51, 51)" }}>
           <ZoomOut className="w-[18px] h-[18px]" />
         </div>
@@ -75,7 +85,7 @@ export default function DesktopMapControls({ map }: DesktopMapControlsProps) {
       <button
         onClick={handleResetNorth}
         style={buttonStyle}
-        title="Reset North"
+        title={t("map.resetNorth")}
       >
         <div style={{ color: "rgb(51, 51, 51)" }}>
           <Compass className="w-[18px] h-[18px]" />
@@ -83,7 +93,11 @@ export default function DesktopMapControls({ map }: DesktopMapControlsProps) {
       </button>
 
       {/* Geolocate */}
-      <button onClick={handleGeolocate} style={buttonStyle} title="Geolocate">
+      <button
+        onClick={handleGeolocate}
+        style={buttonStyle}
+        title={t("map.geolocate")}
+      >
         <div style={{ color: "rgb(51, 51, 51)" }}>
           <Crosshair className="w-[18px] h-[18px]" />
         </div>

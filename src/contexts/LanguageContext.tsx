@@ -45,6 +45,7 @@ const translations: Record<Language, Record<string, string>> = {
     "field.rai": "ไร่",
     "field.ngan": "งาน",
     "field.sqWa": "ตารางวา",
+    "field.sqWaShort": "ตร.วา",
     "field.name": "ชื่อแปลง",
     "field.health": "สุขภาพแปลง",
     "field.saveNew": "บันทึกแปลงใหม่",
@@ -77,7 +78,8 @@ const translations: Record<Language, Record<string, string>> = {
 
     // Confirm dialogs
     "confirm.delete": "ยืนยันการลบ",
-    "confirm.deleteMessage": "คุณต้องการลบแปลงนี้หรือไม่?",
+    "confirm.deleteMessage": "คุณต้องการลบแปลง",
+    "confirm.deleteCannotUndo": "การลบนี้ไม่สามารถยกเลิกได้",
     "confirm.deleted": "ลบสำเร็จ",
     "confirm.error": "เกิดข้อผิดพลาด",
     "confirm.deleteError": "ไม่สามารถลบแปลงได้",
@@ -99,6 +101,7 @@ const translations: Record<Language, Record<string, string>> = {
     "feature.water": "แหล่งน้ำนา\n/เล็ก",
     "feature.burn": "ประวัติการเผา\n[ใหม่]",
     "feature.pest": "ภัยพืช",
+    "feature.comingSoon": "ฟีเจอร์นี้กำลังพัฒนา",
 
     // Map
     "map.selectBasemap": "เลือกแผนที่",
@@ -127,12 +130,18 @@ const translations: Record<Language, Record<string, string>> = {
     "draw.supportedFormats": "รองรับไฟล์: GeoJSON, KML, SHP (ZIP)",
     "draw.uploadZip": "กรุณาอัพโหลดไฟล์ ZIP",
     "draw.uploadZipDetail": "ไฟล์ Shapefile ต้องอัพโหลดเป็นไฟล์ .zip",
+    "draw.uploadZipHint":
+      "ให้รวมไฟล์ .shp, .dbf, .shx, .prj ไว้ในไฟล์ ZIP เดียวกัน",
     "draw.importSuccess": "นำเข้าสำเร็จ",
     "draw.importedFrom": "นำเข้าแปลงจากไฟล์",
     "draw.fileNotSupported": "ไม่รองรับไฟล์นามสกุลนี้",
     "draw.noGeometry": "ไม่พบข้อมูล geometry ในไฟล์",
     "draw.polygonOnly": "ต้องเป็น Polygon หรือ MultiPolygon เท่านั้น",
     "draw.cannotReadFile": "ไม่สามารถอ่านไฟล์ได้",
+    "draw.canDrawField": "คุณสามารถวาดแปลงได้",
+    "draw.maxAreaLimit": "ไม่เกิน 3,000 ไร่ / แปลง",
+    "draw.startDrawingToast": "วาดแปลง<br />ของคุณได้เลย",
+    "draw.addPointBtn": "เพิ่มจุดนี้",
 
     // Farming
     "farm.riceVariety": "สายพันธุ์ข้าว",
@@ -151,6 +160,14 @@ const translations: Record<Language, Record<string, string>> = {
     "farm.broadcast": "นาหว่าน",
     "farm.plantingDate": "วันที่ปลูก",
 
+    // Crops
+    "crop.rice": "ข้าว",
+    "crop.corn": "ข้าวโพด",
+    "crop.sugarcane": "อ้อย",
+    "crop.cassava": "มันสำปะหลัง",
+    "crop.rubber": "ยางพารา",
+    "crop.palm": "ปาล์มน้ำมัน",
+
     // Season
     "season.cycle": "รอบการเพาะปลูก",
 
@@ -160,6 +177,7 @@ const translations: Record<Language, Record<string, string>> = {
     // User
     "user.admin": "ผู้ดูแลระบบ",
     "user.farmer": "เกษตรกร",
+    "user.defaultName": "ผู้ใช้งาน",
 
     // Legend
     "legend.title": "คำอธิบายสัญลักษณ์",
@@ -195,6 +213,20 @@ const translations: Record<Language, Record<string, string>> = {
     "analysis.differentDates": "วันที่แตกต่างกัน",
     "analysis.failedPrefix": "การวิเคราะห์ไม่สำเร็จ: ",
     "analysis.trendValue": "แนวโน้มค่า",
+    "analysis.trendAnalysis": "วิเคราะห์แนวโน้ม",
+    "analysis.resultOf": "ผลการวิเคราะห์",
+    "analysis.foundData": "พบข้อมูล",
+    "analysis.average": "ค่าเฉลี่ย",
+    "analysis.geeError": "เกิดข้อผิดพลาดในการดึงข้อมูลจาก Google Earth Engine",
+    "analysis.sentinelInfo":
+      "ข้อมูลจากดาวเทียม Sentinel-2 • ผลลัพธ์จะแสดงในป็อปอัพด้านขวา",
+    "analysis.timeSeries": "Time Series",
+    "analysis.yearLabel": "ปี",
+    "analysis.monthlyAvg": "ค่าเฉลี่ยรายเดือน",
+    "analysis.yearlyAvg": "ค่าเฉลี่ยรายปี",
+    "analysis.complete": "วิเคราะห์เสร็จสิ้น! ได้ข้อมูล",
+    "analysis.analysisFailed": "การวิเคราะห์ไม่สำเร็จ: ",
+    "analysis.monthlyRange": "ช่วงเดือน",
 
     // Health
     "health.title": "ติดตามความสมบูรณ์ของพืช",
@@ -219,6 +251,18 @@ const translations: Record<Language, Record<string, string>> = {
     "month.oct": "ตุลาคม",
     "month.nov": "พฤศจิกายน",
     "month.dec": "ธันวาคม",
+    "month.janShort": "ม.ค.",
+    "month.febShort": "ก.พ.",
+    "month.marShort": "มี.ค.",
+    "month.aprShort": "เม.ย.",
+    "month.mayShort": "พ.ค.",
+    "month.junShort": "มิ.ย.",
+    "month.julShort": "ก.ค.",
+    "month.augShort": "ส.ค.",
+    "month.sepShort": "ก.ย.",
+    "month.octShort": "ต.ค.",
+    "month.novShort": "พ.ย.",
+    "month.decShort": "ธ.ค.",
 
     // Sort
     "sort.latest": "เรียงตามแปลงที่เพิ่มล่าสุด",
@@ -284,6 +328,150 @@ const translations: Record<Language, Record<string, string>> = {
     "about.contact": "ติดต่อ",
     "about.contactDesc":
       "สำหรับข้อมูลเพิ่มเติมกรุณาติดต่อ: โครงการวิจัยเพื่อการประเมินและพยากรณ์ภัยแล้ง สำหรับการปรับตัวต่อการเปลี่ยนแปลงสภาพภูมิอากาศของเกษตรกรรายย่อยในภาคเหนือและภาคตะวันออกเฉียงเหนือของประเทศไทย คณะสังคมศาสตร์ มหาวิทยาลัยเชียงใหม่",
+
+    // Auth Page
+    "auth.backHome": "กลับหน้าหลัก",
+    "auth.register": "ลงทะเบียนผู้ใช้ใหม่",
+    "auth.registerDesc": "กรอกข้อมูลเพื่อเริ่มต้นใช้งานระบบติดตามแปลงเกษตร",
+    "auth.fullName": "ชื่อ-นามสกุล",
+    "auth.fullNamePlaceholder": "เช่น ธนศักดิ์ ไชยลังกา",
+    "auth.username": "Username",
+    "auth.usernamePlaceholder": "ตัวอย่าง thanasak",
+    "auth.dateOfBirth": "วันเดือนปีเกิด",
+    "auth.selectBirthday": "เลือกวันเกิด",
+    "auth.today": "วันนี้",
+    "auth.email": "Email",
+    "auth.emailPlaceholder": "name@example.com",
+    "auth.password": "รหัสผ่าน",
+    "auth.passwordPlaceholder": "อย่างน้อย 6 ตัวอักษร",
+    "auth.passwordHint": "ระบบจะคำนวณอายุอัตโนมัติและบันทึกในโปรไฟล์",
+    "auth.createAccount": "สร้างบัญชีผู้ใช้งาน",
+    "auth.creatingAccount": "กำลังสร้างบัญชี...",
+    "auth.login": "เข้าสู่ระบบ",
+    "auth.loginDesc": "สำหรับผู้ที่มีบัญชีอยู่แล้ว",
+    "auth.usernameOrEmail": "Username หรือ Email",
+    "auth.usernameOrEmailPlaceholder": "กรอกชื่อผู้ใช้หรืออีเมล",
+    "auth.passwordLoginPlaceholder": "กรอกรหัสผ่าน",
+    "auth.forgotPassword": "ลืมรหัสผ่าน?",
+    "auth.loggingIn": "กำลังเข้าสู่ระบบ...",
+    "auth.fillAllFields": "กรุณากรอกข้อมูลให้ครบถ้วน",
+    "auth.passwordMinLength": "รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร",
+    "auth.registerSuccess": "สร้างบัญชีสำเร็จ! กำลังเข้าสู่ระบบ…",
+
+    // Legend labels
+    "legend.indexInfo": "ข้อมูลดัชนี",
+    "legend.waterBuilding": "น้ำ / สิ่งปลูกสร้าง",
+    "legend.bareSoil": "ดินว่างเปล่า",
+    "legend.lowVegetation": "พืชพรรณน้อย",
+    "legend.healthyVegetation": "พืชสมบูรณ์",
+    "legend.soilWater": "ดิน / น้ำ",
+    "legend.startGrowing": "เริ่มเติบโต",
+    "legend.veryHealthy": "สมบูรณ์มาก",
+    "legend.stressed": "เครียด / ขาดน้ำ",
+    "legend.normal": "ปกติ",
+    "legend.highChlorophyll": "สมบูรณ์ (Chlorophyll สูง)",
+    "legend.drought": "แห้งแล้ง",
+    "legend.lowMoisture": "ความชื้นต่ำ",
+    "legend.moist": "ชุ่มชื้น / น้ำ",
+    "legend.soil": "ดิน",
+    "legend.lowCoverage": "พืชปกคลุมน้อย",
+    "legend.highCoverage": "พืชปกคลุมหนาแน่น",
+    "legend.severeDrought": "ภัยแล้งรุนแรง",
+    "legend.good": "สมบูรณ์ดี",
+
+    // VI Labels
+    "vi.ndvi": "ความหนาแน่นพืช",
+    "vi.evi": "การเจริญเติบโต",
+    "vi.gndvi": "ใบสีเขียว",
+    "vi.ndwi": "ความชื้น",
+    "vi.savi": "พืชปรับดิน",
+    "vi.vci": "สภาพพืช (%)",
+    "vi.index": "ดัชนีพืช",
+
+    // Health Status
+    "health.status.low": "ต่ำ",
+    "health.status.moderate": "ปานกลาง",
+    "health.status.high": "ดี",
+    "health.status.excellent": "ดีเยี่ยม",
+    "health.currentStatus": "สถานะปัจจุบัน",
+    "health.updated": "อัพเดท",
+    "health.history": "ประวัติ",
+    "health.selectFromDropdown": "เลือกแปลงจาก dropdown ด้านบน",
+    "health.noDataYet": "ยังไม่มีข้อมูล กดวิเคราะห์เพื่อเริ่มต้น",
+    "health.tracking": "ติดตามความสมบูรณ์",
+    "health.analyzeSatellite": "วิเคราะห์ข้อมูลดาวเทียม",
+    "health.unknownCause": "ไม่ทราบสาเหตุ",
+    "health.weakLow": "พืชมีความอ่อนแอหรือความหนาแน่นต่ำ",
+    "health.moderateLow": "พืชมีความสมบูรณ์หรือหนาแน่นค่อนข้างต่ำ",
+    "health.moderateMid": "พืชมีความสมบูรณ์หรือหนาแน่นปานกลาง",
+    "health.goodHigh": "พืชมีความสมบูรณ์ดี หนาแน่นสูง",
+    "health.excellentVeryHigh": "พืชมีความสมบูรณ์ดีเยี่ยม หนาแน่นมาก",
+
+    // Copy actions
+    "copy.title": "คัดลอก",
+    "copy.success": "คัดลอกแล้ว",
+    "copy.failed": "คัดลอกไม่สำเร็จ",
+
+    // Table headers
+    "table.date": "วันที่",
+    "table.value": "ค่า",
+
+    // Field detail popup
+    "field.detailOf": "รายละเอียดของแปลง",
+    "field.plantVariety": "ชนิดพันธุ์พืช",
+    "field.plantingSeasonLabel": "ฤดูกาลปลูก",
+
+    // Health page
+    "health.menu": "เมนู",
+    "health.selectVIForMap": "เลือกดัชนีพืชเพื่อแสดงค่าบนแผนที่",
+    "health.trendValue": "แนวโน้มค่า",
+    "health.selectedDateData": "วันที่เลือกให้แสดงข้อมูล",
+    "health.latestDataDate": "วันที่มีข้อมูลล่าสุด",
+
+    "unit.changeToRai": "เปลี่ยนเป็น ไร่ งาน ตารางวา",
+    "unit.changeToSqm": "เปลี่ยนเป็น ตารางเมตร",
+    "unit.changeToLatLng": "เปลี่ยนเป็น ละติจูด, ลองจิจูด",
+    "unit.changeToUTM": "เปลี่ยนเป็น UTM",
+    "unit.sqm": "ตารางเมตร",
+    "unit.sqmShort": "ตร.ม.",
+    "unit.rai": "ไร่",
+    "unit.ngan": "งาน",
+    "unit.wah": "ตารางวา",
+    "field.addressFallback": "ต. สุเทพ อ. เมืองเชียงใหม่ จ. เชียงใหม่",
+
+    // Map controls
+    "map.zoomInBtn": "ซูมเข้า",
+    "map.zoomOutBtn": "ซูมออก",
+    "map.resetNorth": "รีเซ็ตทิศเหนือ",
+    "map.geolocate": "ตำแหน่งของฉัน",
+    "map.basemapTitle": "แผนที่",
+    "map.analyzeField": "วิเคราะห์แปลง",
+
+    // Field actions
+    "field.editName": "แก้ไขชื่อ",
+    "field.editSuccess": "แก้ไขแปลงสำเร็จ!",
+    "field.editFailed": "แก้ไขแปลงไม่สำเร็จ: ",
+    "field.deleteSuccess": "ลบแปลงสำเร็จ",
+    "field.deleteFailed": "ลบแปลงไม่สำเร็จ",
+    "field.createSuccess": "สร้างแปลงสำเร็จ!",
+    "field.createFailed": "สร้างแปลงไม่สำเร็จ",
+    "field.updateFailed": "อัปเดตแปลงไม่สำเร็จ",
+    "field.pleaseSelectField": "กรุณาเลือกแปลงเพื่อเข้าหน้ารายละเอียด",
+    "field.cropType": "ประเภทพืช",
+    "field.kmlConvertFailed": "แปลงไฟล์ KML ไม่สำเร็จ",
+    "field.editFieldData": "แก้ไขข้อมูลแปลง",
+    "field.notFoundToDelete": "ไม่พบแปลงที่ต้องการลบ",
+    "field.noPermissionDelete": "คุณไม่มีสิทธิ์ลบแปลงนี้",
+
+    // Download
+    "download.title": "ดาวน์โหลดไฟล์แปลงของคุณ",
+    "download.selectFormat": "เลือกรูปแบบ",
+    "download.downloadBtn": "ดาวน์โหลด",
+    "download.exportFailed": "ไม่สามารถส่งออกไฟล์ได้ โปรดลองอีกครั้ง",
+
+    // Auth
+    "auth.loginFailed": "เข้าสู่ระบบไม่สำเร็จ",
+    "auth.registerFailed": "ลงทะเบียนไม่สำเร็จ",
   },
   EN: {
     // Header
@@ -309,6 +497,7 @@ const translations: Record<Language, Record<string, string>> = {
     "field.rai": "Rai",
     "field.ngan": "Ngan",
     "field.sqWa": "Sq.Wa",
+    "field.sqWaShort": "Sq.Wa",
     "field.name": "Field Name",
     "field.health": "Field Health",
     "field.saveNew": "Save New Field",
@@ -363,6 +552,7 @@ const translations: Record<Language, Record<string, string>> = {
     "feature.water": "Water\nSource",
     "feature.burn": "Burn History\n[New]",
     "feature.pest": "Crop Pests",
+    "feature.comingSoon": "This feature is under development",
 
     // Map
     "map.selectBasemap": "Select Basemap",
@@ -391,12 +581,18 @@ const translations: Record<Language, Record<string, string>> = {
     "draw.supportedFormats": "Supported: GeoJSON, KML, SHP (ZIP)",
     "draw.uploadZip": "Please upload ZIP file",
     "draw.uploadZipDetail": "Shapefile must be uploaded as .zip file",
+    "draw.uploadZipHint":
+      "Please include .shp, .dbf, .shx, .prj files in a single ZIP file",
     "draw.importSuccess": "Import successful",
     "draw.importedFrom": "Imported field from file",
     "draw.fileNotSupported": "File type not supported",
     "draw.noGeometry": "No geometry found in file",
     "draw.polygonOnly": "Must be Polygon or MultiPolygon only",
     "draw.cannotReadFile": "Cannot read file",
+    "draw.canDrawField": "You can start drawing a field",
+    "draw.maxAreaLimit": "Max 3,000 Rai / Field",
+    "draw.startDrawingToast": "Start drawing<br />your field now",
+    "draw.addPointBtn": "Add Point",
 
     // Farming
     "farm.riceVariety": "Rice Variety",
@@ -415,6 +611,14 @@ const translations: Record<Language, Record<string, string>> = {
     "farm.broadcast": "Broadcasting",
     "farm.plantingDate": "Planting Date",
 
+    // Crops
+    "crop.rice": "Rice",
+    "crop.corn": "Corn",
+    "crop.sugarcane": "Sugarcane",
+    "crop.cassava": "Cassava",
+    "crop.rubber": "Rubber",
+    "crop.palm": "Palm Oil",
+
     // Season
     "season.cycle": "Planting Cycle",
 
@@ -424,6 +628,7 @@ const translations: Record<Language, Record<string, string>> = {
     // User
     "user.admin": "Admin",
     "user.farmer": "Farmer",
+    "user.defaultName": "User",
 
     // Legend
     "legend.title": "Legend",
@@ -459,6 +664,9 @@ const translations: Record<Language, Record<string, string>> = {
     "analysis.differentDates": "different dates",
     "analysis.failedPrefix": "Analysis failed: ",
     "analysis.trendValue": "Trend value",
+    "analysis.complete": "Analysis complete! Data obtained:",
+    "analysis.analysisFailed": "Analysis failed: ",
+    "analysis.monthlyRange": "Month Range",
 
     // Health
     "health.title": "Plant Health Monitoring",
@@ -483,6 +691,18 @@ const translations: Record<Language, Record<string, string>> = {
     "month.oct": "October",
     "month.nov": "November",
     "month.dec": "December",
+    "month.janShort": "Jan",
+    "month.febShort": "Feb",
+    "month.marShort": "Mar",
+    "month.aprShort": "Apr",
+    "month.mayShort": "May",
+    "month.junShort": "Jun",
+    "month.julShort": "Jul",
+    "month.augShort": "Aug",
+    "month.sepShort": "Sep",
+    "month.octShort": "Oct",
+    "month.novShort": "Nov",
+    "month.decShort": "Dec",
 
     // Sort
     "sort.latest": "Sort by latest added",
@@ -547,6 +767,164 @@ const translations: Record<Language, Record<string, string>> = {
     "about.contact": "Contact",
     "about.contactDesc":
       "For more information, please contact: Research Project for Drought Assessment and Forecasting for Climate Change Adaptation of Smallholder Farmers in Northern and Northeastern Thailand, Faculty of Social Sciences, Chiang Mai University.",
+
+    // Auth Page
+    "auth.backHome": "Back to Home",
+    "auth.register": "Register New User",
+    "auth.registerDesc":
+      "Fill in your information to start using the crop monitoring system",
+    "auth.fullName": "Full Name",
+    "auth.fullNamePlaceholder": "e.g. John Doe",
+    "auth.username": "Username",
+    "auth.usernamePlaceholder": "e.g. johndoe",
+    "auth.dateOfBirth": "Date of Birth",
+    "auth.selectBirthday": "Select birthday",
+    "auth.today": "Today",
+    "auth.email": "Email",
+    "auth.emailPlaceholder": "name@example.com",
+    "auth.password": "Password",
+    "auth.passwordPlaceholder": "At least 6 characters",
+    "auth.passwordHint":
+      "System will calculate age automatically and save to profile",
+    "auth.createAccount": "Create Account",
+    "auth.creatingAccount": "Creating account...",
+    "auth.login": "Login",
+    "auth.loginDesc": "For existing users",
+    "auth.usernameOrEmail": "Username or Email",
+    "auth.usernameOrEmailPlaceholder": "Enter username or email",
+    "auth.passwordLoginPlaceholder": "Enter password",
+    "auth.forgotPassword": "Forgot password?",
+    "auth.loggingIn": "Logging in...",
+    "auth.fillAllFields": "Please fill in all fields",
+    "auth.passwordMinLength": "Password must be at least 6 characters",
+    "auth.registerSuccess": "Account created successfully! Logging in…",
+
+    // Legend labels
+    "legend.indexInfo": "Index Information",
+    "legend.waterBuilding": "Water / Buildings",
+    "legend.bareSoil": "Bare Soil",
+    "legend.lowVegetation": "Low Vegetation",
+    "legend.healthyVegetation": "Healthy Vegetation",
+    "legend.soilWater": "Soil / Water",
+    "legend.startGrowing": "Starting to Grow",
+    "legend.veryHealthy": "Very Healthy",
+    "legend.stressed": "Stressed / Dehydrated",
+    "legend.normal": "Normal",
+    "legend.highChlorophyll": "Healthy (High Chlorophyll)",
+    "legend.drought": "Drought",
+    "legend.lowMoisture": "Low Moisture",
+    "legend.moist": "Moist / Water",
+    "legend.soil": "Soil",
+    "legend.lowCoverage": "Low Coverage",
+    "legend.highCoverage": "High Coverage",
+    "legend.severeDrought": "Severe Drought",
+    "legend.good": "Good",
+
+    // VI Labels
+    "vi.ndvi": "Vegetation Density",
+    "vi.evi": "Growth",
+    "vi.gndvi": "Green Leaves",
+    "vi.ndwi": "Moisture",
+    "vi.savi": "Soil-Adjusted",
+    "vi.vci": "Vegetation Condition (%)",
+    "vi.index": "VI Index",
+
+    // Health Status
+    "health.status.low": "Low",
+    "health.status.moderate": "Moderate",
+    "health.status.high": "Good",
+    "health.status.excellent": "Excellent",
+    "health.currentStatus": "Current Status",
+    "health.updated": "Updated",
+    "health.history": "History",
+    "health.selectFromDropdown": "Select field from dropdown above",
+    "health.noDataYet": "No data yet. Click analyze to start",
+    "health.tracking": "Health Tracking",
+    "health.analyzeSatellite": "Analyze Satellite Data",
+    "health.unknownCause": "Unknown cause",
+    "health.weakLow": "Plants are weak or low density",
+    "health.moderateLow":
+      "Plants are moderately healthy with relatively low density",
+    "health.moderateMid": "Plants are moderately healthy with moderate density",
+    "health.goodHigh": "Plants are healthy with high density",
+    "health.excellentVeryHigh": "Plants are excellent with very high density",
+
+    // Copy actions
+    "copy.title": "Copy",
+    "copy.success": "Copied",
+    "copy.failed": "Copy failed",
+
+    // Table headers
+    "table.date": "Date",
+    "table.value": "Value",
+
+    // Field detail popup
+    "field.detailOf": "Field Details",
+    "field.plantVariety": "Plant Variety",
+    "field.plantingSeasonLabel": "Planting Season",
+
+    // Health page
+    "health.menu": "Menu",
+    "health.selectVIForMap": "Select vegetation index to display on map",
+    "health.trendValue": "Trend Value",
+    "health.selectedDateData": "Selected date data",
+    "health.latestDataDate": "Latest data date",
+
+    // Unit toggles
+    "unit.changeToRai": "Change to Rai, Ngan, Sq.Wa",
+    "unit.changeToSqm": "Change to square meters",
+    "unit.changeToLatLng": "Change to Latitude, Longitude",
+    "unit.changeToUTM": "Change to UTM",
+    "unit.sqm": "sq.m.",
+    "unit.rai": "Rai",
+    "unit.ngan": "Ngan",
+    "unit.wah": "Sq. Wah",
+    "field.addressFallback": "Suthep, Mueang Chiang Mai, Chiang Mai",
+
+    // Analysis extras
+    "analysis.trendAnalysis": "Trend Analysis",
+    "analysis.resultOf": "Analysis Results",
+    "analysis.foundData": "Found",
+    "analysis.average": "Average",
+    "analysis.geeError": "Error fetching data from Google Earth Engine",
+    "analysis.sentinelInfo":
+      "Results will be displayed in the popup on the right",
+    "analysis.timeSeries": "Time Series",
+    "analysis.yearLabel": "Year",
+    "analysis.monthlyAvg": "Monthly Average",
+    "analysis.yearlyAvg": "Yearly Average",
+
+    // Field actions
+    "field.editName": "Edit Name",
+    "field.editSuccess": "Field updated successfully!",
+    "field.editFailed": "Failed to update field: ",
+    "field.deleteSuccess": "Field deleted successfully",
+    "field.deleteFailed": "Failed to delete field",
+    "field.createSuccess": "Field created successfully!",
+    "field.createFailed": "Failed to create field",
+    "field.updateFailed": "Failed to update field",
+    "field.pleaseSelectField": "Please select a field to view details",
+    "field.cropType": "Crop Type",
+    "field.kmlConvertFailed": "Failed to convert KML file",
+
+    // Download
+    "download.title": "Download Field",
+    "download.selectFormat": "Select Format",
+    "download.downloadBtn": "Download",
+    "download.exportFailed": "Cannot export file. Please try again",
+
+    // Confirm extras
+    "confirm.deleteCannotUndo": "This action cannot be undone",
+
+    // Field extras
+    "field.editFieldData": "Edit Field Data",
+    "field.notFoundToDelete": "Field not found",
+    "field.noPermissionDelete":
+      "You don't have permission to delete this field",
+
+    // Auth
+    "auth.loginFailed": "Login failed",
+    "auth.registerFailed": "Registration failed",
   },
 };
 

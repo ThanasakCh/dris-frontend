@@ -22,11 +22,12 @@ function DrawingToast({
   isVisible: boolean;
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
   useEffect(() => {
     if (isVisible) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000);
+      }, 1250);
       return () => clearTimeout(timer);
     }
   }, [isVisible, onClose]);
@@ -122,11 +123,10 @@ function DrawingToast({
             margin: 0,
             lineHeight: 1.5,
           }}
-        >
-          วาดแปลง
-          <br />
-          ของคุณได้เลย
-        </p>
+          dangerouslySetInnerHTML={{
+            __html: t("draw.startDrawingToast"),
+          }}
+        />
       </div>
     </>
   );
@@ -298,7 +298,7 @@ export default function MobileDrawingMode({
             gap: "8px",
           }}
         >
-          เพิ่มจุดนี้
+          {t("draw.addPointBtn")}
         </button>
       </div>
 
@@ -330,7 +330,7 @@ export default function MobileDrawingMode({
               lineHeight: 1.4,
             }}
           >
-            คุณสามารถวาดแปลงได้
+            {t("draw.canDrawField")}
           </p>
           <p
             style={{
@@ -339,7 +339,7 @@ export default function MobileDrawingMode({
               margin: "4px 0 0 0",
             }}
           >
-            ไม่เกิน 3,000 ไร่ / แปลง
+            {t("draw.maxAreaLimit")}
           </p>
         </div>
 

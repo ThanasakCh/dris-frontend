@@ -1,5 +1,6 @@
 import { useRef, useImperativeHandle, forwardRef } from "react";
 import ReactEcharts from "echarts-for-react";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 interface TimeSeriesData {
   date: string;
@@ -33,6 +34,7 @@ const TimeSeriesChart = forwardRef<TimeSeriesChartRef, TimeSeriesChartProps>(
     ref
   ) => {
     const chartRef = useRef<ReactEcharts>(null);
+    const { t } = useLanguage();
 
     // Expose download methods via ref
     useImperativeHandle(ref, () => ({
@@ -175,7 +177,7 @@ const TimeSeriesChart = forwardRef<TimeSeriesChartRef, TimeSeriesChartProps>(
           }}
         >
           <span style={{ fontSize: "13px", color: "#9ca3af" }}>
-            ไม่มีข้อมูล
+            {t("field.noData")}
           </span>
         </div>
       );

@@ -326,21 +326,26 @@ export default function DesktopHealthPanel({
       );
       await loadSnapshots();
       await Swal.fire({
-        title: response.data.snapshots_created === 0 ? "แจ้งเตือน" : "สำเร็จ",
+        title:
+          response.data.snapshots_created === 0
+            ? t("confirm.warning")
+            : t("confirm.success"),
         text:
           response.data.snapshots_created === 0
-            ? "ไม่สามารถดึงข้อมูลดาวเทียมได้"
-            : `วิเคราะห์เสร็จสิ้น! ได้ข้อมูล ${response.data.snapshots_created} ภาพ`,
+            ? t("analysis.noSatelliteData")
+            : `${t("analysis.completed")} ${t("analysis.gotData")} ${
+                response.data.snapshots_created
+              } ${t("analysis.images")}`,
         icon: response.data.snapshots_created === 0 ? "warning" : "success",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
         confirmButtonColor: "#16a34a",
       });
     } catch (error: any) {
       await Swal.fire({
-        title: "เกิดข้อผิดพลาด",
+        title: t("confirm.error"),
         text: error.message,
         icon: "error",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
       });
     } finally {
       setIsAnalyzing(false);
@@ -357,11 +362,11 @@ export default function DesktopHealthPanel({
   };
 
   const getHealthDescription = (value: number): string => {
-    if (value < 0.2) return "พืชมีความอ่อนแอหรือความหนาแน่นต่ำ";
-    if (value < 0.4) return "พืชมีความสมบูรณ์หรือหนาแน่นค่อนข้างต่ำ";
-    if (value < 0.6) return "พืชมีความสมบูรณ์หรือหนาแน่นปานกลาง";
-    if (value < 0.8) return "พืชมีความสมบูรณ์ดี หนาแน่นสูง";
-    return "พืชมีความสมบูรณ์ดีเยี่ยม หนาแน่นมาก";
+    if (value < 0.2) return t("health.weakLow");
+    if (value < 0.4) return t("health.moderateLow");
+    if (value < 0.6) return t("health.moderateMid");
+    if (value < 0.8) return t("health.goodHigh");
+    return t("health.excellentVeryHigh");
   };
 
   const copyToClipboard = (text: string) => {
@@ -372,7 +377,7 @@ export default function DesktopHealthPanel({
           toast: true,
           position: "top-end",
           icon: "success",
-          title: "คัดลอกแล้ว",
+          title: t("copy.success"),
           showConfirmButton: false,
           timer: 1500,
           timerProgressBar: true,
@@ -383,7 +388,7 @@ export default function DesktopHealthPanel({
           toast: true,
           position: "top-end",
           icon: "error",
-          title: "คัดลอกไม่สำเร็จ",
+          title: t("copy.failed"),
           showConfirmButton: false,
           timer: 1500,
         });
@@ -450,21 +455,21 @@ export default function DesktopHealthPanel({
                     <button
                       onClick={fieldActions.handleEdit}
                       className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                      title="แก้ไข"
+                      title={t("action.edit")}
                     >
                       <Pencil size={12} />
                     </button>
                     <button
                       onClick={fieldActions.handleDelete}
                       className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                      title="ลบ"
+                      title={t("action.delete")}
                     >
                       <Trash2 size={10} />
                     </button>
                     <button
                       onClick={fieldActions.handleDownload}
                       className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
-                      title="ดาวน์โหลด"
+                      title={t("action.download")}
                     >
                       <Download size={10} />
                     </button>
@@ -479,7 +484,9 @@ export default function DesktopHealthPanel({
                       <VectorSquareIcon size={11} color="#F6B010" />
                       <span className="text-[11px] text-gray-600 leading-none">
                         {showAreaInSqm
-                          ? `${(field.area_m2 || 0).toFixed(2)} ตารางเมตร`
+                          ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                              "unit.sqm"
+                            )}`
                           : `${area.rai} ${t("field.rai")} ${area.ngan} ${t(
                               "field.ngan"
                             )} ${area.tarangwa} ${t("field.sqWa")}`}
@@ -490,8 +497,8 @@ export default function DesktopHealthPanel({
                       onClick={() => setShowAreaInSqm(!showAreaInSqm)}
                       title={
                         showAreaInSqm
-                          ? "เปลี่ยนเป็น ไร่ งาน ตารางวา"
-                          : "เปลี่ยนเป็น ตารางเมตร"
+                          ? t("unit.changeToRai")
+                          : t("unit.changeToSqm")
                       }
                     >
                       <RefreshCw size={10} />
@@ -503,10 +510,10 @@ export default function DesktopHealthPanel({
                     <MapPin
                       size={11}
                       style={{ color: "#F6B010" }}
-                      className="mt-0.5"
+                      className="mt-0.5 shrink-0"
                     />
                     <span className="text-[11px] text-gray-600 leading-tight">
-                      {field.address || "ต.ศรีภิรมย์ อ.พรหมพิราม จ.พิษณุโลก"}
+                      {field.address || t("field.addressFallback")}
                     </span>
                   </div>
 
@@ -540,8 +547,8 @@ export default function DesktopHealthPanel({
                         onClick={() => setShowCoordsInUTM(!showCoordsInUTM)}
                         title={
                           showCoordsInUTM
-                            ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
-                            : "เปลี่ยนเป็น UTM"
+                            ? t("unit.changeToLatLng")
+                            : t("unit.changeToUTM")
                         }
                       >
                         <RefreshCw size={10} />
@@ -561,7 +568,7 @@ export default function DesktopHealthPanel({
               className="w-full bg-blue-50 rounded-xl py-2 px-4 flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors border border-blue-100"
             >
               <span className="text-sm font-semibold text-gray-800">
-                รายละเอียดของแปลง
+                {t("field.detailOf")}
               </span>
               <ChevronRight
                 size={14}
@@ -594,7 +601,7 @@ export default function DesktopHealthPanel({
                             <div className="w-2 h-2 rounded-full bg-green-500"></div>
                           </div>
                           <span className="text-xs text-gray-700">
-                            รายละเอียดของแปลง
+                            {t("field.detailOf")}
                           </span>
                         </div>
                         <button
@@ -610,7 +617,7 @@ export default function DesktopHealthPanel({
                         {/* ชนิดพันธุ์พืช */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            ชนิดพันธุ์พืช
+                            {t("field.plantVariety")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
                             {field.variety || "-"}
@@ -620,7 +627,7 @@ export default function DesktopHealthPanel({
                         {/* วันที่ปลูก */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            วันที่ปลูก
+                            {t("farm.plantingDate")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
                             {field.planting_date
@@ -638,7 +645,7 @@ export default function DesktopHealthPanel({
                         {/* ฤดูกาลปลูก */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            ฤดูกาลปลูก
+                            {t("field.plantingSeasonLabel")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
                             {field.planting_season || "-"}
@@ -657,11 +664,13 @@ export default function DesktopHealthPanel({
             <div className="flex items-center gap-2">
               <LeafIcon size={18} color="#16a34a" />
               <span className="text-[15px] font-semibold text-gray-800">
-                ติดตามความสมบูรณ์ของพืช
+                {t("health.title")}
               </span>
             </div>
             <div className="flex items-center" style={{ gap: 8 }}>
-              <span style={{ fontSize: 12, color: "#073B1A" }}>เมนู</span>
+              <span style={{ fontSize: 12, color: "#073B1A" }}>
+                {t("health.menu")}
+              </span>
               <button
                 type="button"
                 id="menu_btn"
@@ -692,7 +701,7 @@ export default function DesktopHealthPanel({
           {/* VI Selector Card */}
           <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
             <div className="text-[13px] text-gray-500 mb-3">
-              เลือกดัชนีพืชเพื่อแสดงค่าบนแผนที่
+              {t("health.selectVIForMap")}
             </div>
 
             <DropdownMenu modal={false}>
@@ -748,7 +757,9 @@ export default function DesktopHealthPanel({
                 size={16}
                 className={isAnalyzing ? "animate-spin" : ""}
               />
-              {isAnalyzing ? "กำลังวิเคราะห์..." : "วิเคราะห์ข้อมูลดาวเทียม"}
+              {isAnalyzing
+                ? t("action.analyzing")
+                : t("health.analyzeSatellite")}
             </button>
           </div>
         </div>
@@ -760,19 +771,19 @@ export default function DesktopHealthPanel({
             <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
               {/* Title */}
               <div className="text-center text-[14px] text-gray-500 mb-4">
-                ค่าเฉลี่ยระดับความสมบูรณ์พืช
+                {t("health.avgLevel")}
               </div>
 
               {/* Value Display */}
               <div className="flex items-center justify-between mb-3">
                 <span className="text-[14px] font-semibold text-orange-500">
-                  น้อย
+                  {t("health.low")}
                 </span>
                 <span className="text-[32px] font-bold text-gray-800">
                   {selectedSnapshot.mean_value.toFixed(2)}
                 </span>
                 <span className="text-[14px] font-semibold text-green-600">
-                  มาก
+                  {t("health.high")}
                 </span>
               </div>
 
@@ -799,9 +810,8 @@ export default function DesktopHealthPanel({
               </div>
 
               {/* Description Box */}
-              <div className="bg-green-100 rounded-2xl py-3 px-4 flex items-center justify-center gap-2">
-                <span className="text-xl"></span>
-                <span className="text-[13px] font-medium text-green-700">
+              <div className="bg-green-100 rounded-2xl py-3 px-4 flex items-center justify-center min-h-[60px]">
+                <span className="text-[13px] font-medium text-green-700 text-center leading-relaxed">
                   {getHealthDescription(selectedSnapshot.mean_value)}
                 </span>
               </div>
@@ -819,7 +829,7 @@ export default function DesktopHealthPanel({
               }}
             >
               <div style={{ fontSize: 13, color: "#6b7280", marginBottom: 12 }}>
-                แนวโน้มค่า {selectedVI}
+                {t("health.trendValue")} {selectedVI}
               </div>
               <div
                 style={{
@@ -858,7 +868,7 @@ export default function DesktopHealthPanel({
                     }}
                   />
                   <span style={{ fontSize: 11, color: "#9ca3af" }}>
-                    วันที่เลือกให้แสดงข้อมูล
+                    {t("health.selectedDateData")}
                   </span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -871,7 +881,7 @@ export default function DesktopHealthPanel({
                     }}
                   />
                   <span style={{ fontSize: 11, color: "#9ca3af" }}>
-                    วันที่มีข้อมูลล่าสุด
+                    {t("health.latestDataDate")}
                   </span>
                 </div>
               </div>
@@ -904,7 +914,7 @@ export default function DesktopHealthPanel({
                 🌱
               </div>
               <p style={{ fontSize: 14, color: "#9ca3af" }}>
-                ยังไม่มีข้อมูล กดวิเคราะห์เพื่อเริ่มต้น
+                {t("health.noDataYet")}
               </p>
             </div>
           )}
@@ -930,7 +940,9 @@ export default function DesktopHealthPanel({
                   margin: "0 auto 12px",
                 }}
               />
-              <p style={{ fontSize: 14, color: "#9ca3af" }}>กำลังโหลด...</p>
+              <p style={{ fontSize: 14, color: "#9ca3af" }}>
+                {t("loading.message")}
+              </p>
             </div>
           )}
         </div>

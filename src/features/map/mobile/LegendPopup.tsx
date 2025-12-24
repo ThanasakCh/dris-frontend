@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Info, X, ChevronLeft, ChevronRight, Thermometer } from "lucide-react";
 import { useIsMobile } from "../../../hooks/useResponsive";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface ScaleRange {
   min: number;
   max: number;
-  label: string;
+  labelKey: string;
   color: string;
 }
 
@@ -16,16 +17,26 @@ interface VILegend {
   ranges: ScaleRange[];
 }
 
-const viLegends: VILegend[] = [
+const getViLegends = (): VILegend[] => [
   {
     code: "NDVI",
     name: "NDVI",
     fullName: "Normalized Difference Vegetation Index",
     ranges: [
-      { min: -1, max: 0, label: "น้ำ / สิ่งปลูกสร้าง", color: "#ef4444" },
-      { min: 0, max: 0.2, label: "ดินว่างเปล่า", color: "#f97316" },
-      { min: 0.2, max: 0.5, label: "พืชพรรณน้อย", color: "#facc15" },
-      { min: 0.5, max: 1, label: "พืชสมบูรณ์", color: "#22c55e" },
+      { min: -1, max: 0, labelKey: "legend.waterBuilding", color: "#ef4444" },
+      { min: 0, max: 0.2, labelKey: "legend.bareSoil", color: "#f97316" },
+      {
+        min: 0.2,
+        max: 0.5,
+        labelKey: "legend.lowVegetation",
+        color: "#facc15",
+      },
+      {
+        min: 0.5,
+        max: 1,
+        labelKey: "legend.healthyVegetation",
+        color: "#22c55e",
+      },
     ],
   },
   {
@@ -33,9 +44,9 @@ const viLegends: VILegend[] = [
     name: "EVI",
     fullName: "Enhanced Vegetation Index",
     ranges: [
-      { min: -1, max: 0.1, label: "ดิน / น้ำ", color: "#ef4444" },
-      { min: 0.1, max: 0.3, label: "เริ่มเติบโต", color: "#facc15" },
-      { min: 0.3, max: 1, label: "สมบูรณ์มาก", color: "#22c55e" },
+      { min: -1, max: 0.1, labelKey: "legend.soilWater", color: "#ef4444" },
+      { min: 0.1, max: 0.3, labelKey: "legend.startGrowing", color: "#facc15" },
+      { min: 0.3, max: 1, labelKey: "legend.veryHealthy", color: "#22c55e" },
     ],
   },
   {
@@ -43,12 +54,12 @@ const viLegends: VILegend[] = [
     name: "GNDVI",
     fullName: "Green NDVI",
     ranges: [
-      { min: -1, max: 0.3, label: "เครียด / ขาดน้ำ", color: "#ef4444" },
-      { min: 0.3, max: 0.5, label: "ปกติ", color: "#facc15" },
+      { min: -1, max: 0.3, labelKey: "legend.stressed", color: "#ef4444" },
+      { min: 0.3, max: 0.5, labelKey: "legend.normal", color: "#facc15" },
       {
         min: 0.5,
         max: 1,
-        label: "สมบูรณ์ (Chlorophyll สูง)",
+        labelKey: "legend.highChlorophyll",
         color: "#22c55e",
       },
     ],
@@ -58,9 +69,9 @@ const viLegends: VILegend[] = [
     name: "NDWI",
     fullName: "Normalized Difference Water Index",
     ranges: [
-      { min: -1, max: -0.3, label: "แห้งแล้ง", color: "#ef4444" },
-      { min: -0.3, max: 0, label: "ความชื้นต่ำ", color: "#facc15" },
-      { min: 0, max: 1, label: "ชุ่มชื้น / น้ำ", color: "#3b82f6" },
+      { min: -1, max: -0.3, labelKey: "legend.drought", color: "#ef4444" },
+      { min: -0.3, max: 0, labelKey: "legend.lowMoisture", color: "#facc15" },
+      { min: 0, max: 1, labelKey: "legend.moist", color: "#3b82f6" },
     ],
   },
   {
@@ -68,9 +79,9 @@ const viLegends: VILegend[] = [
     name: "SAVI",
     fullName: "Soil Adjusted Vegetation Index",
     ranges: [
-      { min: -1, max: 0.2, label: "ดิน", color: "#ef4444" },
-      { min: 0.2, max: 0.4, label: "พืชปกคลุมน้อย", color: "#facc15" },
-      { min: 0.4, max: 1, label: "พืชปกคลุมหนาแน่น", color: "#22c55e" },
+      { min: -1, max: 0.2, labelKey: "legend.soil", color: "#ef4444" },
+      { min: 0.2, max: 0.4, labelKey: "legend.lowCoverage", color: "#facc15" },
+      { min: 0.4, max: 1, labelKey: "legend.highCoverage", color: "#22c55e" },
     ],
   },
   {
@@ -78,9 +89,9 @@ const viLegends: VILegend[] = [
     name: "VCI",
     fullName: "Vegetation Condition Index",
     ranges: [
-      { min: 0, max: 40, label: "ภัยแล้งรุนแรง", color: "#ef4444" },
-      { min: 40, max: 60, label: "ปกติ", color: "#facc15" },
-      { min: 60, max: 100, label: "สมบูรณ์ดี", color: "#22c55e" },
+      { min: 0, max: 40, labelKey: "legend.severeDrought", color: "#ef4444" },
+      { min: 40, max: 60, labelKey: "legend.normal", color: "#facc15" },
+      { min: 60, max: 100, labelKey: "legend.good", color: "#22c55e" },
     ],
   },
 ];
@@ -89,6 +100,9 @@ export default function LegendPopup() {
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const isMobile = useIsMobile();
+  const { t } = useLanguage();
+
+  const viLegends = getViLegends();
 
   const currentVI = viLegends[currentIndex];
 
@@ -178,7 +192,7 @@ export default function LegendPopup() {
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
           border: isOpen ? "2px solid rgb(59, 130, 246)" : "none",
         }}
-        title="ข้อมูลดัชนี"
+        title={t("legend.indexInfo")}
       >
         <Info
           className="w-[18px] h-[18px]"
@@ -228,7 +242,7 @@ export default function LegendPopup() {
                     color: "rgb(51, 51, 51)",
                   }}
                 >
-                  Legend
+                  {t("legend.title")}
                 </span>
               </div>
               <button
@@ -342,7 +356,7 @@ export default function LegendPopup() {
                         color: "rgb(51, 51, 51)",
                       }}
                     >
-                      {range.label} ({range.min} - {range.max})
+                      {t(range.labelKey)} ({range.min} - {range.max})
                     </span>
                   </div>
                 ))}

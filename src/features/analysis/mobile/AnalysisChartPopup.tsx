@@ -13,7 +13,15 @@ import {
 import axios from "../../../config/axios";
 import { useIsMobile } from "../../../hooks/useResponsive";
 import { useField } from "../../../contexts/FieldContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 import { TimeSeriesChart, TimeSeriesChartRef } from "../../../shared/charts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TimeSeriesData {
   date: string;
@@ -39,6 +47,7 @@ export default function AnalysisPopup({
   fieldName: propFieldName,
 }: AnalysisPopupProps) {
   const { fields } = useField();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFieldId, setSelectedFieldId] = useState<string | undefined>(
     propFieldId
@@ -67,31 +76,31 @@ export default function AnalysisPopup({
     return Array.from({ length: 10 }, (_, i) => startYear + i).reverse();
   };
 
-  const monthNames = [
-    "ม.ค.",
-    "ก.พ.",
-    "มี.ค.",
-    "เม.ย.",
-    "พ.ค.",
-    "มิ.ย.",
-    "ก.ค.",
-    "ส.ค.",
-    "ก.ย.",
-    "ต.ค.",
-    "พ.ย.",
-    "ธ.ค.",
+  const monthKeys = [
+    "month.janShort",
+    "month.febShort",
+    "month.marShort",
+    "month.aprShort",
+    "month.mayShort",
+    "month.junShort",
+    "month.julShort",
+    "month.augShort",
+    "month.sepShort",
+    "month.octShort",
+    "month.novShort",
+    "month.decShort",
   ];
 
   const getAnalysisDescription = (): string => {
     switch (analysisType) {
       case "monthly_range":
-        return `ช่วง ${monthNames[startMonth - 1]} - ${
-          monthNames[endMonth - 1]
-        } ${selectedYear}`;
+        const start = t(monthKeys[startMonth - 1] || "");
+        const end = t(monthKeys[endMonth - 1] || "");
+        return `${t("analysis.monthRange")} ${start} - ${end} ${selectedYear}`;
       case "full_year":
-        return `ทั้งปี ${selectedYear}`;
+        return `${t("analysis.fullYear")} ${selectedYear}`;
       case "ten_year_avg":
-        return `10 ปีย้อนหลัง`;
+        return t("analysis.tenYearAvg");
       default:
         return "";
     }
@@ -177,7 +186,7 @@ export default function AnalysisPopup({
 
   const downloadCSV = () => {
     if (timeSeriesData.length === 0) return;
-    const headers = ["วันที่", `ค่า ${selectedVI}`];
+    const headers = [t("table.date"), `${t("table.value")} ${selectedVI}`];
     const csvData = timeSeriesData.map((item) => [
       item.date,
       item.value.toFixed(4),
@@ -223,7 +232,7 @@ export default function AnalysisPopup({
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="วิเคราะห์"
+        title={t("action.analyze")}
       >
         <LineChart
           className="w-[18px] h-[18px]"
@@ -265,7 +274,7 @@ export default function AnalysisPopup({
                 style={{ fontSize: "15px", fontWeight: 600 }}
               >
                 <BarChart2 className="w-5 h-5" />
-                วิเคราะห์ Trend
+                {t("analysis.analyzeTrend")}
               </h4>
               <button
                 onClick={() => setIsOpen(false)}
@@ -289,34 +298,32 @@ export default function AnalysisPopup({
                     fontWeight: 500,
                   }}
                 >
-                  เลือกแปลง
+                  {t("field.select")}
                 </label>
-                <select
+                <Select
                   value={fieldId || ""}
-                  onChange={(e) =>
-                    setSelectedFieldId(e.target.value || undefined)
+                  onValueChange={(value) =>
+                    setSelectedFieldId(value || undefined)
                   }
-                  className="w-full mt-1 p-2 rounded-lg"
-                  style={{
-                    border: "1px solid #e5e7eb",
-                    fontSize: sizes.fontSize.value,
-                    background: "white",
-                  }}
                 >
-                  <option value="">-- เลือกแปลง --</option>
-                  {fields.map((field) => (
-                    <option key={field.id} value={field.id}>
-                      {field.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                    <SelectValue placeholder={`-- ${t("field.select")} --`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fields.map((field) => (
+                      <SelectItem key={field.id} value={field.id}>
+                        {field.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {!fieldId ? (
                 <div className="text-center py-4" style={{ color: "#6b7280" }}>
                   <BarChart2 className="w-10 h-10 mx-auto mb-2 opacity-30" />
                   <p style={{ fontSize: "13px" }}>
-                    เลือกแปลงจาก dropdown ด้านบน
+                    {t("health.selectFromDropdown")}
                   </p>
                 </div>
               ) : (
@@ -330,25 +337,24 @@ export default function AnalysisPopup({
                         fontWeight: 500,
                       }}
                     >
-                      ดัชนีพืช (VI)
+                      {t("analysis.viIndex")}
                     </label>
-                    <select
+                    <Select
                       value={selectedVI}
-                      onChange={(e) => setSelectedVI(e.target.value)}
+                      onValueChange={(value) => setSelectedVI(value)}
                       disabled={isAnalyzing}
-                      className="w-full mt-1 p-2 rounded-lg"
-                      style={{
-                        border: "1px solid #e5e7eb",
-                        fontSize: sizes.fontSize.value,
-                        background: "white",
-                      }}
                     >
-                      {viTypes.map((vi) => (
-                        <option key={vi.code} value={vi.code}>
-                          {vi.name}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                        <SelectValue placeholder="NDVI" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {viTypes.map((vi) => (
+                          <SelectItem key={vi.code} value={vi.code}>
+                            {vi.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   {/* Analysis Type Selection */}
@@ -360,7 +366,7 @@ export default function AnalysisPopup({
                         fontWeight: 500,
                       }}
                     >
-                      ประเภทการวิเคราะห์
+                      {t("analysis.type")}
                     </label>
                     <div className="flex flex-col gap-2 mt-1">
                       <button
@@ -384,7 +390,7 @@ export default function AnalysisPopup({
                           className="w-4 h-4"
                           style={{ color: "#3b82f6" }}
                         />
-                        ช่วงเดือน
+                        {t("analysis.monthRange")}
                       </button>
                       <button
                         onClick={() => setAnalysisType("full_year")}
@@ -407,7 +413,7 @@ export default function AnalysisPopup({
                           className="w-4 h-4"
                           style={{ color: "#3b82f6" }}
                         />
-                        ทั้งปี
+                        {t("analysis.fullYear")}
                       </button>
                       <button
                         onClick={() => setAnalysisType("ten_year_avg")}
@@ -430,7 +436,7 @@ export default function AnalysisPopup({
                           className="w-4 h-4"
                           style={{ color: "#3b82f6" }}
                         />
-                        10 ปีย้อนหลัง
+                        {t("analysis.tenYearAvg")}
                       </button>
                     </div>
                   </div>
@@ -447,27 +453,26 @@ export default function AnalysisPopup({
                               fontWeight: 500,
                             }}
                           >
-                            ปี
+                            {t("analysis.yearLabel")}
                           </label>
-                          <select
-                            value={selectedYear}
-                            onChange={(e) =>
-                              setSelectedYear(Number(e.target.value))
+                          <Select
+                            value={String(selectedYear)}
+                            onValueChange={(value) =>
+                              setSelectedYear(Number(value))
                             }
                             disabled={isAnalyzing}
-                            className="w-full mt-1 p-2 rounded-lg"
-                            style={{
-                              border: "1px solid #e5e7eb",
-                              fontSize: sizes.fontSize.value,
-                              background: "white",
-                            }}
                           >
-                            {getAvailableYears().map((year) => (
-                              <option key={year} value={year}>
-                                {year}
-                              </option>
-                            ))}
-                          </select>
+                            <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                              <SelectValue placeholder={String(selectedYear)} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {getAvailableYears().map((year) => (
+                                <SelectItem key={year} value={String(year)}>
+                                  {year}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         {analysisType === "monthly_range" && (
                           <>
@@ -479,27 +484,29 @@ export default function AnalysisPopup({
                                   fontWeight: 500,
                                 }}
                               >
-                                เริ่ม
+                                {t("analysis.startMonth")}
                               </label>
-                              <select
-                                value={startMonth}
-                                onChange={(e) =>
-                                  setStartMonth(Number(e.target.value))
+                              <Select
+                                value={String(startMonth)}
+                                onValueChange={(value) =>
+                                  setStartMonth(Number(value))
                                 }
                                 disabled={isAnalyzing}
-                                className="w-full mt-1 p-2 rounded-lg"
-                                style={{
-                                  border: "1px solid #e5e7eb",
-                                  fontSize: sizes.fontSize.value,
-                                  background: "white",
-                                }}
                               >
-                                {monthNames.map((name, idx) => (
-                                  <option key={idx} value={idx + 1}>
-                                    {name}
-                                  </option>
-                                ))}
-                              </select>
+                                <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                                  <SelectValue placeholder={t(monthKeys[0])} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {monthKeys.map((key, idx) => (
+                                    <SelectItem
+                                      key={idx}
+                                      value={String(idx + 1)}
+                                    >
+                                      {t(key)}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="flex-1">
                               <label
@@ -509,27 +516,29 @@ export default function AnalysisPopup({
                                   fontWeight: 500,
                                 }}
                               >
-                                สิ้นสุด
+                                {t("analysis.endMonth")}
                               </label>
-                              <select
-                                value={endMonth}
-                                onChange={(e) =>
-                                  setEndMonth(Number(e.target.value))
+                              <Select
+                                value={String(endMonth)}
+                                onValueChange={(value) =>
+                                  setEndMonth(Number(value))
                                 }
                                 disabled={isAnalyzing}
-                                className="w-full mt-1 p-2 rounded-lg"
-                                style={{
-                                  border: "1px solid #e5e7eb",
-                                  fontSize: sizes.fontSize.value,
-                                  background: "white",
-                                }}
                               >
-                                {monthNames.map((name, idx) => (
-                                  <option key={idx} value={idx + 1}>
-                                    {name}
-                                  </option>
-                                ))}
-                              </select>
+                                <SelectTrigger className="w-full mt-1 h-10 px-3 border border-gray-200 rounded-lg text-sm bg-white">
+                                  <SelectValue placeholder={t(monthKeys[0])} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {monthKeys.map((key, idx) => (
+                                    <SelectItem
+                                      key={idx}
+                                      value={String(idx + 1)}
+                                    >
+                                      {t(key)}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
                           </>
                         )}
@@ -557,7 +566,7 @@ export default function AnalysisPopup({
                     <Activity
                       className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`}
                     />
-                    {isAnalyzing ? "กำลังวิเคราะห์..." : "วิเคราะห์"}
+                    {isAnalyzing ? t("action.analyzing") : t("action.analyze")}
                   </button>
 
                   {/* Chart Result */}
@@ -594,7 +603,7 @@ export default function AnalysisPopup({
                             className="w-4 h-4"
                             style={{ color: "#6b7280" }}
                           />
-                          รูปภาพ
+                          {t("action.image")}
                         </button>
                         <button
                           onClick={downloadCSV}
@@ -633,7 +642,9 @@ export default function AnalysisPopup({
                         }}
                       >
                         <TrendingUp className="w-4 h-4" />
-                        <span style={{ fontWeight: 600 }}>ผลการวิเคราะห์</span>
+                        <span style={{ fontWeight: 600 }}>
+                          {t("analysis.results")}
+                        </span>
                       </div>
                       <div
                         style={{
@@ -642,10 +653,11 @@ export default function AnalysisPopup({
                         }}
                       >
                         <p className="m-0">
-                          พบข้อมูล {timeSeriesData.length} จุด
+                          {t("analysis.foundData")} {timeSeriesData.length}{" "}
+                          {t("analysis.dataPoints")}
                         </p>
                         <p className="m-0">
-                          ค่าเฉลี่ย:{" "}
+                          {t("analysis.average")}:{" "}
                           {(
                             timeSeriesData.reduce(
                               (sum, d) => sum + d.value,

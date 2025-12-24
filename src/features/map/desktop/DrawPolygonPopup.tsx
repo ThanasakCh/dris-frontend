@@ -68,7 +68,7 @@ export default function DesktopDrawPolygonPopup({
           html: `
             <p>${t("draw.uploadZipDetail")}</p>
             <p class="text-sm text-gray-500 mt-2">
-              ให้รวมไฟล์ .shp, .dbf, .shx, .prj ไว้ในไฟล์ ZIP เดียวกัน
+              ${t("draw.uploadZipHint")}
             </p>
           `,
           icon: "info",
@@ -95,6 +95,7 @@ export default function DesktopDrawPolygonPopup({
       if (onImportGeometry) {
         onImportGeometry(geometry, file.name);
         setIsOpen(false);
+        // Do NOT call onStartDrawing here, as MapPage handles the mode switch
       } else if (draw) {
         // Add to draw control directly
         draw.add({
@@ -115,7 +116,9 @@ export default function DesktopDrawPolygonPopup({
         title: t("draw.importSuccess"),
         text: `${t("draw.importedFrom")} ${file.name}`,
         icon: "success",
-        timer: 2000,
+        toast: true,
+        position: "top-end",
+        timer: 3000,
         showConfirmButton: false,
       });
     } catch (error: any) {
@@ -198,7 +201,7 @@ export default function DesktopDrawPolygonPopup({
             ? "rgba(59, 130, 246, 0.4) 0px 0px 0px 3px"
             : "rgba(0, 0, 0, 0.15) 0px 4px 15px",
         }}
-        title="วาดโพลิกอน"
+        title={t("draw.title")}
       >
         <div
           style={{ color: isOpen ? "rgb(59, 130, 246)" : "rgb(51, 51, 51)" }}
@@ -247,7 +250,7 @@ export default function DesktopDrawPolygonPopup({
                 }}
               >
                 <Share2 className="w-4 h-4" />
-                Draw Polygon
+                {t("draw.title")}
               </h4>
               <button
                 onClick={() => setIsOpen(false)}
@@ -274,7 +277,7 @@ export default function DesktopDrawPolygonPopup({
               }}
             >
               <Pencil className="w-4 h-4" />
-              Start Drawing
+              {t("draw.start")}
             </button>
 
             {/* Import Button */}

@@ -82,7 +82,7 @@ export default function DesktopTopHeader({
         {isDesktop && (
           <button
             type="button"
-            title="Toggle Sidebar"
+            title={t("header.toggleSidebar")}
             style={buttonStyle}
             onClick={onMenuClick}
           >
@@ -97,7 +97,7 @@ export default function DesktopTopHeader({
         {!isDesktop && (
           <button
             type="button"
-            title="Toggle Menu"
+            title={t("header.toggleMenu")}
             style={buttonStyle}
             onClick={onMenuClick}
           >
@@ -121,7 +121,7 @@ export default function DesktopTopHeader({
         {/* Language Switch */}
         <button
           type="button"
-          title="Switch to Thai"
+          title={t("header.switchLanguage")}
           style={{ ...buttonStyle, marginLeft: "10px", marginRight: "0px" }}
           onClick={toggleLanguage}
         >
@@ -135,7 +135,7 @@ export default function DesktopTopHeader({
         {/* Theme Switch */}
         <button
           type="button"
-          title="Switch to Dark Mode"
+          title={isDark ? t("header.lightMode") : t("header.darkMode")}
           style={{ ...buttonStyle, marginLeft: "10px", marginRight: "0px" }}
           onClick={toggleTheme}
         >
@@ -202,7 +202,7 @@ export default function DesktopTopHeader({
                     fontSize: "14px",
                   }}
                 >
-                  {user?.name || "ผู้ใช้งาน"}
+                  {user?.name || t("user.defaultName")}
                 </h6>
                 <small
                   style={{ color: "rgb(100, 116, 139)", fontSize: "12px" }}

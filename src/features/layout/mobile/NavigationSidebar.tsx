@@ -145,7 +145,7 @@ export default function MobileSidebar({
           </div>
           {/* sidebar-collapse-btn */}
           <button
-            title="Toggle Menu"
+            title={t("header.toggleMenu")}
             onClick={onClose}
             style={{
               background: colors.buttonBg,
@@ -244,9 +244,9 @@ export default function MobileSidebar({
               >
                 <MapPin size={14} />
               </div>
-              <div>Health Monitoring</div>
+              <div>{t("sidebar.healthTracking")}</div>
               <div style={{ marginTop: "4px", fontSize: "10px" }}>
-                Northern Thailand
+                {t("sidebar.location")}
               </div>
             </div>
           </div>

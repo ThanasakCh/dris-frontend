@@ -3,7 +3,15 @@ import ReactDOM from "react-dom";
 import Swal from "sweetalert2";
 import { Download } from "lucide-react";
 import { useField } from "../contexts/FieldContext";
+import { useLanguage } from "../contexts/LanguageContext";
 import axios from "../config/axios";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Field {
   id: string;
@@ -23,13 +31,14 @@ interface Field {
 
 export function useFieldActions(field: Field, onUpdate?: () => void) {
   const { updateField, deleteField } = useField();
+  const { t } = useLanguage();
 
   // Edit Modal State
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFormData, setEditFormData] = useState({
     name: field.name,
-    crop_type: field.crop_type || "ข้าวหอมมะลิ",
-    variety: field.variety || "ข้าวหอมมะลิ",
+    crop_type: field.crop_type || "jasmine",
+    variety: field.variety || "jasmine",
     planting_season: field.planting_season || "",
     planting_date: field.planting_date
       ? new Date(field.planting_date).toISOString().split("T")[0]
@@ -48,8 +57,8 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
     if (field && field.id) {
       setEditFormData({
         name: field.name,
-        crop_type: field.crop_type || "ข้าวหอมมะลิ",
-        variety: field.variety || "ข้าวหอมมะลิ",
+        crop_type: field.crop_type || "jasmine",
+        variety: field.variety || "jasmine",
         planting_season: field.planting_season || "",
         planting_date: field.planting_date
           ? new Date(field.planting_date).toISOString().split("T")[0]
@@ -61,12 +70,14 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
   // ========== DELETE ==========
   const handleDelete = async () => {
     const result = await Swal.fire({
-      title: "ยืนยันการลบ",
-      text: `คุณต้องการลบแปลง "${field.name}" หรือไม่?\n\nการลบนี้ไม่สามารถยกเลิกได้`,
+      title: t("confirm.delete"),
+      text: `${t("confirm.deleteMessage")} "${field.name}"\n\n${t(
+        "confirm.deleteCannotUndo"
+      )}`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "ลบ",
-      cancelButtonText: "ยกเลิก",
+      confirmButtonText: t("action.delete"),
+      cancelButtonText: t("action.cancel"),
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
     });
@@ -75,19 +86,19 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
       try {
         await deleteField(field.id);
         Swal.fire({
-          title: "สำเร็จ",
-          text: "ลบแปลงสำเร็จ",
+          title: t("confirm.success"),
+          text: t("field.deleteSuccess"),
           icon: "success",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
         });
         if (onUpdate) onUpdate();
       } catch (error: any) {
-        let errorMessage = "ลบแปลงไม่สำเร็จ";
+        let errorMessage = t("field.deleteFailed");
         if (error.response) {
           if (error.response.status === 404) {
-            errorMessage = "ไม่พบแปลงที่ต้องการลบ";
+            errorMessage = t("field.notFoundToDelete");
           } else if (error.response.status === 403) {
-            errorMessage = "คุณไม่มีสิทธิ์ลบแปลงนี้";
+            errorMessage = t("field.noPermissionDelete");
           } else {
             errorMessage = error.response.data?.detail || errorMessage;
           }
@@ -95,10 +106,10 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
           errorMessage = error.message || errorMessage;
         }
         Swal.fire({
-          title: "เกิดข้อผิดพลาด",
+          title: t("confirm.error"),
           text: errorMessage,
           icon: "error",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
         });
       }
     }
@@ -128,18 +139,18 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
       await updateField(field.id, updateData);
       setShowEditModal(false);
       Swal.fire({
-        title: "สำเร็จ",
-        text: "แก้ไขแปลงสำเร็จ!",
+        title: t("confirm.success"),
+        text: t("field.editSuccess"),
         icon: "success",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
       });
       if (onUpdate) onUpdate();
     } catch (error: any) {
       Swal.fire({
-        title: "เกิดข้อผิดพลาด",
-        text: "แก้ไขแปลงไม่สำเร็จ: " + error.message,
+        title: t("confirm.error"),
+        text: t("field.editFailed") + error.message,
         icon: "error",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
       });
     }
   };
@@ -243,10 +254,10 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
       downloadBlob(blob, `${fileBase}.kml`);
     } catch (e) {
       Swal.fire({
-        title: "เกิดข้อผิดพลาด",
-        text: "แปลงไฟล์ KML ไม่สำเร็จ",
+        title: t("confirm.error"),
+        text: t("field.kmlConvertFailed"),
         icon: "error",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
       });
       console.error(e);
     }
@@ -351,13 +362,16 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
             downloadBlob(blob, filename);
           } catch (err: any) {
             const message =
-              err?.response?.data?.detail ||
-              "ไม่สามารถส่งออกไฟล์ได้ โปรดลองอีกครั้ง";
+              err?.response?.data?.detail || t("download.exportFailed");
             Swal.fire({
-              title: message.includes("สำเร็จ") ? "สำเร็จ" : "เกิดข้อผิดพลาด",
+              title: message.includes(t("confirm.success"))
+                ? t("confirm.success")
+                : t("confirm.error"),
               text: message,
-              icon: message.includes("สำเร็จ") ? "success" : "error",
-              confirmButtonText: "ตกลง",
+              icon: message.includes(t("confirm.success"))
+                ? "success"
+                : "error",
+              confirmButtonText: t("action.ok"),
             });
           }
         })();
@@ -405,7 +419,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                 color: "#1a1a1a",
               }}
             >
-              แก้ไขข้อมูลแปลง
+              {t("field.editFieldData")}
             </h2>
 
             <form onSubmit={handleEditSubmit}>
@@ -420,7 +434,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     color: "#374151",
                   }}
                 >
-                  ชื่อแปลง *
+                  {t("field.name")} *
                 </label>
                 <input
                   type="text"
@@ -450,33 +464,32 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     color: "#374151",
                   }}
                 >
-                  ประเภทพืช
+                  {t("field.cropType")}
                 </label>
-                <select
+                <Select
                   value={editFormData.crop_type}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     setEditFormData({
                       ...editFormData,
-                      crop_type: e.target.value,
+                      crop_type: value,
                     })
                   }
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    backgroundColor: "#ffffff",
-                  }}
                 >
-                  <option value="ข้าว">ข้าว</option>
-                  <option value="ข้าวโพด">ข้าวโพด</option>
-                  <option value="อ้อย">อ้อย</option>
-                  <option value="มันสำปะหลัง">มันสำปะหลัง</option>
-                  <option value="ยางพารา">ยางพารา</option>
-                  <option value="ปาล์มน้ำมัน">ปาล์มน้ำมัน</option>
-                  <option value="อื่นๆ">อื่นๆ</option>
-                </select>
+                  <SelectTrigger className="w-full h-11 px-3 border border-gray-300 rounded-lg text-sm bg-white">
+                    <SelectValue placeholder={t("crop.rice")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="rice">{t("crop.rice")}</SelectItem>
+                    <SelectItem value="corn">{t("crop.corn")}</SelectItem>
+                    <SelectItem value="sugarcane">
+                      {t("crop.sugarcane")}
+                    </SelectItem>
+                    <SelectItem value="cassava">{t("crop.cassava")}</SelectItem>
+                    <SelectItem value="rubber">{t("crop.rubber")}</SelectItem>
+                    <SelectItem value="palm">{t("crop.palm")}</SelectItem>
+                    <SelectItem value="other">{t("farm.other")}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* สายพันธุ์ */}
@@ -490,33 +503,36 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     color: "#374151",
                   }}
                 >
-                  สายพันธุ์
+                  {t("field.plantVariety")}
                 </label>
-                <select
+                <Select
                   value={editFormData.variety}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     setEditFormData({
                       ...editFormData,
-                      variety: e.target.value,
+                      variety: value,
                     })
                   }
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    backgroundColor: "#ffffff",
-                  }}
                 >
-                  <option value="ข้าวหอมมะลิ">ข้าวหอมมะลิ</option>
-                  <option value="ข้าวกข6">ข้าวกข6</option>
-                  <option value="ข้าวกข15">ข้าวกข15</option>
-                  <option value="ข้าวปทุมธานี">ข้าวปทุมธานี</option>
-                  <option value="ข้าวเหนียว">ข้าวเหนียว</option>
-                  <option value="ข้าวไรซ์เบอรี่">ข้าวไรซ์เบอรี่</option>
-                  <option value="อื่นๆ">อื่นๆ</option>
-                </select>
+                  <SelectTrigger className="w-full h-11 px-3 border border-gray-300 rounded-lg text-sm bg-white">
+                    <SelectValue placeholder={t("farm.jasmine")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="jasmine">{t("farm.jasmine")}</SelectItem>
+                    <SelectItem value="riceKK6">{t("farm.riceKK6")}</SelectItem>
+                    <SelectItem value="riceKK15">
+                      {t("farm.riceKK15")}
+                    </SelectItem>
+                    <SelectItem value="ricePT">{t("farm.ricePT")}</SelectItem>
+                    <SelectItem value="stickyRice">
+                      {t("farm.stickyRice")}
+                    </SelectItem>
+                    <SelectItem value="riceberry">
+                      {t("farm.riceberry")}
+                    </SelectItem>
+                    <SelectItem value="other">{t("farm.other")}</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* ฤดูกาล */}
@@ -530,31 +546,35 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     color: "#374151",
                   }}
                 >
-                  ฤดูกาล
+                  {t("field.plantingSeasonLabel")}
                 </label>
-                <select
+                <Select
                   value={editFormData.planting_season}
-                  onChange={(e) =>
+                  onValueChange={(value) =>
                     setEditFormData({
                       ...editFormData,
-                      planting_season: e.target.value,
+                      planting_season: value,
                     })
                   }
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid #d1d5db",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    backgroundColor: "#ffffff",
-                  }}
                 >
-                  <option value="">เลือกฤดูกาล</option>
-                  <option value="นาปี">นาปี - ปลูกฤดูฝน</option>
-                  <option value="นาปรัง">นาปรัง - ปลูกนอกฤดู</option>
-                  <option value="นาดำ">นาดำ</option>
-                  <option value="นาหว่าน">นาหว่าน</option>
-                </select>
+                  <SelectTrigger className="w-full h-11 px-3 border border-gray-300 rounded-lg text-sm bg-white">
+                    <SelectValue placeholder={t("farm.selectSeason")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="wetSeason">
+                      {t("farm.wetSeason")}
+                    </SelectItem>
+                    <SelectItem value="drySeason">
+                      {t("farm.drySeason")}
+                    </SelectItem>
+                    <SelectItem value="transplant">
+                      {t("farm.transplant")}
+                    </SelectItem>
+                    <SelectItem value="broadcast">
+                      {t("farm.broadcast")}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* วันที่ปลูก */}
@@ -568,7 +588,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     color: "#374151",
                   }}
                 >
-                  วันที่ปลูก
+                  {t("farm.plantingDate")}
                 </label>
                 <input
                   type="date"
@@ -611,7 +631,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     cursor: "pointer",
                   }}
                 >
-                  ยกเลิก
+                  {t("action.cancel")}
                 </button>
                 <button
                   type="submit"
@@ -626,7 +646,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                     cursor: "pointer",
                   }}
                 >
-                  บันทึก
+                  {t("action.save")}
                 </button>
               </div>
             </form>
@@ -694,7 +714,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                 marginBottom: "12px",
               }}
             >
-              ดาวน์โหลดไฟล์แปลงของคุณ
+              {t("download.title")}
             </div>
             <div style={{ position: "relative" }}>
               <button
@@ -784,7 +804,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                   cursor: "pointer",
                 }}
               >
-                ยกเลิก
+                {t("action.cancel")}
               </button>
               <button
                 onClick={confirmDownload}
@@ -798,7 +818,7 @@ export function useFieldActions(field: Field, onUpdate?: () => void) {
                   cursor: "pointer",
                 }}
               >
-                ดาวน์โหลด
+                {t("download.downloadBtn")}
               </button>
             </div>
           </div>

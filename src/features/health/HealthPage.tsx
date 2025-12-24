@@ -301,20 +301,24 @@ export default function MobileHealthPage() {
       // Show result notification
       if (data.snapshots_created === 0) {
         await Swal.fire({
-          title: "แจ้งเตือน",
-          text: "ไม่สามารถดึงข้อมูลดาวเทียมได้ สาเหตุที่เป็นไปได้: ไม่มีข้อมูลดาวเทียมใสสำหรับพื้นที่นี้ หรือ Google Earth Engine ยังไม่ได้ตั้งค่า กรุณาลองใหม่อีกครั้ง",
+          title: t("confirm.warning"),
+          text: t("analysis.noSatelliteDataDesc"),
           icon: "warning",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
           confirmButtonColor: "#16a34a",
           backdrop: true,
           allowOutsideClick: false,
         });
       } else {
         await Swal.fire({
-          title: "สำเร็จ",
-          text: `วิเคราะห์เสร็จสิ้น! ได้ข้อมูล ${selectedVI} จริงจากดาวเทียม: ${data.snapshots_created} ภาพ, ${data.unique_dates} วันที่แตกต่างกัน`,
+          title: t("confirm.success"),
+          text: `${t("analysis.completed")} ${t(
+            "analysis.gotData"
+          )} ${selectedVI}: ${data.snapshots_created} ${t(
+            "analysis.images"
+          )}, ${data.unique_dates} ${t("analysis.differentDates")}`,
           icon: "success",
-          confirmButtonText: "ตกลง",
+          confirmButtonText: t("action.ok"),
           confirmButtonColor: "#16a34a",
           backdrop: true,
           allowOutsideClick: false,
@@ -323,12 +327,12 @@ export default function MobileHealthPage() {
     } catch (error: any) {
       console.error("Analysis failed:", error);
       await Swal.fire({
-        title: "เกิดข้อผิดพลาด",
+        title: t("confirm.error"),
         text:
-          "การวิเคราะห์ไม่สำเร็จ: " +
+          t("analysis.failedPrefix") +
           (error.response?.data?.detail || error.message),
         icon: "error",
-        confirmButtonText: "ตกลง",
+        confirmButtonText: t("action.ok"),
         confirmButtonColor: "#16a34a",
         backdrop: true,
         allowOutsideClick: false,
@@ -347,11 +351,11 @@ export default function MobileHealthPage() {
   };
 
   const getHealthDescription = (value: number): string => {
-    if (value < 0.2) return "พืชมีความอ่อนแอหรือความหนาแน่นต่ำ";
-    if (value < 0.4) return "พืชมีความสมบูรณ์หรือหนาแน่นปานกลาง";
-    if (value < 0.6) return "พืชมีความสมบูรณ์หรือหนาแน่นปานกลาง";
-    if (value < 0.8) return "พืชมีความสมบูรณ์ดี หนาแน่นสูง";
-    return "พืชมีความสมบูรณ์ดีเยี่ยม หนาแน่นมาก";
+    if (value < 0.2) return t("health.weak");
+    if (value < 0.4) return t("health.moderate");
+    if (value < 0.6) return t("health.moderate");
+    if (value < 0.8) return t("health.good");
+    return t("health.excellent");
   };
 
   const handleSnapshotSelect = (snapshot: VISnapshot, _index: number) => {
@@ -576,10 +580,10 @@ export default function MobileHealthPage() {
                     margin: 0,
                   }}
                 >
-                  เลือกดัชนีพืช
+                  {t("analysis.selectVI")}
                 </h4>
                 <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>
-                  เลือกดัชนีที่ต้องการวิเคราะห์
+                  {t("analysis.selectVIDesc")}
                 </p>
               </div>
             </div>
@@ -590,7 +594,7 @@ export default function MobileHealthPage() {
                 style={{ fontSize: "12px", color: "#6b7280", fontWeight: 500 }}
                 className="mb-1.5 block"
               >
-                ดัชนีพืช:
+                {t("analysis.viIndex")}
               </label>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -669,7 +673,9 @@ export default function MobileHealthPage() {
               <RefreshCw
                 className={`w-4 h-4 ${isAnalyzing ? "animate-spin" : ""}`}
               />
-              {isAnalyzing ? "กำลังวิเคราะห์..." : "วิเคราะห์ข้อมูลดาวเทียม"}
+              {isAnalyzing
+                ? t("action.analyzing")
+                : t("health.analyzeSatellite")}
             </button>
           </div>
 
@@ -692,7 +698,7 @@ export default function MobileHealthPage() {
                     color: "#374151",
                   }}
                 >
-                  ค่าเฉลี่ยระดับความสมบูรณ์พืช
+                  {t("health.avgLevel")}
                 </h3>
 
                 {/* Gauge */}
@@ -704,7 +710,7 @@ export default function MobileHealthPage() {
                       fontWeight: 500,
                     }}
                   >
-                    น้อย
+                    {t("health.low")}
                   </span>
                   <span
                     style={{
@@ -722,7 +728,7 @@ export default function MobileHealthPage() {
                       fontWeight: 500,
                     }}
                   >
-                    มาก
+                    {t("health.high")}
                   </span>
                 </div>
 
@@ -775,7 +781,7 @@ export default function MobileHealthPage() {
                       color: "#374151",
                     }}
                   >
-                    แนวโน้มค่า {selectedVI}
+                    {t("analysis.trendValue")} {selectedVI}
                   </h4>
                   <button
                     onClick={handleAnalyze}
@@ -791,7 +797,7 @@ export default function MobileHealthPage() {
                     <RefreshCw
                       className={`w-3 h-3 ${isAnalyzing ? "animate-spin" : ""}`}
                     />
-                    อัปเดต
+                    {t("action.analyze")}
                   </button>
                 </div>
 

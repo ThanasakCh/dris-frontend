@@ -29,7 +29,7 @@ export default function FieldDetailPanel({
   onClose,
   onFeatureClick,
 }: FieldDetailPanelProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { fields } = useField();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -290,7 +290,8 @@ export default function FieldDetailPanel({
                   <MapPin className="w-4 h-4" style={{ color: "#ef4444" }} />
                 </div>
                 <span style={{ fontSize: "14px", color: "#6b7280", flex: 1 }}>
-                  {field.address || t("field.addressFallback")}
+                  {(language === "EN" ? field.address_en : field.address) ||
+                    t("field.addressFallback")}
                 </span>
               </div>
 

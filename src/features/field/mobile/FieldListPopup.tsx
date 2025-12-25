@@ -126,7 +126,7 @@ const FieldActionButtons = ({ field }: { field: any }) => {
 export default function AnalysisMenuPopup({}: AnalysisMenuPopupProps) {
   const navigate = useNavigate();
   const { fields } = useField();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isSelectPopupOpen, setIsSelectPopupOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAsc, setSortAsc] = useState(true);
@@ -406,7 +406,9 @@ export default function AnalysisMenuPopup({}: AnalysisMenuPopupProps) {
                               <MapPin size={13} style={{ color: "#F6B010" }} />
                             </div>
                             <span className="truncate flex-1 ml-1 text-[11px]">
-                              {field.address || t("field.noAddress")}
+                              {(language === "EN"
+                                ? field.address_en
+                                : field.address) || t("field.noAddress")}
                             </span>
                           </div>
 

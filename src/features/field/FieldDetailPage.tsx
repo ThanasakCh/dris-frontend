@@ -704,7 +704,7 @@ export default function MobileFieldDetailPage() {
                 id: field.id,
                 name: field.name,
                 area_m2: field.area_m2,
-                address: field.address,
+                address: language === "EN" ? field.address_en : field.address,
                 centroid_lat: field.centroid_lat,
                 centroid_lng: field.centroid_lng,
                 geometry: field.geometry,
@@ -731,7 +731,7 @@ export default function MobileFieldDetailPage() {
                 id: field.id,
                 name: field.name,
                 area_m2: field.area_m2,
-                address: field.address,
+                address: language === "EN" ? field.address_en : field.address,
                 centroid_lat: field.centroid_lat,
                 centroid_lng: field.centroid_lng,
                 geometry: field.geometry,
@@ -860,8 +860,9 @@ export default function MobileFieldDetailPage() {
                               className="mt-0.5 shrink-0"
                             />
                             <span className="text-[11px] text-gray-600 leading-tight">
-                              {field.address ||
-                                "ต.ศรีภิรมย์ อ.พรหมพิราม จ.พิษณุโลก"}
+                              {(language === "EN"
+                                ? field.address_en
+                                : field.address) || t("field.addressFallback")}
                             </span>
                           </div>
 
@@ -1390,7 +1391,8 @@ export default function MobileFieldDetailPage() {
                     lineHeight: "1.4",
                   }}
                 >
-                  {field.address || "ต.สุเทพ อ.เมืองเชียงใหม่ จ.เชียงใหม่"}
+                  {(language === "EN" ? field.address_en : field.address) ||
+                    t("field.addressFallback")}
                 </span>
               </div>
 
@@ -1450,8 +1452,9 @@ export default function MobileFieldDetailPage() {
                 className="w-full bg-blue-50 rounded-lg py-2 px-3 flex items-center justify-between cursor-pointer transition-colors border border-blue-100 hover:bg-blue-100"
               >
                 <span className="text-xs font-semibold text-gray-800">
-                  รายละเอียดของแปลง
+                  {t("field.detailOf")}
                 </span>
+
                 <ChevronDown
                   className={`w-5 h-5 text-gray-600 transition-transform ${
                     isFieldDetailOpen ? "rotate-180" : ""

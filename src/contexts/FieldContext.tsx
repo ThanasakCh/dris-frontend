@@ -21,6 +21,7 @@ interface Field {
   centroid_lat: number;
   centroid_lng: number;
   address?: string;
+  address_en?: string; // English address
   thumbnail?: string; // Base64 image data - now included from API
   created_at: string;
 }

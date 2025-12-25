@@ -127,7 +127,7 @@ const FieldActionButtons = ({ field }: { field: any }) => {
 export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupProps) {
   const navigate = useNavigate();
   const { fields } = useField();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isSelectPopupOpen, setIsSelectPopupOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortMode, setSortMode] = useState<"latest" | "name_asc" | "name_desc">(
@@ -460,7 +460,9 @@ export default function DesktopAnalysisMenuPopup({}: DesktopAnalysisMenuPopupPro
                               <MapPin size={14} style={{ color: "#F6B010" }} />
                             </div>
                             <span className="truncate flex-1 ml-1">
-                              {field.address || t("field.noAddress")}
+                              {(language === "EN"
+                                ? field.address_en
+                                : field.address) || t("field.noAddress")}
                             </span>
                           </div>
 

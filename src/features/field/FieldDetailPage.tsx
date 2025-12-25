@@ -14,7 +14,6 @@ import {
   Lightbulb,
   AlertTriangle,
   BookOpen,
-  ChevronRight,
   Trash2,
   Download,
   MapPin,
@@ -310,7 +309,7 @@ export default function MobileFieldDetailPage() {
         type: "fill",
         source: "field",
         paint: {
-          "fill-color": "#fde047",
+          "fill-color": "#fbb355ff",
           "fill-opacity": 0.35,
         },
       });
@@ -321,7 +320,7 @@ export default function MobileFieldDetailPage() {
         type: "line",
         source: "field",
         paint: {
-          "line-color": "#ef4444",
+          "line-color": "#ff4204ff",
           "line-width": 3,
         },
       });
@@ -333,9 +332,9 @@ export default function MobileFieldDetailPage() {
         new maplibregl.LngLatBounds(coords[0], coords[0])
       );
 
-      // On desktop, add more padding on left for sidebar
+      // On desktop, add more padding on right for sidebar panel
       const padding = isDesktop
-        ? { top: 100, bottom: 100, left: 450, right: 100 }
+        ? { top: 100, bottom: 150, left: 50, right: 400 }
         : 5;
       map.fitBounds(bounds, { padding, maxZoom: 17.4 });
     });
@@ -376,7 +375,7 @@ export default function MobileFieldDetailPage() {
         type: "fill",
         source: "field",
         paint: {
-          "fill-color": "#fde047",
+          "fill-color": "#fbb355ff",
           "fill-opacity": 0.35,
         },
       });
@@ -386,7 +385,7 @@ export default function MobileFieldDetailPage() {
         type: "line",
         source: "field",
         paint: {
-          "line-color": "#ef4444",
+          "line-color": "#ff4204ff",
           "line-width": 3,
         },
       });
@@ -554,108 +553,6 @@ export default function MobileFieldDetailPage() {
     },
   ];
 
-  // More menu items for desktop (12 total) - using lucide icons
-  const desktopMenuItems = [
-    {
-      id: "health",
-      icon: Leaf,
-      label: t("feature.health"),
-      color: "#16a34a",
-      bgColor: "#dcfce7",
-      enabled: true,
-      onClick: () => changeActivePanel("health"),
-    },
-    {
-      id: "field-status",
-      icon: BarChart3,
-      label: t("feature.analysis"),
-      color: "#2563eb",
-      bgColor: "#dbeafe",
-      enabled: true,
-      onClick: () => changeActivePanel("analysis"),
-    },
-    {
-      id: "weather",
-      icon: CloudSun,
-      label: t("feature.weather"),
-      color: "#ea580c",
-      bgColor: "#fed7aa",
-      enabled: false,
-    },
-    {
-      id: "fertilizer",
-      icon: Lightbulb,
-      label: t("feature.fertilizer"),
-      color: "#0891b2",
-      bgColor: "#cffafe",
-      enabled: false,
-    },
-    {
-      id: "pest",
-      icon: AlertTriangle,
-      label: t("feature.pest"),
-      color: "#7c3aed",
-      bgColor: "#ede9fe",
-      enabled: false,
-    },
-    {
-      id: "notebook",
-      icon: BookOpen,
-      label: t("feature.notebook"),
-      color: "#2563eb",
-      bgColor: "#dbeafe",
-      enabled: false,
-    },
-    {
-      id: "price",
-      icon: BarChart3,
-      label: t("feature.price"),
-      color: "#eab308",
-      bgColor: "#fef9c3",
-      enabled: false,
-    },
-    {
-      id: "score",
-      icon: BarChart3,
-      label: t("feature.score"),
-      color: "#16a34a",
-      bgColor: "#dcfce7",
-      enabled: false,
-    },
-    {
-      id: "disease",
-      icon: AlertTriangle,
-      label: t("feature.disease"),
-      color: "#dc2626",
-      bgColor: "#fee2e2",
-      enabled: false,
-    },
-    {
-      id: "forecast",
-      icon: BarChart3,
-      label: t("feature.forecast"),
-      color: "#4338ca",
-      bgColor: "#e0e7ff",
-      enabled: false,
-    },
-    {
-      id: "water",
-      icon: Lightbulb,
-      label: t("feature.water"),
-      color: "#0284c7",
-      bgColor: "#e0f2fe",
-      enabled: false,
-    },
-    {
-      id: "burn",
-      icon: AlertTriangle,
-      label: t("feature.burn"),
-      color: "#6b7280",
-      bgColor: "#f3f4f6",
-      enabled: false,
-    },
-  ];
-
   if (isLoading || !field) {
     return (
       <div
@@ -744,44 +641,36 @@ export default function MobileFieldDetailPage() {
               mapRef={mapRef}
             />
           ) : (
-            <div
-              className="absolute top-4 left-4 bottom-4 z-30 pointer-events-none flex flex-col"
-              style={{ width: "350px" }}
-            >
-              <div className="w-full h-full bg-gray-50 rounded-[32px] shadow-xl pointer-events-auto relative overflow-hidden flex flex-col">
-                {/* Header */}
-                <div className="p-4 pb-3 shrink-0">
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={() => navigate("/dris_project")}
-                      className="w-12 h-12 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center text-gray-700 hover:text-green-600 hover:border-green-600 transition-all"
-                    >
-                      <ChevronLeft size={20} />
-                    </button>
-                    <h2 className="text-xl font-bold text-gray-800 flex-1 text-center">
+            <>
+              {/* RIGHT SIDE - Field Details Panel (compact) + Feature Buttons */}
+              <div
+                className="absolute top-[130px] right-5 z-30 flex flex-col gap-3 pointer-events-auto"
+                style={{ width: "350px", maxHeight: "742.4px" }}
+              >
+                {/* Field Details Panel */}
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                  {/* Header */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <h2 className="text-base font-bold text-gray-800 text-center">
                       {t("field.details")}
                     </h2>
-                    <div className="w-12 h-12" />
                   </div>
-                </div>
 
-                {/* Content */}
-                <div className="flex-1 overflow-hidden px-4 pb-4">
-                  {/* Field Info Card */}
-                  <div className="bg-white rounded-3xl p-3.5 mb-3 shadow-sm border border-gray-100">
-                    <div className="flex gap-2.5">
+                  {/* Field Info */}
+                  <div className="p-4">
+                    <div className="flex gap-3">
                       {/* Thumbnail */}
                       <div className="shrink-0">
                         {thumbnail ? (
                           <img
                             src={thumbnail}
                             alt="Field thumbnail"
-                            className="w-[94px] h-[94px] rounded-3xl object-cover shadow-sm"
+                            className="w-20 h-20 rounded-2xl object-cover shadow-sm"
                             style={{ border: "1px solid #e5e7eb" }}
                           />
                         ) : (
                           <div
-                            className="w-[94px] h-[94px] rounded-3xl bg-gray-100 shadow-sm flex items-center justify-center text-gray-300"
+                            className="w-20 h-20 rounded-2xl bg-gray-100 shadow-sm flex items-center justify-center text-gray-300"
                             style={{ border: "1px solid #e5e7eb" }}
                           >
                             <span className="text-xl">🌾</span>
@@ -790,281 +679,255 @@ export default function MobileFieldDetailPage() {
                       </div>
 
                       {/* Content */}
-                      <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
-                        {/* Name + Buttons */}
-                        <div className="flex items-start justify-between mb-1">
-                          <h3 className="text-xl font-bold text-gray-800 leading-none">
+                      <div className="flex-1 min-w-0">
+                        {/* Name + Action Buttons */}
+                        <div className="flex items-start justify-between mb-2">
+                          <h3 className="text-lg font-bold text-gray-800 leading-tight truncate pr-2">
                             {field.name}
                           </h3>
-                          <div className="flex gap-1.5">
+                          <div className="flex gap-1.5 shrink-0">
                             <button
                               onClick={fieldActions?.handleEdit}
-                              className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
+                              className="w-6 h-6 rounded-lg bg-white hover:bg-gray-100 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
                               title={t("action.edit")}
                             >
                               <Pencil size={12} />
                             </button>
                             <button
                               onClick={fieldActions?.handleDelete}
-                              className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
+                              className="w-6 h-6 rounded-lg bg-white hover:bg-gray-100 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
                               title={t("action.delete")}
                             >
-                              <Trash2 size={10} />
+                              <Trash2 size={12} />
                             </button>
                             <button
                               onClick={fieldActions?.handleDownload}
-                              className="w-6 h-6 rounded-lg bg-white hover:bg-gray-50 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
+                              className="w-6 h-6 rounded-lg bg-white hover:bg-gray-100 flex items-center justify-center text-gray-600 border border-gray-200 shadow-sm"
                               title={t("action.download")}
                             >
-                              <Download size={10} />
+                              <Download size={12} />
                             </button>
                           </div>
                         </div>
 
                         {/* Info Lines */}
-                        <div className="flex flex-col gap-1">
-                          {/* Area */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <VectorSquareIcon size={11} color="#F6B010" />
-                              <span className="text-[11px] text-gray-600 leading-none">
-                                {showAreaInSqm
-                                  ? `${(field.area_m2 || 0).toFixed(2)} ${t(
-                                      "unit.sqm"
-                                    )}`
-                                  : `${area.rai} ${t("field.rai")} ${
-                                      area.ngan
-                                    } ${t("field.ngan")} ${area.tarangwa} ${t(
-                                      "field.sqWa"
-                                    )}`}
-                              </span>
-                            </div>
+                        <div className="space-y-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <VectorSquareIcon size={12} color="#F6B010" />
+                            <span className="text-xs text-gray-700">
+                              {showAreaInSqm
+                                ? `${(field.area_m2 || 0).toFixed(2)} ${t(
+                                    "unit.sqm"
+                                  )}`
+                                : `${area.rai} ${t("field.rai")} ${
+                                    area.ngan
+                                  } ${t("field.ngan")} ${area.tarangwa} ${t(
+                                    "field.sqWa"
+                                  )}`}
+                            </span>
                             <button
-                              className="text-gray-400 hover:text-gray-600 transition-colors"
+                              className="text-gray-400 hover:text-gray-600 ml-auto"
                               onClick={() => setShowAreaInSqm(!showAreaInSqm)}
-                              title={
-                                showAreaInSqm
-                                  ? t("unit.changeToRai")
-                                  : t("unit.changeToSqm")
-                              }
                             >
                               <RefreshCw size={10} />
                             </button>
                           </div>
-
-                          {/* Address */}
                           <div className="flex items-start gap-1.5">
                             <MapPin
-                              size={11}
+                              size={12}
                               style={{ color: "#F6B010" }}
                               className="mt-0.5 shrink-0"
                             />
-                            <span className="text-[11px] text-gray-600 leading-tight">
+                            <span className="text-xs text-gray-700 leading-tight">
                               {(language === "EN"
                                 ? field.address_en
                                 : field.address) || t("field.addressFallback")}
                             </span>
                           </div>
-
-                          {/* Coordinates */}
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-1.5">
-                              <LocateFixed
-                                size={11}
-                                style={{ color: "#F6B010" }}
-                              />
-                              <span className="text-[11px] text-gray-600 leading-none">
-                                {showCoordsInUTM
-                                  ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
-                                  : `${field.centroid_lat?.toFixed(
-                                      4
-                                    )} ${field.centroid_lng?.toFixed(4)}`}
-                              </span>
-                            </div>
-                            <div className="flex gap-1.5">
-                              <button
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
-                                onClick={() =>
-                                  copyToClipboard(
-                                    showCoordsInUTM
-                                      ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
-                                      : `${field.centroid_lat}, ${field.centroid_lng}`
-                                  )
-                                }
-                              >
-                                <Copy size={10} />
-                              </button>
-                              <button
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
-                                onClick={() =>
-                                  setShowCoordsInUTM(!showCoordsInUTM)
-                                }
-                                title={
+                          <div className="flex items-center gap-1.5">
+                            <LocateFixed
+                              size={12}
+                              style={{ color: "#F6B010" }}
+                            />
+                            <span className="text-xs text-gray-700">
+                              {showCoordsInUTM
+                                ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
+                                : `${field.centroid_lat?.toFixed(
+                                    4
+                                  )} ${field.centroid_lng?.toFixed(4)}`}
+                            </span>
+                            <button
+                              className="text-gray-400 hover:text-gray-600 ml-1"
+                              onClick={() =>
+                                copyToClipboard(
                                   showCoordsInUTM
-                                    ? "เปลี่ยนเป็น ละติจูด, ลองจิจูด"
-                                    : "เปลี่ยนเป็น UTM"
-                                }
-                              >
-                                <RefreshCw size={10} />
-                              </button>
-                            </div>
+                                    ? `${utm.zone}${utm.hemisphere} ${utm.easting}E ${utm.northing}N`
+                                    : `${field.centroid_lat}, ${field.centroid_lng}`
+                                )
+                              }
+                            >
+                              <Copy size={10} />
+                            </button>
+                            <button
+                              className="text-gray-400 hover:text-gray-600"
+                              onClick={() =>
+                                setShowCoordsInUTM(!showCoordsInUTM)
+                              }
+                            >
+                              <RefreshCw size={8} />
+                            </button>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Cycle + Menu Card */}
-                  <div className="bg-white rounded-3xl p-3.5 shadow-sm border border-gray-100 relative">
-                    {/* Field Detail Selector */}
-                    <div className="mb-3">
-                      <button
-                        ref={fieldDetailButtonRef}
-                        onClick={() => setIsFieldDetailOpen(!isFieldDetailOpen)}
-                        className="w-full bg-blue-50 rounded-xl py-2 px-4 flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors border border-blue-100"
-                      >
-                        <span className="text-sm font-semibold text-gray-800">
-                          {t("field.detailOf")}
-                        </span>
-                        <ChevronRight
-                          size={14}
-                          className={`text-gray-600 transition-transform ${
-                            isFieldDetailOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      {/* Field Detail Popup - GISTDA Style (using Portal) */}
-                      {isFieldDetailOpen &&
-                        createPortal(
-                          <div
-                            ref={fieldDetailPopupRef}
-                            className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
-                            style={{
-                              position: "fixed",
-                              left: "334px",
-                              top: "222px",
-                              width: "300px",
-                              zIndex: 9999,
-                            }}
-                          >
-                            {/* Header with Radio */}
-                            <div className="px-2 py-2">
-                              <div className="border border-green-500 rounded-lg">
-                                <div className="flex items-center justify-between h-10 px-3">
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-4 h-4 rounded-full border-2 border-green-500 flex items-center justify-center">
-                                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                                    </div>
-                                    <span className="text-xs text-gray-700">
-                                      {t("field.detailOf")}
-                                    </span>
-                                  </div>
-                                  <button
-                                    onClick={() => setIsFieldDetailOpen(false)}
-                                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                                  >
-                                    <ChevronUp size={16} />
-                                  </button>
-                                </div>
-
-                                {/* Content */}
-                                <div className="px-3 pb-2 space-y-2">
-                                  {/* ชนิดพันธุ์พืช */}
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-xs text-gray-500">
-                                      {t("field.plantVariety")}
-                                    </span>
-                                    <span className="text-xs font-medium text-gray-800">
-                                      {getVarietyLabel(field?.variety)}
-                                    </span>
-                                  </div>
-
-                                  {/* วันที่ปลูก */}
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-xs text-gray-500">
-                                      {t("farm.plantingDate")}
-                                    </span>
-                                    <span className="text-xs font-medium text-gray-800">
-                                      {field?.planting_date
-                                        ? new Date(
-                                            field.planting_date
-                                          ).toLocaleDateString(
-                                            language === "TH"
-                                              ? "th-TH"
-                                              : "en-GB",
-                                            {
-                                              day: "numeric",
-                                              month: "long",
-                                              year: "numeric",
-                                            }
-                                          )
-                                        : "-"}
-                                    </span>
-                                  </div>
-
-                                  {/* ฤดูกาลปลูก */}
-                                  <div className="flex justify-between items-center">
-                                    <span className="text-xs text-gray-500">
-                                      {t("field.plantingSeasonLabel")}
-                                    </span>
-                                    <span className="text-xs font-medium text-gray-800">
-                                      {getSeasonLabel(field?.planting_season)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>,
-                          document.body
-                        )}
-                    </div>
-
-                    {/* Menu Grid - 3 columns */}
-                    <div className="grid grid-cols-3 gap-2.5">
-                      {desktopMenuItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={item.enabled ? item.onClick : undefined}
-                            disabled={!item.enabled}
-                            className="bg-white rounded-2xl p-2.5 flex flex-col items-center justify-center gap-1.5 shadow-sm border border-gray-100 hover:border-green-300 hover:shadow-md transition-all group"
-                            style={{
-                              minHeight: "80px",
-                              opacity: item.enabled ? 1 : 0.6,
-                              cursor: item.enabled ? "pointer" : "not-allowed",
-                            }}
-                          >
-                            <div
-                              className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors group-hover:bg-green-600 group-hover:text-white"
-                              style={{
-                                background: item.bgColor,
-                                color: item.color,
-                              }}
-                            >
-                              <Icon size={18} />
-                            </div>
-                            <div className="text-[10px] text-center font-medium text-gray-500 leading-tight whitespace-pre-line h-7 flex items-center justify-center group-hover:text-gray-800">
-                              {item.label}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
+                  {/* Field Details Button */}
+                  <div className="px-3 pb-3">
+                    <button
+                      ref={fieldDetailButtonRef}
+                      onClick={() => setIsFieldDetailOpen(!isFieldDetailOpen)}
+                      className="w-full bg-gray-50 rounded-lg py-2 px-3 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors border border-gray-200"
+                    >
+                      <ChevronLeft
+                        size={12}
+                        className={`text-gray-500 transition-transform ${
+                          isFieldDetailOpen ? "-rotate-90" : ""
+                        }`}
+                      />
+                      <span className="text-xs font-medium text-gray-700">
+                        {t("field.detailOf")}
+                      </span>
+                    </button>
                   </div>
-
-                  <div className="h-4" />
                 </div>
+
+                {/* Feature Buttons - 2 floating cards */}
+                <button
+                  onClick={() => changeActivePanel("health")}
+                  className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100 hover:shadow-xl hover:border-green-300 transition-all group flex items-center gap-3"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-600 transition-colors shrink-0">
+                    <Leaf
+                      size={20}
+                      className="text-green-600 group-hover:text-white"
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 text-left leading-tight group-hover:text-green-700">
+                    {t("feature.health")}
+                  </span>
+                </button>
+
+                <button
+                  onClick={() => changeActivePanel("analysis")}
+                  className="bg-white rounded-2xl p-3 shadow-lg border border-gray-100 hover:shadow-xl hover:border-blue-300 transition-all group flex items-center gap-3"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-600 transition-colors shrink-0">
+                    <BarChart3
+                      size={20}
+                      className="text-blue-600 group-hover:text-white"
+                    />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 text-left leading-tight group-hover:text-blue-700">
+                    {t("feature.analysis")}
+                  </span>
+                </button>
               </div>
-            </div>
+
+              {/* Field Detail Popup (Portal) - positioned to the LEFT of details panel */}
+              {isFieldDetailOpen &&
+                createPortal(
+                  <div
+                    ref={fieldDetailPopupRef}
+                    className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-visible"
+                    style={{
+                      position: "fixed",
+                      right: "375px",
+                      top: "200px",
+                      width: "260px",
+                      zIndex: 99999,
+                    }}
+                  >
+                    {/* Arrow pointing to the right (towards the panel) */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        right: "-8px",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        width: 0,
+                        height: 0,
+                        borderTop: "8px solid transparent",
+                        borderBottom: "8px solid transparent",
+                        borderLeft: "8px solid white",
+                        filter: "drop-shadow(2px 0 2px rgba(0,0,0,0.1))",
+                      }}
+                    />
+                    <div className="p-3">
+                      <div className="border border-green-500 rounded-lg">
+                        <div className="flex items-center justify-between h-9 px-3">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3.5 h-3.5 rounded-full border-2 border-green-500 flex items-center justify-center">
+                              <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                            </div>
+                            <span className="text-xs text-gray-700">
+                              {t("field.detailOf")}
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setIsFieldDetailOpen(false)}
+                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                          >
+                            <ChevronUp size={14} />
+                          </button>
+                        </div>
+                        <div className="px-3 pb-3 space-y-1.5">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[11px] text-gray-500">
+                              {t("field.plantVariety")}
+                            </span>
+                            <span className="text-[11px] font-medium text-gray-800">
+                              {getVarietyLabel(field?.variety)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[11px] text-gray-500">
+                              {t("farm.plantingDate")}
+                            </span>
+                            <span className="text-[11px] font-medium text-gray-800">
+                              {field?.planting_date
+                                ? new Date(
+                                    field.planting_date
+                                  ).toLocaleDateString(
+                                    language === "TH" ? "th-TH" : "en-GB",
+                                    {
+                                      day: "numeric",
+                                      month: "long",
+                                      year: "numeric",
+                                    }
+                                  )
+                                : "-"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-[11px] text-gray-500">
+                              {t("field.plantingSeasonLabel")}
+                            </span>
+                            <span className="text-[11px] font-medium text-gray-800">
+                              {getSeasonLabel(field?.planting_season)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>,
+                  document.body
+                )}
+            </>
           )}
           {/* Snapshot Carousel on Map - Floating buttons at bottom center */}
           {activePanel === "health" && mapSnapshots.length > 0 && (
-            <div
-              className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-20 pointer-events-auto flex items-end gap-3"
-              style={{ marginLeft: "175px" }}
-            >
+            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-20 pointer-events-auto flex items-end gap-3">
               {mapSnapshots.map((snapshot) => {
                 const isSelected = mapSelectedSnapshot?.id === snapshot.id;
                 return (
@@ -1110,10 +973,18 @@ export default function MobileFieldDetailPage() {
             </div>
           )}
 
-          {/* Map Controls (Right) */}
-          <div className="absolute top-1/2 right-4 transform -translate-y-1/2 z-20 flex flex-col gap-3">
-            {/* White panel with Location + Layers */}
-            <div className="bg-white rounded-[20px] shadow-lg p-2 flex flex-col gap-2 w-12">
+          {/* TOP LEFT - Back Button */}
+          <button
+            onClick={() => navigate("/dris_project")}
+            className="absolute top-5 left-5 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-green-600 hover:shadow-xl transition-all border border-gray-100 pointer-events-auto"
+          >
+            <ChevronLeft size={24} />
+          </button>
+
+          {/* LEFT SIDE - Map Controls (Vertically Centered) */}
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3 pointer-events-auto">
+            {/* Location + Layers Panel */}
+            <div className="bg-white rounded-[20px] shadow-lg p-2 flex flex-col gap-2 w-12 border border-gray-100">
               <button
                 className="w-8 h-8 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors"
                 title="My Location"
@@ -1143,7 +1014,7 @@ export default function MobileFieldDetailPage() {
 
             {/* Layers Popup */}
             {isLayersOpen && (
-              <div className="absolute right-14 top-0 bg-white rounded-2xl shadow-xl p-4 min-w-[280px] border border-gray-100">
+              <div className="absolute left-14 bottom-16 bg-white rounded-2xl shadow-xl p-4 min-w-[280px] border border-gray-100">
                 <div className="text-sm font-semibold text-gray-700 mb-3">
                   {t("map.selectBasemap")}
                 </div>
@@ -1229,17 +1100,17 @@ export default function MobileFieldDetailPage() {
               </div>
             )}
 
-            {/* Dark green panel with Zoom */}
-            <div className="bg-green-800 rounded-[24px] shadow-lg p-1.5 flex flex-col gap-1 w-12">
+            {/* Zoom Controls */}
+            <div className="bg-white rounded-[20px] shadow-lg p-2 flex flex-col gap-2 w-12 border border-gray-100">
               <button
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg font-medium transition-colors"
+                className="w-8 h-8 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-600 text-lg font-medium transition-colors"
                 onClick={() => mapRef.current?.zoomIn()}
                 title={t("map.zoomIn")}
               >
                 +
               </button>
               <button
-                className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-lg font-medium transition-colors"
+                className="w-8 h-8 rounded-xl hover:bg-gray-100 flex items-center justify-center text-gray-600 text-lg font-medium transition-colors"
                 onClick={() => mapRef.current?.zoomOut()}
                 title={t("map.zoomOut")}
               >

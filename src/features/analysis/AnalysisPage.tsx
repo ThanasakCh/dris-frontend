@@ -151,14 +151,14 @@ export default function MobileAnalysisPage() {
         id: "field-fill",
         type: "fill",
         source: "field",
-        paint: { "fill-color": "#fde047", "fill-opacity": 0.3 },
+        paint: { "fill-color": "#fbb355ff", "fill-opacity": 0.35 },
       });
 
       map.addLayer({
         id: "field-outline",
         type: "line",
         source: "field",
-        paint: { "line-color": "#ef4444", "line-width": 3 },
+        paint: { "line-color": "#ff4204ff", "line-width": 3 },
       });
 
       const coords = field.geometry.coordinates[0] as [number, number][];

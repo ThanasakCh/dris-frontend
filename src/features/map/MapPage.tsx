@@ -241,8 +241,8 @@ const MobileMapPage: React.FC = () => {
             type: "fill",
             filter: ["all", ["==", "$type", "Polygon"]],
             paint: {
-              "fill-color": "#ffff00",
-              "fill-opacity": 0.3,
+              "fill-color": "#fbb355ff",
+              "fill-opacity": 0.35,
             },
           },
           // Polygon outline (dashed)
@@ -251,8 +251,8 @@ const MobileMapPage: React.FC = () => {
             type: "line",
             filter: ["all", ["==", "$type", "Polygon"]],
             paint: {
-              "line-color": "#ff0000",
-              "line-width": 2,
+              "line-color": "#ff4204ff",
+              "line-width": 3,
               "line-dasharray": [2, 2],
             },
           },
@@ -262,21 +262,26 @@ const MobileMapPage: React.FC = () => {
             type: "line",
             filter: ["all", ["==", "$type", "LineString"]],
             paint: {
-              "line-color": "#ff0000",
-              "line-width": 2,
+              "line-color": "#ff4204ff",
+              "line-width": 3,
               "line-dasharray": [2, 2],
             },
           },
-          // Vertex points
+          // Vertex points - Diamond shape
           {
             id: "gl-draw-polygon-and-line-vertex-active",
-            type: "circle",
+            type: "symbol",
             filter: ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"]],
+            layout: {
+              "text-field": "◆",
+              "text-size": 18,
+              "text-allow-overlap": true,
+              "text-ignore-placement": true,
+            },
             paint: {
-              "circle-radius": 8,
-              "circle-color": "#ff0000",
-              "circle-stroke-width": 2,
-              "circle-stroke-color": "#ffffff",
+              "text-color": "#ff4204ff",
+              "text-halo-color": "#ffffff",
+              "text-halo-width": 2,
             },
           },
         ],
@@ -417,8 +422,8 @@ const MobileMapPage: React.FC = () => {
         source: sourceId,
         filter: ["==", "$type", "Polygon"],
         paint: {
-          "fill-color": "#ffff00",
-          "fill-opacity": 0.3,
+          "fill-color": "#fbb355ff",
+          "fill-opacity": 0.35,
         },
       });
     }
@@ -430,23 +435,28 @@ const MobileMapPage: React.FC = () => {
       source: sourceId,
       filter: ["in", "$type", "Polygon", "LineString"],
       paint: {
-        "line-color": "#ff0000",
-        "line-width": 2,
+        "line-color": "#ff4204ff",
+        "line-width": 3,
         "line-dasharray": [2, 2],
       },
     });
 
-    // Add points layer (markers)
+    // Add points layer (diamond markers)
     map.addLayer({
       id: pointsLayerId,
-      type: "circle",
+      type: "symbol",
       source: sourceId,
       filter: ["==", "$type", "Point"],
+      layout: {
+        "text-field": "◆",
+        "text-size": 18,
+        "text-allow-overlap": true,
+        "text-ignore-placement": true,
+      },
       paint: {
-        "circle-radius": 8,
-        "circle-color": "#ff0000",
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#ffffff",
+        "text-color": "#ff4204ff",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 2,
       },
     });
 
@@ -549,8 +559,8 @@ const MobileMapPage: React.FC = () => {
           type: "fill",
           source: sourceId,
           paint: {
-            "fill-color": "#ffff00",
-            "fill-opacity": 0.3,
+            "fill-color": "#fbb355ff",
+            "fill-opacity": 0.35,
           },
         });
 
@@ -559,8 +569,8 @@ const MobileMapPage: React.FC = () => {
           type: "line",
           source: sourceId,
           paint: {
-            "line-color": "#ff0000",
-            "line-width": 2,
+            "line-color": "#ff4204ff",
+            "line-width": 3,
           },
         });
 

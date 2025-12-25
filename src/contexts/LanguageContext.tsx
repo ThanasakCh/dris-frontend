@@ -896,7 +896,7 @@ const translations: Record<Language, Record<string, string>> = {
     "analysis.average": "Average",
     "analysis.geeError": "Error fetching data from Google Earth Engine",
     "analysis.sentinelInfo":
-      "Results will be displayed in the popup on the right",
+      "Results will be displayed in the popup on the left",
     "analysis.timeSeries": "Time Series",
     "analysis.yearLabel": "Year",
     "analysis.monthlyAvg": "Monthly Average",

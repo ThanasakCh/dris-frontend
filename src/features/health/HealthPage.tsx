@@ -168,8 +168,8 @@ export default function MobileHealthPage() {
         type: "fill",
         source: "field",
         paint: {
-          "fill-color": "#ffff00",
-          "fill-opacity": 0.3,
+          "fill-color": "#fbb355ff",
+          "fill-opacity": 0.35,
         },
       });
 
@@ -178,8 +178,8 @@ export default function MobileHealthPage() {
         type: "line",
         source: "field",
         paint: {
-          "line-color": "#ff0000",
-          "line-width": 2,
+          "line-color": "#ff4204ff",
+          "line-width": 3,
         },
       });
 

@@ -1,19 +1,15 @@
 import { useState, useEffect, MutableRefObject, useRef } from "react";
-import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
 import {
   ChevronLeft,
   RefreshCw,
   ChevronDown,
-  ChevronRight,
-  ChevronUp,
   Check,
   Pencil,
   Trash2,
   Download,
   MapPin,
   LocateFixed,
-  Grid3X3,
   Copy,
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
@@ -141,38 +137,11 @@ export default function DesktopHealthPanel({
   mapRef,
   onSnapshotsChange,
 }: DesktopHealthPanelProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const fieldActions = useFieldActions(field, onBack);
 
   // Helper functions to translate variety and season
-  const getVarietyLabel = (variety: string | undefined): string => {
-    if (!variety) return "-";
-    const v = variety.toLowerCase();
-    if (v.includes("jasmine") || v === "jasmine") return t("farm.jasmine");
-    if (v.includes("ricekk6") || v === "ricekk6") return t("farm.riceKK6");
-    if (v.includes("ricekk15") || v === "ricekk15") return t("farm.riceKK15");
-    if (v.includes("ricept") || v === "ricept") return t("farm.ricePT");
-    if (v.includes("stickyrice") || v === "stickyrice")
-      return t("farm.stickyRice");
-    if (v.includes("riceberry") || v === "riceberry")
-      return t("farm.riceberry");
-    if (v.includes("other") || v === "other") return t("farm.other");
-    return variety;
-  };
 
-  const getSeasonLabel = (season: string | undefined): string => {
-    if (!season) return "-";
-    const s = season.toLowerCase();
-    if (s.includes("wetseason") || s === "wetseason")
-      return t("farm.wetSeason");
-    if (s.includes("dryseason") || s === "dryseason")
-      return t("farm.drySeason");
-    if (s.includes("transplant") || s === "transplant")
-      return t("farm.transplant");
-    if (s.includes("broadcast") || s === "broadcast")
-      return t("farm.broadcast");
-    return season;
-  };
   const [selectedVI, setSelectedVI] = useState("NDVI");
   const [snapshots, setSnapshots] = useState<VISnapshot[]>([]);
   const [selectedSnapshot, setSelectedSnapshot] = useState<VISnapshot | null>(
@@ -391,14 +360,6 @@ export default function DesktopHealthPanel({
       .padStart(2, "0")}/${date.getFullYear() + 543}`;
   };
 
-  const getHealthDescription = (value: number): string => {
-    if (value < 0.2) return t("health.weakLow");
-    if (value < 0.4) return t("health.moderateLow");
-    if (value < 0.6) return t("health.moderateMid");
-    if (value < 0.8) return t("health.goodHigh");
-    return t("health.excellentVeryHigh");
-  };
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard
       .writeText(text)
@@ -427,39 +388,36 @@ export default function DesktopHealthPanel({
 
   const panel = (
     <div
-      style={{
-        position: "absolute",
-        top: 16,
-        left: 16,
-        bottom: 16,
-        zIndex: 30,
-        width: 350,
-      }}
+      className="absolute top-[130px] right-5 z-30 flex flex-col gap-3 pointer-events-auto"
+      style={{ width: "350px", maxHeight: "calc(100vh - 150px)" }}
     >
-      <div className="w-full h-full bg-gray-50 rounded-[32px] shadow-xl pointer-events-auto relative overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="p-4 pb-3 shrink-0">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={onBack}
-              className="w-12 h-12 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center text-gray-700 hover:text-green-600 hover:border-green-600 transition-all"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <h2 className="text-xl font-bold text-gray-800 flex-1 text-center">
-              {t("field.details")}
-            </h2>
-            <div className="w-12 h-12" />
-          </div>
+      {/* Header Card */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+          <button
+            onClick={onBack}
+            className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 border border-gray-200"
+          >
+            <ChevronLeft size={16} />
+          </button>
+          <h2 className="text-base font-bold text-gray-800">
+            {t("health.title")}
+          </h2>
+          <div className="w-8 h-8" />
         </div>
+      </div>
 
-        {/* Fixed Content - Field Info, Season, Tab Header, VI Selector */}
-        <div
-          className="shrink-0 px-4 relative z-20"
-          style={{ overflow: "visible" }}
-        >
+      {/* Scrollable Content Card */}
+      <div
+        className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-1 flex flex-col"
+        style={{
+          maxHeight: "calc(100vh - 250px)",
+          overflowY: snapshots.length > 0 ? "auto" : "hidden",
+        }}
+      >
+        <div className="p-4">
           {/* Field Info Card */}
-          <div className="bg-white rounded-3xl p-3.5 mb-3 shadow-sm border border-gray-100">
+          <div className="bg-white rounded-xl p-3 mb-3 shadow-sm border border-gray-100">
             <div className="flex gap-2.5">
               {/* Thumbnail */}
               <div className="shrink-0">
@@ -590,149 +548,16 @@ export default function DesktopHealthPanel({
             </div>
           </div>
 
-          {/* Field Detail Selector */}
-          <div className="mb-3">
-            <button
-              ref={fieldDetailButtonRef}
-              onClick={() => setIsFieldDetailOpen(!isFieldDetailOpen)}
-              className="w-full bg-blue-50 rounded-xl py-2 px-4 flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors border border-blue-100"
-            >
-              <span className="text-sm font-semibold text-gray-800">
-                {t("field.detailOf")}
-              </span>
-              <ChevronRight
-                size={14}
-                className={`text-gray-600 transition-transform ${
-                  isFieldDetailOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            {/* Field Detail Popup - GISTDA Style (using Portal) */}
-            {isFieldDetailOpen &&
-              createPortal(
-                <div
-                  ref={fieldDetailPopupRef}
-                  className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
-                  style={{
-                    position: "fixed",
-                    left: "334px",
-                    top: "222px",
-                    width: "300px",
-                    zIndex: 9999,
-                  }}
-                >
-                  {/* Header with Radio */}
-                  <div className="px-2 py-2">
-                    <div className="border border-green-500 rounded-lg">
-                      <div className="flex items-center justify-between h-10 px-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 rounded-full border-2 border-green-500 flex items-center justify-center">
-                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                          </div>
-                          <span className="text-xs text-gray-700">
-                            {t("field.detailOf")}
-                          </span>
-                        </div>
-                        <button
-                          onClick={() => setIsFieldDetailOpen(false)}
-                          className="text-gray-400 hover:text-gray-600 transition-colors"
-                        >
-                          <ChevronUp size={16} />
-                        </button>
-                      </div>
-
-                      {/* Content */}
-                      <div className="px-3 pb-2 space-y-2">
-                        {/* ชนิดพันธุ์พืช */}
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-500">
-                            {t("field.plantVariety")}
-                          </span>
-                          <span className="text-xs font-medium text-gray-800">
-                            {getVarietyLabel(field.variety)}
-                          </span>
-                        </div>
-
-                        {/* วันที่ปลูก */}
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-500">
-                            {t("farm.plantingDate")}
-                          </span>
-                          <span className="text-xs font-medium text-gray-800">
-                            {field.planting_date
-                              ? new Date(
-                                  field.planting_date
-                                ).toLocaleDateString(
-                                  language === "TH" ? "th-TH" : "en-US",
-                                  {
-                                    day: "numeric",
-                                    month: "long",
-                                    year: "numeric",
-                                  }
-                                )
-                              : "-"}
-                          </span>
-                        </div>
-
-                        {/* ฤดูกาลปลูก */}
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-gray-500">
-                            {t("field.plantingSeasonLabel")}
-                          </span>
-                          <span className="text-xs font-medium text-gray-800">
-                            {getSeasonLabel(field.planting_season)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>,
-                document.body
-              )}
+          {/* Section Title */}
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <LeafIcon size={18} color="#16a34a" />
+            <span className="text-sm font-semibold text-gray-800">
+              {t("health.title")}
+            </span>
           </div>
 
-          {/* Tab Header */}
-          <div className="flex items-center justify-between py-2 px-1 mb-3 relative z-10">
-            <div className="flex items-center gap-2">
-              <LeafIcon size={18} color="#16a34a" />
-              <span className="text-[15px] font-semibold text-gray-800">
-                {t("health.title")}
-              </span>
-            </div>
-            <div className="flex items-center" style={{ gap: 8 }}>
-              <span style={{ fontSize: 12, color: "#073B1A" }}>
-                {t("health.menu")}
-              </span>
-              <button
-                type="button"
-                id="menu_btn"
-                aria-label="ย้อนกลับ"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  if (onBack) onBack();
-                }}
-                style={{
-                  width: 40,
-                  height: 40,
-                  background: "#FFFFFF",
-                  border: "none",
-                  borderRadius: 8,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  cursor: "pointer",
-                  marginLeft: 8,
-                }}
-              >
-                <Grid3X3 size={16} style={{ color: "#073B1A" }} />
-              </button>
-            </div>
-          </div>
-
-          {/* VI Selector Card */}
-          <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
+          {/* VI Selector */}
+          <div className="bg-gray-50 rounded-xl p-3 mb-3 border border-gray-100">
             <div className="text-[13px] text-gray-500 mb-3">
               {t("health.selectVIForMap")}
             </div>
@@ -798,55 +623,86 @@ export default function DesktopHealthPanel({
         </div>
 
         {/* Scrollable Results Area - starts from Gauge Card */}
-        <div className="flex-1 overflow-y-auto px-4 pb-2">
-          {/* Gauge Card */}
+        <div className="flex-1 flex flex-col overflow-y-auto px-4 pb-2">
+          {/* Stats Card - Old Style */}
           {selectedSnapshot && (
-            <div className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
-              {/* Title */}
-              <div className="text-center text-[14px] text-gray-500 mb-4">
-                {t("health.avgLevel")}
-              </div>
+            <div className="bg-white rounded-xl p-5 mb-3 shadow-sm border border-gray-100">
+              <div className="text-center">
+                {/* Title with date */}
+                <div className="text-[13px] text-gray-500 mb-1">
+                  {t("health.avgValue")} {selectedVI}
+                </div>
+                <div className="text-[14px] font-semibold text-gray-700 mb-4">
+                  {new Date(selectedSnapshot.snapshot_date).toLocaleDateString(
+                    "th-TH",
+                    { year: "numeric", month: "long", day: "numeric" }
+                  )}
+                </div>
 
-              {/* Value Display */}
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[14px] font-semibold text-orange-500">
-                  {t("health.low")}
-                </span>
-                <span className="text-[32px] font-bold text-gray-800">
-                  {selectedSnapshot.mean_value.toFixed(2)}
-                </span>
-                <span className="text-[14px] font-semibold text-green-600">
-                  {t("health.high")}
-                </span>
-              </div>
-
-              {/* Gradient Bar */}
-              <div className="relative h-3 rounded-full mb-4 overflow-hidden">
+                {/* Large Value */}
                 <div
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    background:
-                      "linear-gradient(to right, #ef4444, #f97316, #facc15, #a3e635, #22c55e)",
-                  }}
-                />
-                {/* Indicator */}
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-gray-800 border-2 border-white shadow-md"
-                  style={{
-                    left: `${Math.min(
-                      Math.max(selectedSnapshot.mean_value * 100, 0),
-                      100
-                    )}%`,
-                    marginLeft: -8,
-                  }}
-                />
-              </div>
+                  className="text-[36px] font-bold mb-2"
+                  style={{ color: "#4CAF50" }}
+                >
+                  {selectedSnapshot.mean_value.toFixed(3)}
+                </div>
 
-              {/* Description Box */}
-              <div className="bg-green-100 rounded-2xl py-3 px-4 flex items-center justify-center min-h-[60px]">
-                <span className="text-[13px] font-medium text-green-700 text-center leading-relaxed">
-                  {getHealthDescription(selectedSnapshot.mean_value)}
-                </span>
+                {/* Simple Progress Bar */}
+                <div className="bg-gray-100 rounded-full h-2 mb-4 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{
+                      width: `${Math.min(
+                        Math.max(selectedSnapshot.mean_value * 100, 0),
+                        100
+                      )}%`,
+                      background: "linear-gradient(90deg, #4CAF50cc, #4CAF50)",
+                    }}
+                  />
+                </div>
+
+                {/* Health Status Badge */}
+                {(() => {
+                  const value = selectedSnapshot.mean_value;
+                  let status = { text: "", color: "", desc: "" };
+                  if (value < 0.3) {
+                    status = {
+                      text: t("health.low"),
+                      color: "#ef4444",
+                      desc: t("health.needImprovement"),
+                    };
+                  } else if (value < 0.6) {
+                    status = {
+                      text: t("health.medium"),
+                      color: "#f59e0b",
+                      desc: t("health.fairCondition"),
+                    };
+                  } else if (value < 0.8) {
+                    status = {
+                      text: t("health.good"),
+                      color: "#10b981",
+                      desc: t("health.goodCondition"),
+                    };
+                  } else {
+                    status = {
+                      text: t("health.excellent"),
+                      color: "#059669",
+                      desc: t("health.excellentCondition"),
+                    };
+                  }
+                  return (
+                    <div
+                      className="inline-block px-3 py-1.5 rounded-full text-[12px] font-semibold"
+                      style={{
+                        background: status.color + "20",
+                        border: `1px solid ${status.color}40`,
+                        color: status.color,
+                      }}
+                    >
+                      {status.text} • {status.desc}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           )}
@@ -924,29 +780,31 @@ export default function DesktopHealthPanel({
           {/* Empty State */}
           {!isLoading && snapshots.length === 0 && (
             <div
+              className="flex-1 flex flex-col items-center justify-center"
               style={{
                 background: "white",
                 borderRadius: 20,
-                padding: 32,
+                padding: 20,
                 textAlign: "center",
+                minHeight: 120,
               }}
             >
               <div
                 style={{
-                  width: 56,
-                  height: 56,
+                  width: 48,
+                  height: 48,
                   borderRadius: "50%",
                   background: "#f3f4f6",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  margin: "0 auto 12px",
-                  fontSize: 28,
+                  marginBottom: 10,
+                  fontSize: 24,
                 }}
               >
                 🌱
               </div>
-              <p style={{ fontSize: 14, color: "#9ca3af" }}>
+              <p style={{ fontSize: 13, color: "#9ca3af", margin: 0 }}>
                 {t("health.noDataYet")}
               </p>
             </div>

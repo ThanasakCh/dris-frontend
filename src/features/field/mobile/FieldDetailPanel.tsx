@@ -78,8 +78,8 @@ export default function FieldDetailPanel({
         type: "fill",
         source: "field",
         paint: {
-          "fill-color": "#fde047",
-          "fill-opacity": 0.4,
+          "fill-color": "#fbb355ff",
+          "fill-opacity": 0.35,
         },
       });
 
@@ -88,7 +88,7 @@ export default function FieldDetailPanel({
         type: "line",
         source: "field",
         paint: {
-          "line-color": "#ef4444",
+          "line-color": "#ff4204ff",
           "line-width": 3,
         },
       });

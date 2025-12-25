@@ -1,12 +1,9 @@
 import { useState, useRef, MutableRefObject, useEffect } from "react";
-import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
 import {
   ChevronLeft,
   RefreshCw,
   ChevronDown,
-  ChevronRight,
-  ChevronUp,
   Check,
   Pencil,
   Trash2,
@@ -18,7 +15,6 @@ import {
   Image as ImageIcon,
   FileText,
   BarChart3,
-  Grid3X3,
 } from "lucide-react";
 import maplibregl from "maplibre-gl";
 import axios from "../../../config/axios";
@@ -168,38 +164,11 @@ export default function DesktopAnalysisPanel({
   onBack,
   mapRef: _mapRef,
 }: DesktopAnalysisPanelProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const fieldActions = useFieldActions(field, onBack);
 
   // Helper functions to translate variety and season
-  const getVarietyLabel = (variety: string | undefined): string => {
-    if (!variety) return "-";
-    const v = variety.toLowerCase();
-    if (v.includes("jasmine") || v === "jasmine") return t("farm.jasmine");
-    if (v.includes("ricekk6") || v === "ricekk6") return t("farm.riceKK6");
-    if (v.includes("ricekk15") || v === "ricekk15") return t("farm.riceKK15");
-    if (v.includes("ricept") || v === "ricept") return t("farm.ricePT");
-    if (v.includes("stickyrice") || v === "stickyrice")
-      return t("farm.stickyRice");
-    if (v.includes("riceberry") || v === "riceberry")
-      return t("farm.riceberry");
-    if (v.includes("other") || v === "other") return t("farm.other");
-    return variety;
-  };
 
-  const getSeasonLabel = (season: string | undefined): string => {
-    if (!season) return "-";
-    const s = season.toLowerCase();
-    if (s.includes("wetseason") || s === "wetseason")
-      return t("farm.wetSeason");
-    if (s.includes("dryseason") || s === "dryseason")
-      return t("farm.drySeason");
-    if (s.includes("transplant") || s === "transplant")
-      return t("farm.transplant");
-    if (s.includes("broadcast") || s === "broadcast")
-      return t("farm.broadcast");
-    return season;
-  };
   const [selectedVI, setSelectedVI] = useState("NDVI");
   const [analysisType, setAnalysisType] = useState<
     "monthly_range" | "full_year" | "ten_year_avg"
@@ -476,39 +445,33 @@ export default function DesktopAnalysisPanel({
     <>
       {/* Main Panel */}
       <div
-        style={{
-          position: "absolute",
-          top: 16,
-          left: 16,
-          bottom: 16,
-          zIndex: 30,
-          width: 350,
-        }}
+        className="absolute top-[130px] right-5 z-30 flex flex-col gap-3 pointer-events-auto"
+        style={{ width: "350px", maxHeight: "calc(100vh - 150px)" }}
       >
-        <div className="w-full h-full bg-gray-50 rounded-[32px] shadow-xl pointer-events-auto relative overflow-hidden flex flex-col">
-          {/* Header */}
-          <div className="p-4 pb-3 shrink-0">
-            <div className="flex items-center justify-between">
-              <button
-                onClick={onBack}
-                className="w-12 h-12 rounded-full bg-white border-2 border-gray-300 flex items-center justify-center text-gray-700 hover:text-green-600 hover:border-green-600 transition-all"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <h2 className="text-xl font-bold text-gray-800 flex-1 text-center">
-                {t("field.details")}
-              </h2>
-              <div className="w-12 h-12" />
-            </div>
+        {/* Header Card */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <button
+              onClick={onBack}
+              className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-600 border border-gray-200"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <h2 className="text-base font-bold text-gray-800">
+              {t("analysis.trendAnalysis")}
+            </h2>
+            <div className="w-8 h-8" />
           </div>
+        </div>
 
-          {/* Fixed Content */}
-          <div
-            className="shrink-0 px-4 relative z-20"
-            style={{ overflow: "visible" }}
-          >
+        {/* Scrollable Content Card */}
+        <div
+          className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden flex-1"
+          style={{ maxHeight: "calc(100vh - 250px)", overflowY: "auto" }}
+        >
+          <div className="p-4">
             {/* Field Info Card */}
-            <div className="bg-white rounded-3xl p-3.5 mb-3 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-xl p-3 mb-3 shadow-sm border border-gray-100">
               <div className="flex gap-2.5">
                 {/* Thumbnail */}
                 <div className="shrink-0">
@@ -639,157 +602,19 @@ export default function DesktopAnalysisPanel({
               </div>
             </div>
 
-            {/* Field Detail Selector */}
-            <div className="mb-3">
-              <button
-                ref={fieldDetailButtonRef}
-                onClick={() => setIsFieldDetailOpen(!isFieldDetailOpen)}
-                className="w-full bg-blue-50 rounded-xl py-2 px-4 flex items-center justify-between cursor-pointer hover:bg-blue-100 transition-colors border border-blue-100"
-              >
-                <span className="text-sm font-semibold text-gray-800">
-                  {t("field.detailOf")}
-                </span>
-                <ChevronRight
-                  size={14}
-                  className={`text-gray-600 transition-transform ${
-                    isFieldDetailOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-
-              {/* Field Detail Popup - GISTDA Style (using Portal) */}
-              {isFieldDetailOpen &&
-                createPortal(
-                  <div
-                    ref={fieldDetailPopupRef}
-                    className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden"
-                    style={{
-                      position: "fixed",
-                      left: "334px",
-                      top: "222px",
-                      width: "300px",
-                      zIndex: 9999,
-                    }}
-                  >
-                    {/* Header with Radio */}
-                    <div className="px-2 py-2">
-                      <div className="border border-green-500 rounded-lg">
-                        <div className="flex items-center justify-between h-10 px-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full border-2 border-green-500 flex items-center justify-center">
-                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                            </div>
-                            <span className="text-xs text-gray-700">
-                              {t("field.detailOf")}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => setIsFieldDetailOpen(false)}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
-                          >
-                            <ChevronUp size={16} />
-                          </button>
-                        </div>
-
-                        {/* Content */}
-                        <div className="px-3 pb-2 space-y-2">
-                          {/* ชนิดพันธุ์พืช */}
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-gray-500">
-                              {t("field.plantVariety")}
-                            </span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {getVarietyLabel(field.variety)}
-                            </span>
-                          </div>
-
-                          {/* วันที่ปลูก */}
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-gray-500">
-                              {t("farm.plantingDate")}
-                            </span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {field.planting_date
-                                ? new Date(
-                                    field.planting_date
-                                  ).toLocaleDateString(
-                                    language === "TH" ? "th-TH" : "en-US",
-                                    {
-                                      day: "numeric",
-                                      month: "long",
-                                      year: "numeric",
-                                    }
-                                  )
-                                : "-"}
-                            </span>
-                          </div>
-
-                          {/* ฤดูกาลปลูก */}
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs text-gray-500">
-                              {t("field.plantingSeasonLabel")}
-                            </span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {getSeasonLabel(field.planting_season)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>,
-
-                  document.body
-                )}
-            </div>
-
             {/* Tab Header */}
-            <div className="flex items-center justify-between py-2 px-1 mb-3 relative z-10">
-              <div className="flex items-center gap-2">
-                <TrendIcon size={18} color="#16a34a" />
-                <span className="text-[15px] font-semibold text-gray-800">
-                  {t("analysis.trendAnalysis")}
-                </span>
-              </div>
-              <div className="flex items-center" style={{ gap: 8 }}>
-                <span style={{ fontSize: 12, color: "#073B1A" }}>
-                  {t("health.menu")}
-                </span>
-                <button
-                  type="button"
-                  id="menu_btn"
-                  aria-label="ย้อนกลับ"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if (onBack) onBack();
-                  }}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    background: "#FFFFFF",
-                    border: "none",
-                    borderRadius: 8,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    cursor: "pointer",
-                    marginLeft: 8,
-                  }}
-                >
-                  <Grid3X3 size={16} style={{ color: "#073B1A" }} />
-                </button>
-              </div>
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <TrendIcon size={18} color="#16a34a" />
+              <span className="text-sm font-semibold text-gray-800">
+                {t("analysis.trendAnalysis")}
+              </span>
             </div>
-          </div>
 
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
-            {/* เลือกดัชนีพืช */}
-            <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
-              <div className="text-[12px] text-gray-500 mb-2">
+            {/* VI Selector */}
+            <div className="bg-gray-50 rounded-lg p-2 mb-2 border border-gray-100">
+              <div className="text-[11px] text-gray-500 mb-1">
                 {t("analysis.selectVI")}
               </div>
-
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <button className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-between hover:border-gray-300 transition-colors">
@@ -832,11 +657,11 @@ export default function DesktopAnalysisPanel({
             </div>
 
             {/* ประเภทการวิเคราะห์ */}
-            <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
-              <div className="text-[12px] text-gray-500 mb-2">
+            <div className="bg-white rounded-lg p-2 mb-2 shadow-sm">
+              <div className="text-[11px] text-gray-500 mb-1">
                 {t("analysis.type")}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 {[
                   { code: "monthly_range", label: t("analysis.monthRange") },
                   { code: "full_year", label: t("analysis.fullYear") },
@@ -853,7 +678,7 @@ export default function DesktopAnalysisPanel({
                       )
                     }
                     disabled={isAnalyzing}
-                    className={`flex-1 py-2 rounded-full text-[12px] font-medium transition-all ${
+                    className={`flex-1 py-1.5 rounded-lg text-[11px] font-medium transition-all ${
                       analysisType === type.code
                         ? "bg-green-100 text-green-700 border-2 border-green-500"
                         : "bg-gray-100 text-gray-600 border border-gray-200"
@@ -867,11 +692,11 @@ export default function DesktopAnalysisPanel({
 
             {/* Date Range Selectors */}
             {analysisType !== "ten_year_avg" && (
-              <div className="bg-white rounded-xl p-3 mb-2 shadow-sm">
-                <div className="flex gap-2 items-end">
+              <div className="bg-white rounded-lg p-2 mb-2 shadow-sm">
+                <div className="flex gap-1.5 items-end">
                   {/* ปี */}
                   <div className="flex-1">
-                    <label className="text-[11px] text-gray-500 mb-1 block">
+                    <label className="text-[10px] text-gray-500 mb-0.5 block">
                       {t("analysis.yearLabel")}
                     </label>
                     <Select
@@ -879,7 +704,7 @@ export default function DesktopAnalysisPanel({
                       onValueChange={(value) => setSelectedYear(Number(value))}
                       disabled={isAnalyzing}
                     >
-                      <SelectTrigger className="w-full h-9 px-2 border border-gray-200 rounded-lg bg-gray-50 text-sm">
+                      <SelectTrigger className="w-full h-8 px-2 border border-gray-200 rounded-lg bg-gray-50 text-xs">
                         <SelectValue placeholder={String(selectedYear)} />
                       </SelectTrigger>
                       <SelectContent>
@@ -896,7 +721,7 @@ export default function DesktopAnalysisPanel({
                   {analysisType === "monthly_range" && (
                     <>
                       <div className="flex-1">
-                        <label className="text-[11px] text-gray-500 mb-1 block">
+                        <label className="text-[10px] text-gray-500 mb-0.5 block">
                           {t("analysis.startMonth")}
                         </label>
                         <Select
@@ -906,7 +731,7 @@ export default function DesktopAnalysisPanel({
                           }
                           disabled={isAnalyzing}
                         >
-                          <SelectTrigger className="w-full h-9 px-2 border border-gray-200 rounded-lg bg-gray-50 text-sm">
+                          <SelectTrigger className="w-full h-8 px-2 border border-gray-200 rounded-lg bg-gray-50 text-xs">
                             <SelectValue placeholder={t(monthKeys[0])} />
                           </SelectTrigger>
                           <SelectContent>
@@ -921,7 +746,7 @@ export default function DesktopAnalysisPanel({
 
                       {/* เดือนสิ้นสุด */}
                       <div className="flex-1">
-                        <label className="text-[11px] text-gray-500 mb-1 block">
+                        <label className="text-[10px] text-gray-500 mb-0.5 block">
                           {t("analysis.endMonth")}
                         </label>
                         <Select
@@ -929,7 +754,7 @@ export default function DesktopAnalysisPanel({
                           onValueChange={(value) => setEndMonth(Number(value))}
                           disabled={isAnalyzing}
                         >
-                          <SelectTrigger className="w-full h-9 px-2 border border-gray-200 rounded-lg bg-gray-50 text-sm">
+                          <SelectTrigger className="w-full h-8 px-2 border border-gray-200 rounded-lg bg-gray-50 text-xs">
                             <SelectValue placeholder={t(monthKeys[0])} />
                           </SelectTrigger>
                           <SelectContent>
@@ -951,7 +776,7 @@ export default function DesktopAnalysisPanel({
             <button
               onClick={analyzeFieldVI}
               disabled={isAnalyzing}
-              className={`w-full py-3 rounded-full font-semibold text-[14px] flex items-center justify-center gap-2 transition-colors ${
+              className={`w-full py-2.5 rounded-lg font-semibold text-[13px] flex items-center justify-center gap-2 transition-colors ${
                 isAnalyzing
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-green-600 hover:bg-green-700 cursor-pointer"
@@ -965,7 +790,7 @@ export default function DesktopAnalysisPanel({
             </button>
 
             {/* Description */}
-            <p className="text-[10px] text-gray-400 text-center mt-2 leading-relaxed">
+            <p className="text-[9px] text-gray-400 text-center mt-1 leading-relaxed">
               {t("analysis.sentinelInfo")}
             </p>
           </div>
@@ -980,43 +805,44 @@ export default function DesktopAnalysisPanel({
           style={{
             top: "50%",
             transform: "translateY(-50%)",
-            left: 366,
+            right: 370,
             width: 28,
             height: 56,
             zIndex: 35,
-            borderRadius: "0 16px 16px 0",
-            boxShadow: "4px 0 12px rgba(0,0,0,0.1)",
+            borderRadius: "16px 0 0 16px",
+            boxShadow: "-4px 0 12px rgba(0,0,0,0.1)",
           }}
         >
-          <ChevronLeft size={20} style={{ transform: "rotate(180deg)" }} />
+          <ChevronLeft size={20} />
         </button>
       )}
 
-      {/* Result Popup - ข้างๆ Panel */}
+      {/* Result Popup - ด้านซ้ายของ Panel */}
       {showResultPopup && timeSeriesData.length > 0 && (
         <div
           style={{
             position: "absolute",
             top: "50%",
             transform: "translateY(-50%)",
-            left: 366,
+            right: 370,
             zIndex: 35,
             display: "flex",
             alignItems: "center",
+            flexDirection: "row-reverse",
           }}
         >
-          {/* Toggle Button (Arrow) - seamlessly connected */}
+          {/* Toggle Button (Arrow) - seamlessly connected on the right */}
           <button
             onClick={() => setShowResultPopup(false)}
             className="bg-white flex items-center justify-center text-gray-400 hover:text-green-600 transition-colors"
             style={{
               width: 28,
               height: 56,
-              borderRadius: "16px 0 0 16px",
-              marginRight: -1,
+              borderRadius: "0 16px 16px 0",
+              marginLeft: -1,
             }}
           >
-            <ChevronLeft size={20} />
+            <ChevronLeft size={20} style={{ transform: "rotate(180deg)" }} />
           </button>
 
           {/* Popup Content */}
@@ -1024,8 +850,8 @@ export default function DesktopAnalysisPanel({
             className="bg-white overflow-hidden"
             style={{
               width: 340,
-              borderRadius: "0 24px 24px 0",
-              boxShadow: "4px 4px 20px rgba(0,0,0,0.12)",
+              borderRadius: "24px 0 0 24px",
+              boxShadow: "-4px 4px 20px rgba(0,0,0,0.12)",
             }}
           >
             {/* Header */}

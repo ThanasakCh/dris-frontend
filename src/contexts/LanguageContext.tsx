@@ -428,6 +428,10 @@ const translations: Record<Language, Record<string, string>> = {
     "health.selectedDateData": "วันที่เลือกให้แสดงข้อมูล",
     "health.latestDataDate": "วันที่มีข้อมูลล่าสุด",
 
+    // Chart legend
+    "chart.selectedDate": "วันที่เลือกให้แสดงข้อมูล",
+    "chart.latestDate": "วันที่มีข้อมูลล่าสุด",
+
     "unit.changeToRai": "เปลี่ยนเป็น ไร่ งาน ตารางวา",
     "unit.changeToSqm": "เปลี่ยนเป็น ตารางเมตร",
     "unit.changeToLatLng": "เปลี่ยนเป็น ละติจูด, ลองจิจูด",
@@ -869,6 +873,10 @@ const translations: Record<Language, Record<string, string>> = {
     "health.trendValue": "Trend Value",
     "health.selectedDateData": "Selected date data",
     "health.latestDataDate": "Latest data date",
+
+    // Chart legend
+    "chart.selectedDate": "Selected date",
+    "chart.latestDate": "Latest data date",
 
     // Unit toggles
     "unit.changeToRai": "Change to Rai, Ngan, Sq.Wa",

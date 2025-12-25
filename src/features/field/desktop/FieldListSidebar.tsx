@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Search, Plus, MapPin, Layers } from "lucide-react";
 import { useField } from "../../../contexts/FieldContext";
+import { useLanguage } from "../../../contexts/LanguageContext";
 
 interface DesktopSidebarProps {
   onFieldClick: (fieldId: string, fieldName: string) => void;
@@ -14,6 +15,7 @@ export default function DesktopSidebar({
   onDrawClick,
 }: DesktopSidebarProps) {
   const { fields } = useField();
+  const { language } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredFields = fields.filter((field) =>
@@ -110,14 +112,16 @@ export default function DesktopSidebar({
                           {formatArea(field.area_m2)}
                         </span>
                       </div>
-                      {field.address && (
+                      {(field.address || field.address_en) && (
                         <div className="flex items-center gap-1.5 mt-1">
                           <MapPin
                             size={12}
                             className="text-blue-500 shrink-0"
                           />
                           <span className="text-xs text-gray-500 truncate">
-                            {field.address}
+                            {language === "EN"
+                              ? field.address_en
+                              : field.address}
                           </span>
                         </div>
                       )}

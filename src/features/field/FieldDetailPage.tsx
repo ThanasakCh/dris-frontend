@@ -104,10 +104,15 @@ export default function MobileFieldDetailPage() {
   const getSeasonLabel = (season: string | undefined): string => {
     if (!season) return "-";
     const s = season.toLowerCase();
-    if (s.includes("นาปี") || s.includes("wet")) return t("farm.wetSeason");
-    if (s.includes("นาปรัง") || s.includes("dry")) return t("farm.drySeason");
+    if (s.includes("นาปี") || s.includes("wet") || s === "wetseason")
+      return t("farm.wetSeason");
+    if (s.includes("นาปรัง") || s.includes("dry") || s === "dryseason")
+      return t("farm.drySeason");
+    if (s === "transplant") return t("farm.transplant");
+    if (s === "broadcast") return t("farm.broadcast");
     return season;
   };
+
   const [isLoading, setIsLoading] = useState(false);
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [isFieldDetailOpen, setIsFieldDetailOpen] = useState(false);
@@ -689,7 +694,7 @@ export default function MobileFieldDetailPage() {
                 id: field.id,
                 name: field.name,
                 area_m2: field.area_m2,
-                address: field.address,
+                address: language === "EN" ? field.address_en : field.address,
                 centroid_lat: field.centroid_lat,
                 centroid_lng: field.centroid_lng,
                 geometry: field.geometry,
@@ -716,7 +721,7 @@ export default function MobileFieldDetailPage() {
                 id: field.id,
                 name: field.name,
                 area_m2: field.area_m2,
-                address: field.address,
+                address: language === "EN" ? field.address_en : field.address,
                 centroid_lat: field.centroid_lat,
                 centroid_lng: field.centroid_lng,
                 geometry: field.geometry,
@@ -845,8 +850,9 @@ export default function MobileFieldDetailPage() {
                               className="mt-0.5 shrink-0"
                             />
                             <span className="text-[11px] text-gray-600 leading-tight">
-                              {field.address ||
-                                "ต.ศรีภิรมย์ อ.พรหมพิราม จ.พิษณุโลก"}
+                              {(language === "EN"
+                                ? field.address_en
+                                : field.address) || t("field.addressFallback")}
                             </span>
                           </div>
 
@@ -1375,7 +1381,8 @@ export default function MobileFieldDetailPage() {
                     lineHeight: "1.4",
                   }}
                 >
-                  {field.address || "ต.สุเทพ อ.เมืองเชียงใหม่ จ.เชียงใหม่"}
+                  {(language === "EN" ? field.address_en : field.address) ||
+                    t("field.addressFallback")}
                 </span>
               </div>
 
@@ -1435,8 +1442,9 @@ export default function MobileFieldDetailPage() {
                 className="w-full bg-blue-50 rounded-lg py-2 px-3 flex items-center justify-between cursor-pointer transition-colors border border-blue-100 hover:bg-blue-100"
               >
                 <span className="text-xs font-semibold text-gray-800">
-                  รายละเอียดของแปลง
+                  {t("field.detailOf")}
                 </span>
+
                 <ChevronDown
                   className={`w-5 h-5 text-gray-600 transition-transform ${
                     isFieldDetailOpen ? "rotate-180" : ""
@@ -1462,7 +1470,7 @@ export default function MobileFieldDetailPage() {
                             <div className="w-2 h-2 rounded-full bg-green-500"></div>
                           </div>
                           <span className="text-xs text-gray-700">
-                            รายละเอียดของแปลง
+                            {t("field.detailOf")}
                           </span>
                         </div>
                       </div>
@@ -1472,27 +1480,30 @@ export default function MobileFieldDetailPage() {
                         {/* ชนิดพันธุ์พืช */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            ชนิดพันธุ์พืช
+                            {t("field.plantVariety")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
-                            {field?.variety || "-"}
+                            {getVarietyLabel(field?.variety)}
                           </span>
                         </div>
 
                         {/* วันที่ปลูก */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            วันที่ปลูก
+                            {t("farm.plantingDate")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
                             {field?.planting_date
                               ? new Date(
                                   field.planting_date
-                                ).toLocaleDateString("th-TH", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                ).toLocaleDateString(
+                                  language === "TH" ? "th-TH" : "en-US",
+                                  {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                  }
+                                )
                               : "-"}
                           </span>
                         </div>
@@ -1500,10 +1511,10 @@ export default function MobileFieldDetailPage() {
                         {/* ฤดูกาลปลูก */}
                         <div className="flex justify-between items-center">
                           <span className="text-xs text-gray-500">
-                            ฤดูกาลปลูก
+                            {t("field.plantingSeasonLabel")}
                           </span>
                           <span className="text-xs font-medium text-gray-800">
-                            {field?.planting_season || "-"}
+                            {getSeasonLabel(field?.planting_season)}
                           </span>
                         </div>
                       </div>

@@ -830,7 +830,7 @@ export default function MobileHealthPage() {
                       style={{ background: "#16A34A", borderStyle: "dashed" }}
                     />
                     <span style={{ fontSize: "11px", color: "#6b7280" }}>
-                      วันที่เลือกให้แสดงข้อมูล
+                      {t("chart.selectedDate")}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -839,7 +839,7 @@ export default function MobileHealthPage() {
                       style={{ background: "#16A34A" }}
                     />
                     <span style={{ fontSize: "11px", color: "#6b7280" }}>
-                      วันที่มีข้อมูลล่าสุด
+                      {t("chart.latestDate")}
                     </span>
                   </div>
                 </div>
@@ -861,7 +861,7 @@ export default function MobileHealthPage() {
                   textAlign: "center",
                 }}
               >
-                ยังไม่มีข้อมูล กดปุ่มด้านบนเพื่อวิเคราะห์
+                {t("health.noDataYet")}
               </p>
             </div>
           )}
